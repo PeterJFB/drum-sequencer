@@ -54,6 +54,10 @@ public class Composer {
         timer.cancel();
     }
 
+    public void getProgress() {
+        return progress;
+    }
+
     public static void main(String[] args) {
         Composer composer = new Composer();
         composer.start();

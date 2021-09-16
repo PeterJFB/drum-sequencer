@@ -39,6 +39,7 @@ public class Composer {
 
     private void progressBeat(){
         //Runs every sixteenths. Plays everything that is set for the current
+        //TODO: Read what instruments to play from a track instead of hardcoded logic
         if (progress % 4 == 0) {
             kick.play();
         }
@@ -54,7 +55,7 @@ public class Composer {
         timer.cancel();
     }
 
-    public void getProgress() {
+    public int getProgress() {
         return progress;
     }
 

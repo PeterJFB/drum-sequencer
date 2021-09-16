@@ -1,5 +1,5 @@
 # Group gr2101 repository 
  
-Welcome to IT1901 Fall 2021 course 
- 
-Good luck! 
+## Project: Drum sequencer app
+
+The project is located in the "sequencer" folder

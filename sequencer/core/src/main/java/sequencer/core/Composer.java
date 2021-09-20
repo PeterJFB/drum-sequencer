@@ -21,8 +21,10 @@ public class Composer {
         timer = new Timer();
     }
 
+    /** 
+     * Sets up a scheduled timer task to fire progressBeat(), where the time between sixteenths is calculated in millisecondsBetweenSixteenths()
+     */
     public void start() {
-        //Sets up a scheduled timer task to fire progressBeat(), where the time between sixteenths is calculated in millisecondsBetweenSixteenths()
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 progressBeat();
@@ -32,14 +34,21 @@ public class Composer {
         millisecondsBetweenSixteenths(BPM)); 
     }
 
+    
+    /** 
+     * Calculates time in milliseconds between sixteenths when given the BPM
+     * @param bpm the BPM to calculate from
+     * @return int time in milliseconds between sixteenths
+     */
     private int millisecondsBetweenSixteenths(float bpm){
-        //Calculates time in miliseconds between sixteenths when given the BPM
         return (int) Math.floor((1000 * 60 / 4)/(bpm));
     }
 
+    /** 
+     * Runs every sixteenth. Plays everything that is set for the current
+     */
     private void progressBeat(){
-        //Runs every sixteenths. Plays everything that is set for the current
-        //TODO: Read what instruments to play from a track instead of hardcoded logic
+        //TODO: Read what instruments to play from a track instead of hardcoded
         if (progress % 4 == 0) {
             kick.play();
         }
@@ -51,14 +60,25 @@ public class Composer {
         progress = progress % MEASURE_LENGTH;
     }
 
+    /** 
+     * Stops the Conductor
+     */
     public void stop() {
         timer.cancel();
     }
 
+    
+    /** 
+     * @return int whitch sixteenth the Conductor will play next
+     */
     public int getProgress() {
         return progress;
     }
 
+    
+    /** 
+     * Just for playing around. Not meant for use in production
+     */
     public static void main(String[] args) {
         Composer composer = new Composer();
         composer.start();

@@ -16,7 +16,7 @@ public class Composer {
     private int progress; //How many sixteenths of the measure has been played
     private Timer timer;
 
-    Composer(){
+    public Composer(){
         progress = 0;
         timer = new Timer();
     }

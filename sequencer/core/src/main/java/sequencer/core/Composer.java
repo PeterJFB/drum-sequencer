@@ -15,6 +15,7 @@ public class Composer {
 
     private int progress; //How many sixteenths of the measure has been played
     private Timer timer;
+    private boolean playing;
 
     /** 
      * Composer constructor. Equal to Composer(true).
@@ -33,12 +34,23 @@ public class Composer {
     public Composer(boolean createDaemonTimer){
         progress = 0;
         timer = new Timer(createDaemonTimer);
+        playing = false;
+    }
+
+    /** 
+     * @return if the Conductor is currently playing
+     */
+    public boolean isPlaying() {
+        return playing;
     }
 
     /** 
      * Sets up a scheduled timer task to fire progressBeat(), where the time between sixteenths is calculated in millisecondsBetweenSixteenths()
      */
     public void start() {
+        if (playing) {
+            timer.cancel();
+        }
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 progressBeat();
@@ -46,6 +58,15 @@ public class Composer {
         },
         0,
         millisecondsBetweenSixteenths(BPM)); 
+        playing = true;
+    }
+
+    /** 
+     * Stops the Conductor
+     */
+    public void stop() {
+        timer.cancel();
+        playing = false;
     }
 
     
@@ -73,14 +94,6 @@ public class Composer {
         progress ++;
         progress = progress % MEASURE_LENGTH;
     }
-
-    /** 
-     * Stops the Conductor
-     */
-    public void stop() {
-        timer.cancel();
-    }
-
     
     /** 
      * @return int whitch sixteenth the Conductor will play next
@@ -94,7 +107,7 @@ public class Composer {
      * Just for playing around. Not meant for use in production
      */
     public static void main(String[] args) {
-        Composer composer = new Composer();
+        Composer composer = new Composer(false);
         composer.start();
     }
 }

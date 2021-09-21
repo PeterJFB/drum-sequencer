@@ -16,9 +16,23 @@ public class Composer {
     private int progress; //How many sixteenths of the measure has been played
     private Timer timer;
 
+    /** 
+     * Composer constructor. Equal to Composer(true).
+     * Use this in production.
+     */
     public Composer(){
+        this(true);
+    }
+
+    /**
+     * Composer constructor.
+     * @param createDaemonTimer If the timer should be a daemon thread. 
+     * See {@linktourl https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html#setDaemon(boolean)}. 
+     * If set to false, the conductor will not stop when the window is closed
+     */
+    public Composer(boolean createDaemonTimer){
         progress = 0;
-        timer = new Timer();
+        timer = new Timer(createDaemonTimer);
     }
 
     /** 

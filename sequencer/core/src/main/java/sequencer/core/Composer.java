@@ -51,7 +51,7 @@ public class Composer {
      * Choose which track to play
      * @param track The track to play
      */
-    public void chooseTrack(Track track){
+    public void setTrack(Track track){
         currentTrack = track;
     }
 
@@ -64,8 +64,13 @@ public class Composer {
 
     /** 
      * Sets up a scheduled timer task to fire progressBeat(), where the time between sixteenths is calculated in millisecondsBetweenSixteenths()
+     * @throws IllegalStateException
      */
     public void start() {
+        if (currentTrack == null) {
+            throw new IllegalStateException("Cannot start when track is not set");
+        }
+        
         if (playing) {
             timer.cancel();
         }
@@ -138,7 +143,7 @@ public class Composer {
         testTrack.updateInstrument("snare", 12);
         testTrack.updateInstrument("snare", 15);
 
-        composer.chooseTrack(testTrack);
+        composer.setTrack(testTrack);
 
         composer.start();
     }

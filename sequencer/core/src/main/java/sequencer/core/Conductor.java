@@ -50,12 +50,19 @@ public class Conductor {
     /**
      * Choose which track to play
      * @param track The track to play
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException if track is the wrong length or contains unknown instruments
      */
     public void setTrack(Track track){
+        //Checks if track contains unknown instruments
         if (!instrumentAudioClips.keySet().containsAll(track.getInstruments().keySet())) {
             throw new IllegalArgumentException("Track contains unknown instruments");
         }
+
+        //Check if the track contains instruments with the wrong pattern length
+        if (track.getInstruments().values().stream().anyMatch(pattern -> pattern.size() != MEASURE_LENGTH)) {
+            throw new IllegalArgumentException(String.format("Track contains patterns of the wrong length (Not %d sixteenths)", MEASURE_LENGTH));
+        }
+
         currentTrack = track;
     }
 

@@ -48,11 +48,11 @@ public class Conductor {
     }
 
     /**
-     * Choose which track to play
-     * @param track The track to play
+     * Validates if track is playable
+     * @param track The track to validate
      * @throws IllegalArgumentException if track is the wrong length or contains unknown instruments
      */
-    public void setTrack(Track track){
+    private void validateTrack(Track track){
         //Checks if track contains unknown instruments
         if (!instrumentAudioClips.keySet().containsAll(track.getInstruments().keySet())) {
             throw new IllegalArgumentException("Track contains unknown instruments");
@@ -62,7 +62,15 @@ public class Conductor {
         if (track.getInstruments().values().stream().anyMatch(pattern -> pattern.size() != MEASURE_LENGTH)) {
             throw new IllegalArgumentException(String.format("Track contains patterns of the wrong length (Not %d sixteenths)", MEASURE_LENGTH));
         }
+    }
 
+    /**
+     * Choose which track to play
+     * @param track The track to play
+     * @throws IllegalArgumentException if track is the wrong length or contains unknown instruments
+     */
+    public void setTrack(Track track){
+        validateTrack(track);
         currentTrack = track;
     }
 
@@ -115,8 +123,10 @@ public class Conductor {
 
     /** 
      * Runs every sixteenth. Plays everything that is set for the current sixteenth
+     * @throws IllegalArgumentException if currentTrack is the wrong length or contains unknown instruments
      */
     private void progressBeat(){
+        validateTrack(currentTrack);
         currentTrack.getInstruments().keySet().stream()
         .filter(instrument -> {
             return currentTrack.getInstruments().get(instrument).get(progress);

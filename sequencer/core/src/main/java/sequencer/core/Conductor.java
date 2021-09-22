@@ -50,8 +50,12 @@ public class Conductor {
     /**
      * Choose which track to play
      * @param track The track to play
+     * @throws IllegalArgumentException
      */
     public void setTrack(Track track){
+        if (!instrumentAudioClips.keySet().containsAll(track.getInstruments().keySet())) {
+            throw new IllegalArgumentException("Track contains unknown instruments");
+        }
         currentTrack = track;
     }
 

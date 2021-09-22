@@ -8,16 +8,16 @@ import java.util.TimerTask;
 
 import javafx.scene.media.AudioClip;
 
-public class Composer {
+public class Conductor {
     public static final int BPM = 128; //Beats per minute. One beat is one fourth of a measure, or four sixtheenths //TODO: Get the BPM from the track instead of having a set BPM
     public static final int MEASURE_LENGTH = 16; //How long the measure is (In sixteenths) //TODO: Get the measure Length from the track instead of having a set length
 
     private static final Map<String, AudioClip> instrumentAudioClips;
     static {
         Map<String, AudioClip> instrMap = new HashMap<>();
-        instrMap.put("kick", new AudioClip(Composer.class.getResource("/sequencer/core/707 Kick.wav").toExternalForm()));
-        instrMap.put("hihat", new AudioClip(Composer.class.getResource("/sequencer/core/808 CH.wav").toExternalForm()));
-        instrMap.put("snare", new AudioClip(Composer.class.getResource("/sequencer/core/808 Snare.wav").toExternalForm()));
+        instrMap.put("kick", new AudioClip(Conductor.class.getResource("/sequencer/core/707 Kick.wav").toExternalForm()));
+        instrMap.put("hihat", new AudioClip(Conductor.class.getResource("/sequencer/core/808 CH.wav").toExternalForm()));
+        instrMap.put("snare", new AudioClip(Conductor.class.getResource("/sequencer/core/808 Snare.wav").toExternalForm()));
         instrumentAudioClips = Collections.unmodifiableMap(instrMap);
     }
 
@@ -28,20 +28,20 @@ public class Composer {
     private Track currentTrack;
 
     /** 
-     * Composer constructor. Equal to Composer(true).
+     * Conductor constructor. Equal to Conductor(true).
      * Use this in production.
      */
-    public Composer(){
+    public Conductor(){
         this(true);
     }
 
     /**
-     * Composer constructor.
+     * Conductor constructor.
      * @param createDaemonTimer If the timer should be a daemon thread. 
      * See {@linktourl https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html#setDaemon(boolean)}. 
      * If set to false, the conductor will not stop when the window is closed
      */
-    public Composer(boolean createDaemonTimer){
+    public Conductor(boolean createDaemonTimer){
         progress = 0;
         timer = new Timer(createDaemonTimer);
         playing = false;
@@ -64,7 +64,7 @@ public class Composer {
 
     /** 
      * Sets up a scheduled timer task to fire progressBeat(), where the time between sixteenths is calculated in millisecondsBetweenSixteenths()
-     * @throws IllegalStateException
+     * @throws IllegalStateException if Conductor has no track to play
      */
     public void start() {
         if (currentTrack == null) {
@@ -130,7 +130,7 @@ public class Composer {
      * Just for playing around. Not meant for use in production
      */
     public static void main(String[] args) {
-        Composer composer = new Composer(false);
+        Conductor conductor = new Conductor(false);
 
         Track testTrack = new Track();
         testTrack.addInstrument("kick", 16);
@@ -143,8 +143,8 @@ public class Composer {
         testTrack.updateInstrument("snare", 12);
         testTrack.updateInstrument("snare", 15);
 
-        composer.setTrack(testTrack);
+        conductor.setTrack(testTrack);
 
-        composer.start();
+        conductor.start();
     }
 }

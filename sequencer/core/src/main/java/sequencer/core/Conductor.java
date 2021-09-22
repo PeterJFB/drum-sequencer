@@ -56,7 +56,7 @@ public class Conductor {
     }
 
     /** 
-     * @return if the Conductor is currently playing
+     * @return if the conductor is currently playing
      */
     public boolean isPlaying() {
         return playing;
@@ -119,7 +119,7 @@ public class Conductor {
     }
     
     /** 
-     * @return int which sixteenth the Conductor will play next
+     * @return int which sixteenth the conductor will play next
      */
     public int getProgress() {
         return progress;

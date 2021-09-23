@@ -54,13 +54,15 @@ public class Conductor {
      */
     private void validateTrack(Track track){
         //Checks if track contains unknown instruments
-        if (!instrumentAudioClips.keySet().containsAll(track.getInstruments().keySet())) {
+        if (!instrumentAudioClips.keySet().containsAll(track.getInstruments())) {
             throw new IllegalArgumentException("Track contains unknown instruments");
         }
 
         //Check if the track contains instruments with the wrong pattern length
-        if (track.getInstruments().values().stream().anyMatch(pattern -> pattern.size() != MEASURE_LENGTH)) {
-            throw new IllegalArgumentException(String.format("Track contains patterns of the wrong length (Not %d sixteenths)", MEASURE_LENGTH));
+        for (String instrument: track.getInstruments()){
+            if (track.getPattern(instrument).size() != MEASURE_LENGTH){
+                throw new IllegalArgumentException(String.format("Track contains patterns of the wrong length (Not %d sixteenths)", MEASURE_LENGTH));
+            }
         }
     }
 
@@ -127,9 +129,9 @@ public class Conductor {
      */
     private void progressBeat(){
         validateTrack(currentTrack);
-        currentTrack.getInstruments().keySet().stream()
+        currentTrack.getInstruments().stream()
         .filter(instrument -> {
-            return currentTrack.getInstruments().get(instrument).get(progress);
+            return currentTrack.getPattern(instrument).get(progress);
         })
         .forEach(instrument -> {
             instrumentAudioClips.get(instrument).play();
@@ -154,15 +156,15 @@ public class Conductor {
         Conductor conductor = new Conductor(false);
 
         Track testTrack = new Track();
-        testTrack.addInstrument("kick", 16);
-        testTrack.addInstrument("snare", 16);
-        testTrack.updateInstrument("kick", 0);
-        testTrack.updateInstrument("kick", 4);
-        testTrack.updateInstrument("snare", 4);
-        testTrack.updateInstrument("kick", 8);
-        testTrack.updateInstrument("kick", 12);
-        testTrack.updateInstrument("snare", 12);
-        testTrack.updateInstrument("snare", 15);
+        testTrack.addInstrument("kick");
+        testTrack.addInstrument("snare");
+        testTrack.toggleSixteenth("kick", 0);
+        testTrack.toggleSixteenth("kick", 4);
+        testTrack.toggleSixteenth("snare", 4);
+        testTrack.toggleSixteenth("kick", 8);
+        testTrack.toggleSixteenth("kick", 12);
+        testTrack.toggleSixteenth("snare", 12);
+        testTrack.toggleSixteenth("snare", 15);
 
         conductor.setTrack(testTrack);
 

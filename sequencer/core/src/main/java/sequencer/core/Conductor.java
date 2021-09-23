@@ -154,8 +154,8 @@ public class Conductor {
         Conductor conductor = new Conductor(false);
 
         Track testTrack = new Track();
-        testTrack.addInstrument("kick", 16);
-        testTrack.addInstrument("snare", 16);
+        testTrack.addInstrument("kick");
+        testTrack.addInstrument("snare");
         testTrack.updateInstrument("kick", 0);
         testTrack.updateInstrument("kick", 4);
         testTrack.updateInstrument("snare", 4);

@@ -89,15 +89,13 @@ public class TrackMapperTest {
     public void testTrackMapperSerAndDesers() {
         Track track;
 
-        HashMap<String, List<Boolean>> instruments = new HashMap<>();
-
         track = new Track();
         track.setArtistName("mr. Worldwide");
         testTrackMapperSerAndDeser(track);
 
-        instruments.put("hihat", Arrays.asList(true, false, true, false, false, false, false, true, true, true, true,
-                false, true, false, true, true));
-        track = new Track("name", "artist", instruments);
+        track.setTrackName("Tiem of lief");
+        track.addInstrument("hihat", Arrays.asList(true, false, true, false, false, false, false, true, true, true,
+                true, false, true, false, true, true));
         testTrackMapperSerAndDeser(track);
 
         track.addInstrument("kick");

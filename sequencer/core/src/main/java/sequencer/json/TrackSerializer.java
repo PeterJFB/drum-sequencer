@@ -1,5 +1,7 @@
 package sequencer.json;
 
+import java.util.Collections;
+import java.util.List;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -18,7 +20,13 @@ class TrackSerializer extends JsonSerializer<Track> {
         jsonGen.writeStartObject();
         jsonGen.writeStringField("name", track.getTrackName());
         jsonGen.writeStringField("artist", track.getArtistName());
-        jsonGen.writeObjectField("instruments", track.getInstruments());
+        jsonGen.writeObjectFieldStart("instruments");
+        List<String> instruments = track.getInstruments();
+        Collections.reverse(instruments);
+        for (String instrument : instruments) {
+            jsonGen.writeObjectField(instrument, track.getPattern(instrument));
+        }
+        jsonGen.writeEndObject();
         jsonGen.writeEndObject();
     }
 }

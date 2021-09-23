@@ -3,7 +3,7 @@ package sequencer.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
 public class Track {
 
@@ -12,27 +12,13 @@ public class Track {
 
     private String trackName;
     private String artistName;
-    private HashMap<String, List<Boolean>> instruments = new HashMap<>();
+    private Map<String, List<Boolean>> instruments = new HashMap<>();
 
     /**
-     * Constructor for creating an empty track. Used when creating a new track from
-     * Controller
+     * Constructor for creating an empty track. We always construct the track empty and then 
+     * add instruments and trackName and artistName later on
      */
     public Track() {
-    }
-
-    /**
-     * Constructor for creating a track with spesific fields. Used when reading a
-     * new track from file
-     * 
-     * @param trackName
-     * @param artistName
-     * @param instruments
-     */
-    public Track(String trackName, String artistName, HashMap<String, List<Boolean>> instruments) {
-        setTrackName(trackName);
-        setArtistName(artistName);
-        setInstruments(instruments);
     }
 
     /**
@@ -50,10 +36,19 @@ public class Track {
     }
 
     /**
-     * @return a copy of instruments
+     * @return a List of instrument names
      */
-    public HashMap<String, List<Boolean>> getInstruments() {
-        return new HashMap<>(instruments);
+    public List<String> getInstruments() {
+        return new ArrayList<>(instruments.keySet());
+    }
+
+    /**
+     * @param instrument
+     * @return a copy of the pattern for the given instrument or null instrument is not 
+     * a key in instruments
+     */
+    public List<Boolean> getPattern(String instrument) {
+        return new ArrayList<>(instruments.get(instrument));
     }
 
     /**
@@ -69,8 +64,7 @@ public class Track {
 
     /**
      * @param artistName
-     * @throws IllegalArgumentException if artistName is more than 30 characters
-     *                                  long
+     * @throws IllegalArgumentException if artistName is more than 30 characters long
      */
     public void setArtistName(String artistName) throws IllegalArgumentException {
         if (artistName.length() >= 30) {
@@ -80,100 +74,57 @@ public class Track {
     }
 
     /**
-     * Sets instruments to a copy of the param instruments
-     * 
-     * @param instruments
-     */
-    public void setInstruments(HashMap<String, List<Boolean>> instruments) {
-        if (!checkInstruments(instruments)) {
-            throw new IllegalArgumentException("Cannot set instruments. One or more instrumnts had an illegal format");
-        }
-        this.instruments = new HashMap<>(instruments);
-    }
-
-    private Boolean checkInstruments(HashMap<String, List<Boolean>> instruments) {
-        for (Entry<String, List<Boolean>> instrumentEntry : instruments.entrySet()) {
-            if (instrumentEntry.getValue() == null || instrumentEntry.getValue().size() != TRACK_LENGTH) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Adds another instrument to intruments with given values
-     * 
      * @param instrument
-     * @param values
+     * @param pattern
      */
-    public void addInstrument(String instrument, List<Boolean> values) {
-        if (!checkInstrument(values)) {
+    public void addInstrument(String instrument, List<Boolean> pattern) {
+        if (!checkInstrument(pattern)) {
             throw new IllegalArgumentException("Cannot add instrument. The instrument had an illegal format");
         }
-        instruments.put(instrument, new ArrayList<>(values));
+        instruments.put(instrument, new ArrayList<>(pattern));
     }
 
-    private Boolean checkInstrument(List<Boolean> values) {
-        if (values == null || values.size() != TRACK_LENGTH) {
+    private Boolean checkInstrument(List<Boolean> pattern) {
+        if (pattern == null || pattern.size() != TRACK_LENGTH) {
             return false;
         }
         return true;
     }
 
     /**
-     * Adds anouther instrument to intruments with given length an all values as
-     * false
-     * 
+     * Adds anouther instrument to intruments with given length an all values as false
      * @param instrument
      */
     public void addInstrument(String instrument) {
-        List<Boolean> values = new ArrayList<>();
+        List<Boolean> pattern = new ArrayList<>();
         for (int i = 0; i < TRACK_LENGTH; i++) {
-            values.add(false);
+            pattern.add(false);
         }
-        addInstrument(instrument, values);
+        addInstrument(instrument, pattern);
     }
 
     /**
-     * Changes the value on given index for the given instrument (from true to
-     * false, or vise versa)
-     * 
+     * Toggles the value of the given sixteenth for the pattern of the given instrument 
+     * (from true to false, or vise versa)
      * @param instrument
      * @param index
      * @throws IllegalArgumentException if instrument is not a key in instruments,
-     *                                  or index is out of bounds
+     * or sixteenth (the index) is out of bounds
      */
-    public void updateInstrument(String instrument, Integer index) throws IllegalArgumentException {
-        Entry<String, List<Boolean>> instrumentEntry = getInstrumentEntry(instrument);
-        if (instrumentEntry == null) {
+    public void toggleSixteenth(String instrument, Integer sixteenth) throws IllegalArgumentException {
+        List<Boolean> pattern = instruments.get(instrument);
+        if (pattern == null) {
             throw new IllegalArgumentException("Cannot update non-existing instrument");
         }
-        if (index >= TRACK_LENGTH) {
+        if (sixteenth >= TRACK_LENGTH) {
             throw new IllegalArgumentException("Cannot update instrument. Index out of bounds");
         }
-        Boolean newValue = instrumentEntry.getValue().get(index) == true ? false : true;
-        instrumentEntry.getValue().set(index, newValue);
+        pattern.set(sixteenth, !pattern.get(sixteenth));
     }
 
     /**
-     * Returns the entry in instrument where the key matches the param instrument,
-     * or null if no matches are found
-     * 
-     * @param instrument
-     * @return
-     */
-    private Entry<String, List<Boolean>> getInstrumentEntry(String instrument) {
-        for (Entry<String, List<Boolean>> instrumentEntry : instruments.entrySet()) {
-            if (instrumentEntry.getKey().equals(instrument)) {
-                return instrumentEntry;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Check if this track is equal to some Track 
-     *
+     * Check if this track is equal to some Track
      * @param otherTrack track to compare to
      * @return true if they are equal, false otherwise
      */
@@ -197,17 +148,17 @@ public class Track {
                 return false;
         }
 
-        HashMap<String, List<Boolean>> instruments = getInstruments();
-        HashMap<String, List<Boolean>> otherInstruments = otherTrack.getInstruments();
-
-        if (!instruments.entrySet().equals(otherInstruments.entrySet()))
+        // Check if the instrument names are equal
+        List<String> instruments = getInstruments();
+        List<String> otherInstruments = otherTrack.getInstruments();
+        if (!instruments.equals(otherInstruments)){
             return false;
+        }
 
-        for (Entry<String, List<Boolean>> instrument : instruments.entrySet()) {
-
-            List<Boolean> pattern = instrument.getValue();
-            List<Boolean> otherPattern = otherInstruments.get(instrument.getKey());
-
+        // Check if all the patterns for the instruments are equal
+        for (String instrument: instruments){
+            List<Boolean> pattern = getPattern(instrument);
+            List<Boolean> otherPattern = otherTrack.getPattern(instrument);
             if (!pattern.equals(otherPattern))
                 return false;
         }

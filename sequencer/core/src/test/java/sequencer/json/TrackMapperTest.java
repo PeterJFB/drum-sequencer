@@ -35,7 +35,7 @@ public class TrackMapperTest {
     @DisplayName("TrackMapper should serialize instruments when present")
     public void testTrackMapperInstrumentsString() {
         Track track = new Track();
-        track.addInstrument("kick", 16);
+        track.addInstrument("kick");
 
         StringBuilder kickPatternString = new StringBuilder();
 
@@ -52,8 +52,7 @@ public class TrackMapperTest {
         kickPatternString.deleteCharAt(kickPatternString.length() - 1);
         snarePatternString.deleteCharAt(snarePatternString.length() - 1);
 
-        // TODO: replace with List!
-        track.addInstrument("snare", new ArrayList<>(snarePattern));
+        track.addInstrument("snare", snarePattern);
 
         testTrackMapperWithExpectedOutputString(track,
                 "{\"name\":null,\"artist\":null,\"instruments\":{\"kick\":[%s],\"snare\":[%s]}}"
@@ -90,19 +89,20 @@ public class TrackMapperTest {
     public void testTrackMapperSerAndDesers() {
         Track track;
 
-        // TODO: List!
-        HashMap<String, ArrayList<Boolean>> instruments = new HashMap<>();
+        HashMap<String, List<Boolean>> instruments = new HashMap<>();
 
         track = new Track();
         track.setArtistName("mr. Worldwide");
         testTrackMapperSerAndDeser(track);
 
-        instruments.put("hihat", new ArrayList<>(Arrays.asList(true, false, true)));
+        instruments.put("hihat", Arrays.asList(true, false, true, false, false, false, false, true, true, true, true,
+                false, true, false, true, true));
         track = new Track("name", "artist", instruments);
         testTrackMapperSerAndDeser(track);
 
-        instruments.put("kick", new ArrayList<>(Arrays.asList(false, false, true)));
-        track = new Track("name2", "artist2", instruments);
+        track.addInstrument("kick");
+        track.setTrackName("name2");
+        track.setArtistName("artist2");
         testTrackMapperSerAndDeser(track);
 
     }
@@ -130,8 +130,6 @@ public class TrackMapperTest {
         } catch (IOException e) {
             fail("Test failed with an unexpected IOException");
         }
-
-        System.out.println(track.getArtistName());
         Assertions.assertTrue(track.equals(newTrack), "Serialized track did not match the original");
 
     }

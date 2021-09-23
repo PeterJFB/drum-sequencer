@@ -171,6 +171,12 @@ public class Track {
         return null;
     }
 
+    /**
+     * Check if this track is equal to some Track 
+     *
+     * @param otherTrack track to compare to
+     * @return true if they are equal, false otherwise
+     */
     public boolean equals(Track otherTrack) {
 
         // Check if both texts are empty (is considered a valid match)

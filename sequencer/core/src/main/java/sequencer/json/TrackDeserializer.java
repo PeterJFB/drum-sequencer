@@ -2,6 +2,7 @@ package sequencer.json;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -47,45 +48,30 @@ class TrackDeserializer extends JsonDeserializer<Track> {
             JsonNode itemsNode = objectNode.get("instruments");
             if (itemsNode instanceof ObjectNode instrumentPatternObject) {
 
-                for (JsonNode instrumentPatternNode : instrumentPatternObject) {
-                    if (instrumentPatternNode instanceof ObjectNode instrumentPattern) {
+                // Get pattern
+                instrumentPatternObject.fieldNames().forEachRemaining((instrument) -> {
 
-                        String instrument = null;
-                        List<Boolean> pattern = new ArrayList<>();
+                    List<Boolean> pattern = new ArrayList<>();
+                    JsonNode patternNode = instrumentPatternObject.get(instrument);
 
-                        // Get intrument name
-                        JsonNode instrumentNode = instrumentPattern.get("instrument");
-                        if (instrumentNode instanceof TextNode instrumentTextNode) {
-                            instrument = instrumentTextNode.asText();
-                        }
+                    if (patternNode instanceof ArrayNode patternArrayNode) {
+                        for (JsonNode valueNode : patternArrayNode) {
 
-                        // Skip instatitaiating the instrument if its name does not exist
-                        if (instrument == null) {
-                            continue;
-                        }
-
-                        // Get pattern
-                        JsonNode patternNode = instrumentPattern.get("pattern");
-
-                        if (patternNode instanceof ArrayNode patternArrayNode) {
-                            for (JsonNode valueNode : patternArrayNode) {
-
-                                if (valueNode instanceof BooleanNode value) {
-                                    pattern.add(value.asBoolean());
-                                } else {
-                                    pattern.add(false);
-                                }
+                            if (valueNode instanceof BooleanNode value) {
+                                pattern.add(value.asBoolean());
+                            } else {
+                                pattern.add(false);
                             }
                         }
-                        // TODO: Replace ArrayList!
-                        track.addInstrument(instrument, new ArrayList<>(pattern));
                     }
-                }
+
+                    track.addInstrument(instrument, pattern);
+                });
+
             }
-
             return track;
-
         }
+
         return null;
     }
 }

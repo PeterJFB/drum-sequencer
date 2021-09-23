@@ -2,18 +2,22 @@ package sequencer.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 public class Track {
 
+    public final static int TRACK_LENGTH = 16;
+    public final static int BPM = 128;
+
     private String trackName;
     private String artistName;
-    private HashMap<String, ArrayList<Boolean>> instruments = new HashMap<>(); 
+    private HashMap<String, List<Boolean>> instruments = new HashMap<>();
 
     /** 
      * Constructor for creating an empty track. Used when creating a new track from Controller
     */
-    public Track(){}
+    public Track(){ }
 
     /**
      * Constructor for creating a track with spesific fields. Used when reading a new track from file
@@ -21,7 +25,9 @@ public class Track {
      * @param artistName
      * @param instruments
      */
-    public Track(String trackName, String artistName, HashMap<String, ArrayList<Boolean>> instruments){
+    public Track(String trackName, String artistName, HashMap<String, List<Boolean>> instruments){
+        setTrackName(trackName);
+        setArtistName(artistName);
         setInstruments(instruments);
     }
 
@@ -42,7 +48,7 @@ public class Track {
     /**
      * @return a copy of instruments
      */
-    public HashMap<String, ArrayList<Boolean>> getInstruments() {
+    public HashMap<String, List<Boolean>> getInstruments() {
         return new HashMap<>(instruments);
     }
 
@@ -52,7 +58,7 @@ public class Track {
      */
     public void setTrackName(String trackName) throws IllegalArgumentException{
         if (trackName.length() >= 30) {
-            throw new IllegalArgumentException("Track name can not be more than 20 characters long.");
+            throw new IllegalArgumentException("Track name can not be more than 30 characters long.");
         }
         this.trackName = trackName;
     }
@@ -63,7 +69,7 @@ public class Track {
      */
     public void setArtistName(String artistName) throws IllegalArgumentException{
         if (artistName.length() >= 30) {
-            throw new IllegalArgumentException("Artist name can not be more than 20 characters long.");
+            throw new IllegalArgumentException("Artist name can not be more than 30 characters long.");
         }
         this.artistName = artistName;
     }
@@ -72,8 +78,20 @@ public class Track {
      * Sets instruments to a copy of the param instruments
      * @param instruments
      */
-    public void setInstruments(HashMap<String, ArrayList<Boolean>> instruments) {
+    public void setInstruments(HashMap<String, List<Boolean>> instruments) {
+        if (!checkInstruments(instruments)){
+            throw new IllegalArgumentException("Cannot set instruments. One or more instrumnts had an illegal format");
+        }
         this.instruments = new HashMap<>(instruments);
+    }
+
+    private Boolean checkInstruments(HashMap<String, List<Boolean>> instruments){
+        for (Entry<String, List<Boolean>> instrumentEntry : instruments.entrySet()){
+            if (instrumentEntry.getValue() == null || instrumentEntry.getValue().size() != TRACK_LENGTH){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -81,34 +99,44 @@ public class Track {
      * @param instrument
      * @param values
      */
-    public void addInstrument(String instrument, ArrayList<Boolean> values) {
+    public void addInstrument(String instrument, List<Boolean> values) {
+        if (!checkInstrument(values)){
+            throw new IllegalArgumentException("Cannot add instrument. The instrument had an illegal format");
+        }
         instruments.put(instrument, new ArrayList<>(values));
+    }
+
+    private Boolean checkInstrument(List<Boolean> values){
+        if (values == null || values.size() != TRACK_LENGTH){
+             return false;
+        }  
+        return true;
     }
 
     /**
      * Adds anouther instrument to intruments with given length an all values as false
      * @param instrument
      */
-    public void addInstrument(String instrument, int length) {
-        ArrayList<Boolean> values = new ArrayList<>();
-        for (int i=0; i<length; i++){
+    public void addInstrument(String instrument) {
+        List<Boolean> values = new ArrayList<>();
+        for (int i=0; i<TRACK_LENGTH; i++){
             values.add(false);
         }
         addInstrument(instrument, values);
     }
 
     /**
-     * Changes the values on given index for the given instrument (from true to false, or vise versa)
+     * Changes the value on given index for the given instrument (from true to false, or vise versa)
      * @param instrument
      * @param index
      * @throws IllegalArgumentException if instrument is not a key in instruments, or index is out of bounds
      */
     public void updateInstrument(String instrument, Integer index) throws IllegalArgumentException{
-        Entry<String, ArrayList<Boolean>> instrumentEntry = getInstrumentEntry(instrument);
+        Entry<String, List<Boolean>> instrumentEntry = getInstrumentEntry(instrument);
         if (instrumentEntry == null) {
             throw new IllegalArgumentException("Cannot update non-existing instrument");
         }
-        if (instrumentEntry.getValue().size() <= index){
+        if (index >= TRACK_LENGTH){
             throw new IllegalArgumentException("Cannot update instrument. Index out of bounds");
         }
         Boolean newValue = instrumentEntry.getValue().get(index) == true ? false : true;
@@ -120,8 +148,8 @@ public class Track {
      * @param instrument
      * @return
      */
-    private Entry<String, ArrayList<Boolean>> getInstrumentEntry(String instrument){
-        for (Entry<String, ArrayList<Boolean>> instrumentEntry : instruments.entrySet()){
+    private Entry<String, List<Boolean>> getInstrumentEntry(String instrument){
+        for (Entry<String, List<Boolean>> instrumentEntry : instruments.entrySet()){
             if (instrumentEntry.getKey().equals(instrument)){
                 return instrumentEntry;
             }

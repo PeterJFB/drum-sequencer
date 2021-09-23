@@ -23,8 +23,10 @@
 
 .sixteenth {
     -fx-cursor: hand;
-    -fx-background-radius: 15;
-    -fx-border-radius: 15;
-    -fx-border-width: 2;
-    -fx-border-color: rgba(242, 242, 242, 0.2);
+    /* 
+    these don't work ... :( but should, according to https://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#rectangle
+    
+    -fx-arc-width: 30.0; 
+    -fx-arc-height: 30.0; 
+    */
 }

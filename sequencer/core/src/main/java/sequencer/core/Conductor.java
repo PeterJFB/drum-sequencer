@@ -1,7 +1,9 @@
 package sequencer.core;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,6 +26,7 @@ public class Conductor {
     private int progress; //How many sixteenths of the measure has been played
     private Timer timer;
     private boolean playing;
+    private List<ConductorListener> listeners;
 
     private Track currentTrack;
 
@@ -45,6 +48,7 @@ public class Conductor {
         progress = 0;
         timer = new Timer(createDaemonTimer);
         playing = false;
+        conductorListeners = new ArrayList<>();
     }
 
     /**
@@ -127,6 +131,8 @@ public class Conductor {
      */
     private void progressBeat(){
         validateTrack(currentTrack);
+
+        //Play instruments
         currentTrack.getInstruments().keySet().stream()
         .filter(instrument -> {
             return currentTrack.getInstruments().get(instrument).get(progress);
@@ -134,6 +140,9 @@ public class Conductor {
         .forEach(instrument -> {
             instrumentAudioClips.get(instrument).play();
         });
+
+        //Fire events
+        listeners.forEach(listener -> listener.run(progress));
 
         progress ++;
         progress = progress % MEASURE_LENGTH;
@@ -144,6 +153,22 @@ public class Conductor {
      */
     public int getProgress() {
         return progress;
+    }
+
+    /**
+     * Add a listener that listens for when the beat progresses
+     * @param listener the listener to be added
+     */
+    public void addListener(ConductorListener listener){
+        listeners.add(listener);
+    }
+
+    /**
+     * Remove a listener that listens for when the beat progresses
+     * @param listener the listener to be removed
+     */
+    public void removeListener(ConductorListener listener){
+        listeners.remove(listener);
     }
 
     

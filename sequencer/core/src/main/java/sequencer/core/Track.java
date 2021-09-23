@@ -3,6 +3,7 @@ package sequencer.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 public class Track {
@@ -12,7 +13,7 @@ public class Track {
 
     private String trackName;
     private String artistName;
-    private HashMap<String, List<Boolean>> instruments = new HashMap<>();
+    private Map<String, List<Boolean>> instruments = new HashMap<>();
 
     /**
      * Constructor for creating an empty track. Used when creating a new track from
@@ -29,7 +30,7 @@ public class Track {
      * @param artistName
      * @param instruments
      */
-    public Track(String trackName, String artistName, HashMap<String, List<Boolean>> instruments) {
+    public Track(String trackName, String artistName, Map<String, List<Boolean>> instruments) {
         setTrackName(trackName);
         setArtistName(artistName);
         setInstruments(instruments);
@@ -52,7 +53,7 @@ public class Track {
     /**
      * @return a copy of instruments
      */
-    public HashMap<String, List<Boolean>> getInstruments() {
+    public Map<String, List<Boolean>> getInstruments() {
         return new HashMap<>(instruments);
     }
 
@@ -84,14 +85,14 @@ public class Track {
      * 
      * @param instruments
      */
-    public void setInstruments(HashMap<String, List<Boolean>> instruments) {
+    public void setInstruments(Map<String, List<Boolean>> instruments) {
         if (!checkInstruments(instruments)) {
             throw new IllegalArgumentException("Cannot set instruments. One or more instrumnts had an illegal format");
         }
         this.instruments = new HashMap<>(instruments);
     }
 
-    private Boolean checkInstruments(HashMap<String, List<Boolean>> instruments) {
+    private Boolean checkInstruments(Map<String, List<Boolean>> instruments) {
         for (Entry<String, List<Boolean>> instrumentEntry : instruments.entrySet()) {
             if (instrumentEntry.getValue() == null || instrumentEntry.getValue().size() != TRACK_LENGTH) {
                 return false;
@@ -151,7 +152,7 @@ public class Track {
         if (index >= TRACK_LENGTH) {
             throw new IllegalArgumentException("Cannot update instrument. Index out of bounds");
         }
-        Boolean newValue = instrumentEntry.getValue().get(index) == true ? false : true;
+        Boolean newValue = !instrumentEntry.getValue().get(index);
         instrumentEntry.getValue().set(index, newValue);
     }
 
@@ -197,8 +198,8 @@ public class Track {
                 return false;
         }
 
-        HashMap<String, List<Boolean>> instruments = getInstruments();
-        HashMap<String, List<Boolean>> otherInstruments = otherTrack.getInstruments();
+        Map<String, List<Boolean>> instruments = getInstruments();
+        Map<String, List<Boolean>> otherInstruments = otherTrack.getInstruments();
 
         if (!instruments.entrySet().equals(otherInstruments.entrySet()))
             return false;

@@ -48,7 +48,7 @@ public class Conductor {
         progress = 0;
         timer = new Timer(createDaemonTimer);
         playing = false;
-        conductorListeners = new ArrayList<>();
+        listeners = new ArrayList<>();
     }
 
     /**
@@ -190,6 +190,8 @@ public class Conductor {
         testTrack.updateInstrument("snare", 15);
 
         conductor.setTrack(testTrack);
+
+        conductor.addListener(progress -> System.out.println(progress)); //Listeners work!
 
         conductor.start();
     }

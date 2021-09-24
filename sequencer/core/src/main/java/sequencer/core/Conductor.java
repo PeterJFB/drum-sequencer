@@ -25,6 +25,7 @@ public class Conductor {
 
     private int progress; //How many sixteenths of the measure has been played
     private Timer timer;
+    private TimerTask progressBeatTask;
     private boolean playing;
     private List<ConductorListener> listeners;
 
@@ -97,13 +98,15 @@ public class Conductor {
         }
         
         if (playing) {
-            timer.cancel();
+            progressBeatTask.cancel();
         }
-        timer.scheduleAtFixedRate(new TimerTask() {
+        progressBeatTask = new TimerTask() {
             public void run() {
                 progressBeat();
             }
-        },
+        };
+        timer.scheduleAtFixedRate(
+        progressBeatTask,
         0,
         millisecondsBetweenSixteenths(BPM)); 
         playing = true;
@@ -113,7 +116,7 @@ public class Conductor {
      * Stops the Conductor
      */
     public void stop() {
-        timer.cancel();
+        progressBeatTask.cancel();
         playing = false;
     }
 
@@ -192,7 +195,7 @@ public class Conductor {
         conductor.setTrack(testTrack);
 
         conductor.addListener(progress -> System.out.println(progress)); //Listeners work!
-
+        
         conductor.start();
     }
 }

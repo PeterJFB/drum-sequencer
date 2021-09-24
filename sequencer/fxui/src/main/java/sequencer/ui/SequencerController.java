@@ -1,14 +1,19 @@
 package sequencer.ui;
 
 import sequencer.core.*;
+import sequencer.json.TrackMapper;
+import sequencer.persistence.PersistenceHandler;
 
 import java.util.List;
 import java.util.Arrays;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.paint.Color;
@@ -18,11 +23,14 @@ public class SequencerController {
 
     private Conductor conductor;
     private Track track;
+    private PersistenceHandler persistenceHandler;
 
     @FXML
     void initialize() {
         conductor = new Conductor();
         track = new Track();
+        // persistenceHandler = new PersistenceHandler("drum-sequencer-persistence",
+        // TrackMapper.FORMAT);
 
         createElements();
     }
@@ -40,10 +48,16 @@ public class SequencerController {
     private Pane header;
 
     @FXML
+    private Pane timeline;
+
+    @FXML
     private Pane instrumentsPanel;
 
     @FXML
     private Pane instrumentsPattern;
+
+    @FXML
+    private Text trackName;
 
     // The colors used as the background for the clickable sixteenth-rectangles,
     // including both shades of the same color.
@@ -59,13 +73,18 @@ public class SequencerController {
         instrumentsPattern.setPrefSize(WIDTH_OF_SIXTEENTH * 16 + (WIDTH_OF_SIXTEENTH / 10) * 17,
                 HEIGHT_OF_SIXTEENTH * 5 + (WIDTH_OF_SIXTEENTH / 5) * 6);
         instrumentsPattern.setLayoutX(WIDTH_OF_SIXTEENTH * 3.5);
-        instrumentsPattern.setLayoutY(WIDTH_OF_SIXTEENTH * 1.5);
+        instrumentsPattern.setLayoutY(WIDTH_OF_SIXTEENTH * 1.5 + HEIGHT_OF_SIXTEENTH / 3);
 
-        instrumentsPanel.setPrefSize(instrumentsPattern.getLayoutX(), instrumentsPattern.getPrefHeight());
-        instrumentsPanel.setLayoutY(instrumentsPattern.getLayoutY());
+        instrumentsPanel.setPrefSize(instrumentsPattern.getLayoutX(),
+                instrumentsPattern.getPrefHeight() + HEIGHT_OF_SIXTEENTH / 3);
+        instrumentsPanel.setLayoutY(instrumentsPattern.getLayoutY() - HEIGHT_OF_SIXTEENTH / 3);
 
         header.setPrefSize(instrumentsPanel.getPrefWidth() + instrumentsPattern.getPrefWidth(),
-                instrumentsPattern.getLayoutY());
+                instrumentsPanel.getLayoutY());
+
+        timeline.setPrefSize(instrumentsPattern.getPrefWidth(), HEIGHT_OF_SIXTEENTH / 3);
+        timeline.setLayoutX(instrumentsPattern.getLayoutX());
+        timeline.setLayoutY(instrumentsPanel.getLayoutY());
 
         for (int row = 0; row < 5; row++) {
             double layoutY = HEIGHT_OF_SIXTEENTH * row + (WIDTH_OF_SIXTEENTH / 5) * (row + 1);
@@ -78,15 +97,14 @@ public class SequencerController {
                 sixteenth.setId(col + "," + row);
                 sixteenth.getStyleClass().add("sixteenth");
                 sixteenth.setArcWidth(30.0);
-                sixteenth.setArcHeight(20.0);
+                sixteenth.setArcHeight(30.0);
                 sixteenth.setFill(Color.web(COLORS.get(row)[1]));
                 sixteenth.setOnMouseClicked(event -> toggleSixteenth(event));
                 instrumentsPattern.getChildren().add(sixteenth);
             }
-            Pane instrumentSubPanel = new Pane();
+            StackPane instrumentSubPanel = new StackPane();
             instrumentSubPanel.setPrefSize(instrumentsPanel.getPrefWidth(), HEIGHT_OF_SIXTEENTH);
-            instrumentSubPanel.setLayoutX(0);
-            instrumentSubPanel.setLayoutY(layoutY);
+            instrumentSubPanel.setLayoutY(layoutY + timeline.getPrefHeight());
             instrumentSubPanel.getStyleClass().add("instrumentSubPanel");
 
             ChoiceBox<String> availableInstruments = new ChoiceBox<>();
@@ -97,6 +115,16 @@ public class SequencerController {
 
             instrumentsPanel.getChildren().add(instrumentSubPanel);
         }
+
+        int amountOfSavedTracks = 1;
+        try {
+            amountOfSavedTracks = persistenceHandler.listFilenames().size() + 1;
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        trackName.setText("untitled" + amountOfSavedTracks);
+        trackName.setLayoutX(header.getPrefWidth() / 2);
+        trackName.setLayoutY(header.getPrefHeight() / 2);
     }
 
     public void addInstrument(ActionEvent e) {
@@ -113,14 +141,12 @@ public class SequencerController {
         if (instrument != null) {
             int toggledIndex = track.getPattern(instrument).get(sixteenthID[0]) ? 1 : 0; // Refers to the index in a
                                                                                          // String[] in COLORS. In other
-                                                                                         // words, which shade of color.
+                                                                                         // words, which shade.
 
             String toggledColor = COLORS.get(sixteenthID[1])[toggledIndex];
             if (toggledIndex == 0) {
                 DropShadow dropShadow = new DropShadow();
                 dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
-                // dropShadow.setOffsetX(-3.0);
-                // dropShadow.setOffsetY(-3.0);
                 dropShadow.setColor(Color.web(toggledColor));
                 sixteenth.setEffect(dropShadow);
             } else {
@@ -130,6 +156,11 @@ public class SequencerController {
             track.toggleSixteenth(instrument, sixteenthID[0]);
         }
 
+    }
+
+    @FXML
+    public void editTrackName() {
+        System.out.println("edit cool");
     }
 
 }

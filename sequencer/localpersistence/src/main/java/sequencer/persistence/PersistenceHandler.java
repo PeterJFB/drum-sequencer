@@ -36,7 +36,7 @@ public class PersistenceHandler {
      *                                  using valid characters (lowercase, a-z)
      */
     public PersistenceHandler(String saveDirectory, String acceptedFiletype) {
-        setSaveDirectory(saveDirectory);
+        setSaveDirectory(saveDirectory);    
         setAcceptedFiletype(acceptedFiletype);
     }
 

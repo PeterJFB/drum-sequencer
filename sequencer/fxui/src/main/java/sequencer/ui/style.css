@@ -1,6 +1,13 @@
 
 #header {
     -fx-background-color: #545454;
+    -fx-font-size: 40px;
+}
+
+#trackName {
+    /* -fx-fill: #971919; */
+    -fx-border-color: #F2F2F2;
+    -fx-border-width: 0 0 2 0;
 }
 
 #instrumentsPanel {
@@ -30,3 +37,4 @@
     -fx-arc-height: 30.0; 
     */
 }
+

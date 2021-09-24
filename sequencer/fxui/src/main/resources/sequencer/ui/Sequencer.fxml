@@ -4,26 +4,26 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Region?>
-
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.control.TextField?>
 
 
 <VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sequencer.ui.SequencerController" alignment="CENTER">
     <AnchorPane>
         <Pane fx:id="header">
-            <ImageView>
+            <!-- <ImageView>
                 <image>
                     <Image url="@#" />
                 </image>
-            </ImageView>
+            </ImageView> -->
             <Text fx:id="trackName" />
-            <ImageView>
+            <!-- <ImageView onMouseClicked="#editTrackName">
                 <image>
                     <Image url="@#" />
                 </image>
-            </ImageView>
+            </ImageView> -->
         </Pane>
         <Pane fx:id="instrumentsPanel" />
         <Pane fx:id="timeline" />

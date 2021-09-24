@@ -17,7 +17,7 @@ Essential module responsible to render all graphics within the applicat
 
 #### *domain-layer* : core
 
-Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all import class-info can be serialized to a json-format through the `jackson` dependency.
+Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all important class-info can be serialized to a json-format through the `jackson` dependency.
 
 ---
 

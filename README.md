@@ -20,7 +20,7 @@ The project is setup to run both locally and on [Gitpod](https://www.gitpod.io/)
 
 ### Local
 
-After installing `Java 16` and `maven` (both of which can be done with [SDKMAN](https://sdkman.io/)), will the project start by running:
+After installing `Java 16` and `maven` (both of which can be done with [SDKMAN](https://sdkman.io/)), the project will start by running:
 
 ```bash
 $ cd sequencer/ # Move into sequencer folder
@@ -48,7 +48,7 @@ After which the GUI will be visible on the open `6080` port
 
 > ## 🛈 gitpod and audio support
 >
-> As of now, is the `gitlab/workspace-full-vnc` dockerimage [resticted when it comes audio support](https://www.gitpod.io/blog/native-ui-with-vnc). This makes it difficult to test the audio-specific features within the network-based IDE. While the project runs fine within gitpod, is it recommended to experience the audio-based features of the project locally.
+> As of now, the `gitlab/workspace-full-vnc` dockerimage is [resticted when it comes to audio support](https://www.gitpod.io/blog/native-ui-with-vnc). This makes it difficult to test the audio-specific features within the network-based IDE. While the project runs fine within gitpod, it is recommended to experience the audio-based features of the project locally.
 
 ## Tests
 

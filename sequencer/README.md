@@ -8,13 +8,13 @@ Project is currently divided into three *layers*, each represented as 
 
 #### *application-layer* : fxui
 
-Essential module responsible to render all graphics within the application. The module is using `javafx` to render in a window, and delegating all logic to the **core** and **localpersistence** modules.
+Essential module responsible for rendering all graphics within the application. The module is using `javafx` to render in a window, and delegating all logic to the **core** and **localpersistence** modules.
 
 ---
 
 #### *domain-layer* : core
 
-Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all import class-info can be serialized to a json-format through the `jackson` dependency.
+Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all important class-info can be serialized to a json-format through the `jackson` dependency.
 
 ---
 

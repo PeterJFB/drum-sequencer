@@ -1,0 +1,51 @@
+
+#header {
+    -fx-background-color: #545454;
+    -fx-font-size: 40px;
+}
+
+#saveTrackBtn {
+    -fx-cursor: hand;
+}
+
+#trackNameLabel, #artistNameLabel {
+    -fx-fill: #F2F2F2;
+}
+
+#trackName, #artistName {
+    -fx-text-fill: #F2F2F2;
+    -fx-background-color: transparent;
+}
+
+#trackName .text, #artistName .text {
+    -fx-underline: true;
+}
+
+#startStopBtn {
+    -fx-cursor: hand; 
+}
+
+#instrumentsPanel {
+    -fx-background-color: #4E4E4E;
+}
+
+.instrumentSubPanel {
+    -fx-background-color: #404040; 
+    -fx-border-width: 2;
+    -fx-border-color: #373737;
+}
+
+#timeline {
+    -fx-background-color: #D9CFFE;
+}
+
+#instrumentsPattern {
+    -fx-background-color: #000400;
+}
+
+.sixteenth {
+    -fx-cursor: hand;
+    -fx-arc-width: 30.0; 
+    -fx-arc-height: 30.0;
+}
+

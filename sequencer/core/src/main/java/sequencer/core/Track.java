@@ -15,8 +15,8 @@ public class Track {
     private Map<String, List<Boolean>> instruments = new HashMap<>();
 
     /**
-     * Constructor for creating an empty track. We always construct the track empty and then 
-     * add instruments and trackName and artistName later on
+     * Constructor for creating an empty track. We always construct the track empty
+     * and then add instruments and trackName and artistName later on
      */
     public Track() {
     }
@@ -44,8 +44,8 @@ public class Track {
 
     /**
      * @param instrument
-     * @return a copy of the pattern for the given instrument or null instrument is not 
-     * a key in instruments
+     * @return a copy of the pattern for the given instrument or null instrument is
+     *         not a key in instruments
      */
     public List<Boolean> getPattern(String instrument) {
         return new ArrayList<>(instruments.get(instrument));
@@ -64,7 +64,8 @@ public class Track {
 
     /**
      * @param artistName
-     * @throws IllegalArgumentException if artistName is more than 30 characters long
+     * @throws IllegalArgumentException if artistName is more than 30 characters
+     *                                  long
      */
     public void setArtistName(String artistName) throws IllegalArgumentException {
         if (artistName.length() >= 30) {
@@ -74,7 +75,8 @@ public class Track {
     }
 
     /**
-     * Adds another instrument to intruments with given values
+     * Adds another instrument to instruments with given values
+     * 
      * @param instrument
      * @param pattern
      */
@@ -93,7 +95,9 @@ public class Track {
     }
 
     /**
-     * Adds anouther instrument to intruments with given length an all values as false
+     * Adds anouther instrument to instruments with given length an all values as
+     * false
+     * 
      * @param instrument
      */
     public void addInstrument(String instrument) {
@@ -105,12 +109,13 @@ public class Track {
     }
 
     /**
-     * Toggles the value of the given sixteenth for the pattern of the given instrument 
-     * (from true to false, or vise versa)
+     * Toggles the value of the given sixteenth for the pattern of the given
+     * instrument (from true to false, or vise versa)
+     * 
      * @param instrument
      * @param index
      * @throws IllegalArgumentException if instrument is not a key in instruments,
-     * or sixteenth (the index) is out of bounds
+     *                                  or sixteenth (the index) is out of bounds
      */
     public void toggleSixteenth(String instrument, Integer sixteenth) throws IllegalArgumentException {
         List<Boolean> pattern = instruments.get(instrument);
@@ -125,6 +130,7 @@ public class Track {
 
     /**
      * Check if this track is equal to some Track
+     * 
      * @param otherTrack track to compare to
      * @return true if they are equal, false otherwise
      */
@@ -151,12 +157,12 @@ public class Track {
         // Check if the instrument names are equal
         List<String> instruments = getInstruments();
         List<String> otherInstruments = otherTrack.getInstruments();
-        if (!instruments.equals(otherInstruments)){
+        if (!instruments.equals(otherInstruments)) {
             return false;
         }
 
         // Check if all the patterns for the instruments are equal
-        for (String instrument: instruments){
+        for (String instrument : instruments) {
             List<Boolean> pattern = getPattern(instrument);
             List<Boolean> otherPattern = otherTrack.getPattern(instrument);
             if (!pattern.equals(otherPattern))

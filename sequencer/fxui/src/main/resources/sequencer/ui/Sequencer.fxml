@@ -14,19 +14,20 @@
 <VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sequencer.ui.SequencerController">
     <AnchorPane>
         <GridPane fx:id="header">
-            
             <ImageView fx:id="saveTrackBtn" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="LEFT" onMouseClicked="#saveTrack">
                 <image>
                     <Image url="@images/save.png" />
                 </image>
             </ImageView>
-            
-            <Text fx:id="trackNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
-            <TextField fx:id="trackName" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyPressed="#editTrackName"/>
-            <Text fx:id="artistNameLabel" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
-            <TextField fx:id="artistName" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyPressed="#editArtistName"/>
-            
-            <ImageView fx:id="startStopBtn" GridPane.columnIndex="5" GridPane.rowIndex="0" GridPane.halignment="RIGHT"  onMouseClicked="#togglePlayingTrack">
+
+            <Text fx:id="loadTrackText" GridPane.columnIndex="0" GridPane.rowIndex="1" onMouseClicked="#loadTrack">Load</Text>
+
+            <Text fx:id="trackNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
+            <TextField fx:id="trackName" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyPressed="#editTrackName" />
+            <Text fx:id="artistNameLabel" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
+            <TextField fx:id="artistName" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyPressed="#editArtistName" />
+
+            <ImageView fx:id="startStopBtn" GridPane.columnIndex="5" GridPane.rowIndex="0" GridPane.halignment="RIGHT" onMouseClicked="#togglePlayingTrack">
                 <image>
                     <Image url="@images/play.png" />
                 </image>

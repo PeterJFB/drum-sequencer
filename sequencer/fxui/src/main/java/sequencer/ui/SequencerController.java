@@ -36,6 +36,7 @@ public class SequencerController {
         track = new Track();
         conductor = new Conductor();
         conductor.setTrack(track);
+        trackMapper = new TrackMapper();
         persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", TrackMapper.FORMAT);
 
         createElements();
@@ -85,6 +86,8 @@ public class SequencerController {
     );
 
     public void createElements() {
+        instrumentsPattern.getChildren().clear();
+        instrumentsPanel.getChildren().clear();
 
         // Giving all of the sections of the application their respective sizes and
         // layout locations:
@@ -107,19 +110,6 @@ public class SequencerController {
         // Using a nested loop to create the grid of rows and (col)umns:
         for (int row = 0; row < 5; row++) {
             double layoutY = HEIGHT_OF_SIXTEENTH * row + (WIDTH_OF_SIXTEENTH / 5) * (row + 1);
-            for (int col = 0; col < 16; col++) {
-                // Creating all the clickable sixteenth-rectangles:
-                Rectangle sixteenth = new Rectangle();
-                sixteenth.setWidth(WIDTH_OF_SIXTEENTH);
-                sixteenth.setHeight(HEIGHT_OF_SIXTEENTH);
-                sixteenth.setLayoutX(WIDTH_OF_SIXTEENTH * col + (WIDTH_OF_SIXTEENTH / 10) * (col + 1));
-                sixteenth.setLayoutY(layoutY);
-                sixteenth.setId(col + "," + row);
-                sixteenth.getStyleClass().add("sixteenth");
-                sixteenth.setFill(Color.web(COLORS.get(row)[1]));
-                sixteenth.setOnMouseClicked(event -> toggleSixteenth(event));
-                instrumentsPattern.getChildren().add(sixteenth);
-            }
 
             // Creating the sub panels inside of instrumentsPanel, which all contains
             // their own ChoiceBox with a list of available instruments:
@@ -132,10 +122,32 @@ public class SequencerController {
             ChoiceBox<String> availableInstruments = new ChoiceBox<>();
             availableInstruments.setId(String.valueOf(row));
             availableInstruments.getItems().addAll(conductor.getAvailableInstruments());
+            if (row < track.getInstruments().size()) {
+                availableInstruments.setValue(track.getInstruments().get(row));
+            }
             availableInstruments.setOnAction(event -> addInstrument(event));
             instrumentSubPanel.getChildren().add(availableInstruments);
 
             instrumentsPanel.getChildren().add(instrumentSubPanel);
+
+            for (int col = 0; col < 16; col++) {
+                // Creating all the clickable sixteenth-rectangles:
+                Rectangle sixteenth = new Rectangle();
+                sixteenth.setWidth(WIDTH_OF_SIXTEENTH);
+                sixteenth.setHeight(HEIGHT_OF_SIXTEENTH);
+                sixteenth.setLayoutX(WIDTH_OF_SIXTEENTH * col + (WIDTH_OF_SIXTEENTH / 10) * (col + 1));
+                sixteenth.setLayoutY(layoutY);
+                sixteenth.setId(col + "," + row);
+                sixteenth.getStyleClass().add("sixteenth");
+                sixteenth.setFill(Color.web(COLORS.get(row)[1]));
+                sixteenth.setOnMouseClicked(event -> toggleSixteenth((Rectangle) event.getSource()));
+                instrumentsPattern.getChildren().add(sixteenth);
+
+                if (row < track.getInstruments().size()) {
+                    toggleSixteenth(sixteenth);
+                    toggleSixteenth(sixteenth);
+                }
+            }
         }
 
         // Displaying the name of the track, and adding it to the header GridPane
@@ -158,11 +170,11 @@ public class SequencerController {
         artistNameLabel.setLayoutX(header.getPrefWidth() / 2);
         artistNameLabel.setLayoutY(header.getPrefHeight() / 2);
 
-        trackName.setText("untitled" + amountOfSavedTracks);
+        trackName.setText(track.getTrackName() != null ? track.getTrackName() : "untitled" + amountOfSavedTracks);
         trackName.setLayoutX(header.getPrefWidth() / 2);
         trackName.setLayoutY(header.getPrefHeight() / 2);
 
-        artistName.setText("untitled");
+        artistName.setText(track.getArtistName() != null ? track.getArtistName() : "untitled");
         artistName.setLayoutX(header.getPrefWidth() / 2);
         artistName.setLayoutY(header.getPrefHeight() / 2);
     }
@@ -172,8 +184,7 @@ public class SequencerController {
         track.addInstrument(instrument);
     }
 
-    public void toggleSixteenth(MouseEvent e) {
-        Rectangle sixteenth = ((Rectangle) e.getSource());
+    public void toggleSixteenth(Rectangle sixteenth) {
         int[] sixteenthID = Arrays.stream(sixteenth.getId().split(",")).mapToInt(Integer::parseInt).toArray();
         String instrument = ((ChoiceBox<String>) instrumentsPanel.lookup("#" + String.valueOf(sixteenthID[1])))
                 .getValue();
@@ -205,6 +216,22 @@ public class SequencerController {
             trackMapper.writeTrack(track, persistenceHandler.getWriterToFile(track.getTrackName()));
         } catch (Exception e) {
             // TODO: handle exception
+        }
+    }
+
+    @FXML
+    public void loadTrack() {
+        Track newTrack = null;
+        try {
+            newTrack = trackMapper.readTrack(persistenceHandler.getReaderFromFile(track.getTrackName()));
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
+        if (newTrack != null) {
+            track = newTrack;
+            conductor.setTrack(track);
+            createElements();
         }
     }
 

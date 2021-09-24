@@ -62,13 +62,6 @@ public class Conductor {
         if (!instrumentAudioClips.keySet().containsAll(track.getInstruments())) {
             throw new IllegalArgumentException("Track contains unknown instruments");
         }
-
-        //Check if the track contains instruments with the wrong pattern length
-        for (String instrument: track.getInstruments()){
-            if (track.getPattern(instrument).size() != MEASURE_LENGTH){
-                throw new IllegalArgumentException(String.format("Track contains patterns of the wrong length (Not %d sixteenths)", MEASURE_LENGTH));
-            }
-        }
     }
 
     /**

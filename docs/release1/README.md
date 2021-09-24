@@ -11,7 +11,7 @@ These have been structured into three modules, which all represents a different 
 
 #### *application-layer* : fxui
 
-Essential module responsible to render all graphics within the application. The module is using `javafx` to render in a window, and delegating all logic to the **core** and **localpersistence** modules.
+Essential module responsible for rendering all graphics within the application. The module is using `javafx` to render in a window, and delegating all logic to the **core** and **localpersistence** modules.
 
 ---
 
@@ -64,7 +64,7 @@ sequencer.ui ...> sequencer.persistence
 sequencer.ui ...> sequencer.json
 ```
 
-They are as of writing this also in [sequencer/README.md](./../../sequencer), though this structure might change in later releases.
+They are, as of writing this, also in [sequencer/README.md](./../../sequencer), though this structure might change in later releases.
 
 ### Comment
 

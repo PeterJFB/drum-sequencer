@@ -14,6 +14,7 @@ public class SequencerApp extends Application {
     Scene scene = new Scene(parent);
     scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
     stage.setScene(scene);
+    stage.setResizable(false);
     stage.setTitle("Drum sequencer");
     stage.show();
   }

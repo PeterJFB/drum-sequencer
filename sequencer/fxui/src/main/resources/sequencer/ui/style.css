@@ -4,10 +4,25 @@
     -fx-font-size: 40px;
 }
 
-#trackName {
-    /* -fx-fill: #971919; */
-    -fx-border-color: #F2F2F2;
-    -fx-border-width: 0 0 2 0;
+#saveTrackBtn {
+    -fx-cursor: hand;
+}
+
+#trackNameLabel, #artistNameLabel {
+    -fx-fill: #F2F2F2;
+}
+
+#trackName, #artistName {
+    -fx-text-fill: #F2F2F2;
+    -fx-background-color: transparent;
+}
+
+#trackName .text, #artistName .text {
+    -fx-underline: true;
+}
+
+#startStopBtn {
+    -fx-cursor: hand; 
 }
 
 #instrumentsPanel {
@@ -30,11 +45,7 @@
 
 .sixteenth {
     -fx-cursor: hand;
-    /* 
-    these don't work ... :( but should, according to https://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#rectangle
-    
     -fx-arc-width: 30.0; 
-    -fx-arc-height: 30.0; 
-    */
+    -fx-arc-height: 30.0;
 }
 

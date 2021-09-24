@@ -9,35 +9,43 @@ import java.util.Arrays;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 
 public class SequencerController {
 
     private Conductor conductor;
     private Track track;
     private PersistenceHandler persistenceHandler;
+    private TrackMapper trackMapper;
 
     @FXML
     void initialize() {
-        conductor = new Conductor();
         track = new Track();
-        // persistenceHandler = new PersistenceHandler("drum-sequencer-persistence",
-        // TrackMapper.FORMAT);
+        conductor = new Conductor();
+        conductor.setTrack(track);
+        trackMapper = new TrackMapper();
+        persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", TrackMapper.FORMAT);
 
         createElements();
     }
 
-    // By utilizing a constant for sizes throughout the code, the a
-    // will be easily scalable, and henceforth make life quite easier.
-    private static final double WIDTH_OF_SIXTEENTH = 120d;
+    // By utilizing a constant throughout the code, the sizes and layout locations
+    // of all of the sections will be easily scalable and responsive, and henceforth
+    // make life quite easier.
+    private static final double WIDTH_OF_SIXTEENTH = 70d;
     private static final double HEIGHT_OF_SIXTEENTH = WIDTH_OF_SIXTEENTH * (1 + Math.sqrt(5)) / 2; // Multiplying with a
                                                                                                    // irrational number,
                                                                                                    // better known as
@@ -45,7 +53,7 @@ public class SequencerController {
                                                                                                    // Ratio".
 
     @FXML
-    private Pane header;
+    private GridPane header;
 
     @FXML
     private Pane timeline;
@@ -57,7 +65,16 @@ public class SequencerController {
     private Pane instrumentsPattern;
 
     @FXML
-    private Text trackName;
+    private Text trackNameLabel;
+
+    @FXML
+    private Text artistNameLabel;
+
+    @FXML
+    private TextField trackName;
+
+    @FXML
+    private TextField artistName;
 
     // The colors used as the background for the clickable sixteenth-rectangles,
     // including both shades of the same color.
@@ -69,7 +86,11 @@ public class SequencerController {
     );
 
     public void createElements() {
+        instrumentsPattern.getChildren().clear();
+        instrumentsPanel.getChildren().clear();
 
+        // Giving all of the sections of the application their respective sizes and
+        // layout locations:
         instrumentsPattern.setPrefSize(WIDTH_OF_SIXTEENTH * 16 + (WIDTH_OF_SIXTEENTH / 10) * 17,
                 HEIGHT_OF_SIXTEENTH * 5 + (WIDTH_OF_SIXTEENTH / 5) * 6);
         instrumentsPattern.setLayoutX(WIDTH_OF_SIXTEENTH * 3.5);
@@ -86,9 +107,31 @@ public class SequencerController {
         timeline.setLayoutX(instrumentsPattern.getLayoutX());
         timeline.setLayoutY(instrumentsPanel.getLayoutY());
 
+        // Using a nested loop to create the grid of rows and (col)umns:
         for (int row = 0; row < 5; row++) {
             double layoutY = HEIGHT_OF_SIXTEENTH * row + (WIDTH_OF_SIXTEENTH / 5) * (row + 1);
+
+            // Creating the sub panels inside of instrumentsPanel, which all contains
+            // their own ChoiceBox with a list of available instruments:
+            StackPane instrumentSubPanel = new StackPane();
+            instrumentSubPanel.setPrefSize(instrumentsPanel.getPrefWidth(), HEIGHT_OF_SIXTEENTH);
+            instrumentSubPanel.setLayoutY(layoutY + timeline.getPrefHeight());
+            instrumentSubPanel.getStyleClass().add("instrumentSubPanel");
+
+            // Creating the ChoiceBox, and adding it to the sub panel:
+            ChoiceBox<String> availableInstruments = new ChoiceBox<>();
+            availableInstruments.setId(String.valueOf(row));
+            availableInstruments.getItems().addAll(conductor.getAvailableInstruments());
+            if (row < track.getInstruments().size()) {
+                availableInstruments.setValue(track.getInstruments().get(row));
+            }
+            availableInstruments.setOnAction(event -> addInstrument(event));
+            instrumentSubPanel.getChildren().add(availableInstruments);
+
+            instrumentsPanel.getChildren().add(instrumentSubPanel);
+
             for (int col = 0; col < 16; col++) {
+                // Creating all the clickable sixteenth-rectangles:
                 Rectangle sixteenth = new Rectangle();
                 sixteenth.setWidth(WIDTH_OF_SIXTEENTH);
                 sixteenth.setHeight(HEIGHT_OF_SIXTEENTH);
@@ -96,35 +139,44 @@ public class SequencerController {
                 sixteenth.setLayoutY(layoutY);
                 sixteenth.setId(col + "," + row);
                 sixteenth.getStyleClass().add("sixteenth");
-                sixteenth.setArcWidth(30.0);
-                sixteenth.setArcHeight(30.0);
                 sixteenth.setFill(Color.web(COLORS.get(row)[1]));
-                sixteenth.setOnMouseClicked(event -> toggleSixteenth(event));
+                sixteenth.setOnMouseClicked(event -> toggleSixteenth((Rectangle) event.getSource()));
                 instrumentsPattern.getChildren().add(sixteenth);
+
+                if (row < track.getInstruments().size()) {
+                    toggleSixteenth(sixteenth);
+                    toggleSixteenth(sixteenth);
+                }
             }
-            StackPane instrumentSubPanel = new StackPane();
-            instrumentSubPanel.setPrefSize(instrumentsPanel.getPrefWidth(), HEIGHT_OF_SIXTEENTH);
-            instrumentSubPanel.setLayoutY(layoutY + timeline.getPrefHeight());
-            instrumentSubPanel.getStyleClass().add("instrumentSubPanel");
-
-            ChoiceBox<String> availableInstruments = new ChoiceBox<>();
-            availableInstruments.setId(String.valueOf(row));
-            availableInstruments.getItems().addAll(conductor.getAvailableInstruments());
-            availableInstruments.setOnAction(event -> addInstrument(event));
-            instrumentSubPanel.getChildren().add(availableInstruments);
-
-            instrumentsPanel.getChildren().add(instrumentSubPanel);
         }
 
+        // Displaying the name of the track, and adding it to the header GridPane
+        // together with the save-button and the play-button
         int amountOfSavedTracks = 1;
         try {
             amountOfSavedTracks = persistenceHandler.listFilenames().size() + 1;
         } catch (Exception e) {
             // TODO: handle exception
         }
-        trackName.setText("untitled" + amountOfSavedTracks);
+
+        // Adding text to the track name and artist name labels, and fill-text
+        // "untitled" for the artist name and track name text fields
+        // Setting width and height for the labels and text fields
+        trackNameLabel.setText("Track name: ");
+        trackNameLabel.setLayoutX(header.getPrefWidth() / 2);
+        trackNameLabel.setLayoutY(header.getPrefHeight() / 2);
+
+        artistNameLabel.setText("Artist name: ");
+        artistNameLabel.setLayoutX(header.getPrefWidth() / 2);
+        artistNameLabel.setLayoutY(header.getPrefHeight() / 2);
+
+        trackName.setText(track.getTrackName() != null ? track.getTrackName() : "untitled" + amountOfSavedTracks);
         trackName.setLayoutX(header.getPrefWidth() / 2);
         trackName.setLayoutY(header.getPrefHeight() / 2);
+
+        artistName.setText(track.getArtistName() != null ? track.getArtistName() : "untitled");
+        artistName.setLayoutX(header.getPrefWidth() / 2);
+        artistName.setLayoutY(header.getPrefHeight() / 2);
     }
 
     public void addInstrument(ActionEvent e) {
@@ -132,8 +184,7 @@ public class SequencerController {
         track.addInstrument(instrument);
     }
 
-    public void toggleSixteenth(MouseEvent e) {
-        Rectangle sixteenth = ((Rectangle) e.getSource());
+    public void toggleSixteenth(Rectangle sixteenth) {
         int[] sixteenthID = Arrays.stream(sixteenth.getId().split(",")).mapToInt(Integer::parseInt).toArray();
         String instrument = ((ChoiceBox<String>) instrumentsPanel.lookup("#" + String.valueOf(sixteenthID[1])))
                 .getValue();
@@ -142,7 +193,6 @@ public class SequencerController {
             int toggledIndex = track.getPattern(instrument).get(sixteenthID[0]) ? 1 : 0; // Refers to the index in a
                                                                                          // String[] in COLORS. In other
                                                                                          // words, which shade.
-
             String toggledColor = COLORS.get(sixteenthID[1])[toggledIndex];
             if (toggledIndex == 0) {
                 DropShadow dropShadow = new DropShadow();
@@ -158,9 +208,67 @@ public class SequencerController {
 
     }
 
+    // Fires when user presses enter in the track name text field
+    // Updates the track name for the track
     @FXML
-    public void editTrackName() {
-        System.out.println("edit cool");
+    public void saveTrack() {
+        try {
+            trackMapper.writeTrack(track, persistenceHandler.getWriterToFile(track.getTrackName()));
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
+
+    @FXML
+    public void loadTrack() {
+        Track newTrack = null;
+        try {
+            newTrack = trackMapper.readTrack(persistenceHandler.getReaderFromFile(track.getTrackName()));
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
+        if (newTrack != null) {
+            track = newTrack;
+            conductor.setTrack(track);
+            createElements();
+        }
+    }
+
+    // Fires when user presses the "enter" key in the track name text field
+    // Updates the track name for the track
+    @FXML
+    public void editTrackName(KeyEvent e) {
+        if (e.getCode() == KeyCode.ENTER) {
+            String newTrackName = trackName.getText();
+            track.setTrackName(newTrackName);
+        }
+    }
+
+    // Fires when user presses the "enter" key in the artist name text field
+    // Updates the artist name for the track
+    @FXML
+    public void editArtistName(KeyEvent e) {
+        if (e.getCode() == KeyCode.ENTER) {
+            String newArtistName = artistName.getText();
+            track.setArtistName(newArtistName);
+        }
+    }
+
+    @FXML
+    private ImageView startStopBtn;
+
+    @FXML
+    public void togglePlayingTrack() {
+        String toggledImageURL;
+        if (conductor.isPlaying()) {
+            conductor.stop();
+            toggledImageURL = "images/play.png";
+        } else {
+            conductor.start();
+            toggledImageURL = "images/stop.png";
+        }
+        startStopBtn.setImage(new Image(getClass().getResource(toggledImageURL).toExternalForm()));
     }
 
 }

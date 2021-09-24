@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -139,6 +140,10 @@ public class PersistenceHandler {
      * @return a {@link List} where each {@link String} is a {@code filename}
      */
     public List<String> listFilenames() {
+        if (!getSaveDirectoryPath().toFile().exists()) {
+            return new ArrayList<>();
+        }
+
         return Arrays.stream(saveDirectoryPath.toFile().list(filenameFilter)).map((name) -> {
             return name.substring(0, name.indexOf("." + acceptedFiletype));
         }).collect(Collectors.toList());

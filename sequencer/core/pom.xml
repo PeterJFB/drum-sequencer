@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
-            <version>15</version>
+            <version>16</version>
             <type>pom</type>
         </dependency>
 

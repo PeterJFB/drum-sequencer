@@ -1,6 +1,7 @@
 package sequencer.persistence;
 
 import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Assertions;
@@ -17,11 +18,7 @@ public class PersistenceHandlerTest {
         // Valid initializations
         ph = new PersistenceHandler("phtestph", ".json");
         Assertions.assertEquals("json", ph.getAcceptedFiletype());
-        Assertions.assertTrue(ph.getSaveDirectoryPath().toString().endsWith("/phtestph"));
-
-        ph = new PersistenceHandler("phtestph/phtestph2", "json");
-        Assertions.assertEquals("json", ph.getAcceptedFiletype());
-        Assertions.assertTrue(ph.getSaveDirectoryPath().toString().endsWith("/phtestph/phtestph2"));
+        Assertions.assertTrue(ph.getSaveDirectoryPath().endsWith(Path.of("phtestph")));
 
         // Invalid initializations
         for (String invalidFiletype : Arrays.asList("test.json", "..json", "json."))

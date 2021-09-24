@@ -81,8 +81,8 @@ public class TrackMapperTest {
     }
 
     private String clearWhitespace(String text) {
-        return text.replaceAll("[\t\s\n ]", "");
-    }
+        return text.replaceAll("[\t\s\n\r ]", "");
+      }
 
     @Test
     @DisplayName("TrackMapper should serialize and deserialize instances of Track without changig the object")

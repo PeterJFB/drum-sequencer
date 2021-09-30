@@ -12,6 +12,9 @@ The project itself and further descriptions is located in the [sequencer 
 
 ## Releases
 
+[main branch](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/) represents the latest release of the project.
+Check out the [development branch]() if you want to see features which are implemented but not yet released.
+
 Documentation for each release is located in the [docs folder](./docs).
 
 ## Getting started
@@ -64,3 +67,11 @@ Location of current tests are listed in the [sequencer folder](./sequencer).
 ## Workflow
 
 Current workflow is mainly shaped by the goals given by the user-story (or stories), and their corresponding issues on gitlab. The progress on the next release is always visible on the milestones-page. Work consists mainly of individial and pair-programming, but we also make sure to have at least two scrum-meetings every week, where everything discussed is documented on a common drive.
+
+Code-implementation is currently inspired by [gitflow workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow), where we separate newly developed and release-ready code in two branches:
+
+- [main branch](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/) contains the latest release, and is only updated by the latter branch.
+- [develop branch](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/tree/develop) contains the non-released features. All changes will be branched from and merged with this branch.
+
+Below is a graph from [bitbucket](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) showing an example of our workflow:
+<img src="https://wac-cdn.atlassian.com/dam/jcr:34c86360-8dea-4be4-92f7-6597d4d5bfae/02%20Feature%20branches.svg?cdnVersion=1826" width=800></img>

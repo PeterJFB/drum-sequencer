@@ -187,26 +187,33 @@ public class SequencerController {
     track.addInstrument(instrument);
   }
 
+  /**
+   * Turns on or off a specific sixteenth.
+   *
+   * @param sixteenth sixteenth which is to be toggled
+   */
   public void toggleSixteenth(Rectangle sixteenth) {
-    int[] sixteenthID = Arrays.stream(sixteenth.getId().split(",")).mapToInt(Integer::parseInt).toArray();
-    String instrument = ((ChoiceBox<String>) instrumentsPanel.lookup("#" + String.valueOf(sixteenthID[1])))
-      .getValue();
+    int[] sixteenthID =
+        Arrays.stream(sixteenth.getId().split(",")).mapToInt(Integer::parseInt).toArray();
+    String instrument =
+        ((ChoiceBox<String>) instrumentsPanel.lookup("#" + String.valueOf(sixteenthID[1])))
+            .getValue();
     if (instrument != null) {
-    int toggledIndex = track.getPattern(instrument).get(sixteenthID[0]) ? 1 : 0;
-    // Refers to the index in a
-    // String[] in COLORS. In other
-    // words, which shade.
-    String toggledColor = COLORS.get(sixteenthID[1])[toggledIndex];
-    if (toggledIndex == 0) {
-    DropShadow dropShadow = new DropShadow();
-    dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
-    dropShadow.setColor(Color.web(toggledColor));
-    sixteenth.setEffect(dropShadow);
-    } else {
-    sixteenth.setEffect(null);
-    }
-    sixteenth.setFill(Color.web(toggledColor));
-    track.toggleSixteenth(instrument, sixteenthID[0]);
+      int toggledIndex = track.getPattern(instrument).get(sixteenthID[0]) ? 1 : 0;
+      // Refers to the index in a
+      // String[] in COLORS. In other
+      // words, which shade.
+      String toggledColor = COLORS.get(sixteenthID[1])[toggledIndex];
+      if (toggledIndex == 0) {
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
+        dropShadow.setColor(Color.web(toggledColor));
+        sixteenth.setEffect(dropShadow);
+      } else {
+        sixteenth.setEffect(null);
+      }
+      sixteenth.setFill(Color.web(toggledColor));
+      track.toggleSixteenth(instrument, sixteenthID[0]);
     }
 
   }

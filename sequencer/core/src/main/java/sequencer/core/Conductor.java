@@ -35,6 +35,10 @@ public class Conductor {
   private boolean playing;
   private List<ConductorListener> listeners;
 
+  // Used for detecting changes in BPM, and updating the timer to
+  // reflect this
+  private int lastCheckedBpm;
+
   private Track currentTrack;
 
   /**
@@ -81,116 +85,118 @@ public class Conductor {
     }
   }
 
-    /**
+  /**
    * Choose which track to play.
    *
    * @param track The track to play
    * @throws IllegalArgumentException if track is the wrong length or contains unknown instruments
    */
-    public void setTrack(Track track) {
-        validateTrack(track);
-        currentTrack = track;
-    }
+  public void setTrack(Track track) {
+    validateTrack(track);
+    currentTrack = track;
+  }
 
-    
-    /**
-     * Return if the conductor is currently playing.
-     */
-    public boolean isPlaying() {
-        return playing;
-    }
+  /**
+   * Return if the conductor is currently playing.
+   */
+  public boolean isPlaying() {
+    return playing;
+  }
 
-    /**
+  /**
    * Sets up a scheduled timer task to fire progressBeat(), where the time between sixteenths is
    * calculated in millisecondsBetweenSixteenths().
    *
    * @throws IllegalStateException if Conductor has no track to play
    */
-    public void start() {
-        if (currentTrack == null) {
-            throw new IllegalStateException("Cannot start when track is not set");
-        }
-
-        if (playing) {
-            progressBeatTask.cancel();
-        }
-        progressBeatTask = new TimerTask() {
-            public void run() {
-                progressBeat();
-            }
-        };
-        timer.scheduleAtFixedRate(
-        progressBeatTask,
-        0,
-        millisecondsBetweenSixteenths(Track.BPM)); 
-        playing = true;
+  public void start() {
+    if (currentTrack == null) {
+      throw new IllegalStateException("Cannot start when track is not set");
     }
 
-    /**
-     * Stops the Conductor
-     */
-    public void stop() {
-        progressBeatTask.cancel();
-        playing = false;
-        progress = 0;
+    if (playing) {
+      stop();
     }
+    progressBeatTask = new TimerTask() {
+      public void run() {
+        progressBeat();
+      }
+    };
+    timer.scheduleAtFixedRate(progressBeatTask, 0, millisecondsBetweenSixteenths(Track.BPM));
+    lastCheckedBpm = Track.BPM;
+    playing = true;
+  }
 
-    /**
-     * Calculates time in milliseconds between sixteenths when given the BPM
-     * 
-     * @param bpm the BPM to calculate from
-     * @return int time in milliseconds between sixteenths
-     */
-    private int millisecondsBetweenSixteenths(float bpm) {
-        return (int) Math.floor((1000 * 60 / 4) / (bpm));
+  /**
+   * Stops the Conductor.
+   */
+  public void stop() {
+    progressBeatTask.cancel();
+    playing = false;
+    progress = 0;
+  }
+
+  /**
+   * Calculates time in milliseconds between sixteenths when given the BPM.
+   *
+   * @param bpm the BPM to calculate from
+   * @return int time in milliseconds between sixteenths
+   */
+  private int millisecondsBetweenSixteenths(float bpm) {
+    return (int) Math.floor((1000 * 60 / 4) / (bpm));
+  }
+
+  /**
+   * Runs every sixteenth. Plays everything that is set for the current sixteenth
+   *
+   * @throws IllegalArgumentException if currentTrack is the wrong length or contains unknown
+   *         instruments
+   */
+  private void progressBeat() {
+    // Restarts timer if BPM has changed
+    if (lastCheckedBpm != Track.BPM) {
+      start();
+      return;
     }
+    validateTrack(currentTrack);
+    currentTrack.getInstruments().stream().filter(instrument -> {
+      return currentTrack.getPattern(instrument).get(progress);
+    }).forEach(instrument -> {
+      instrumentAudioClips.get(instrument).play();
+    });
 
-    /**
-     * Runs every sixteenth. Plays everything that is set for the current sixteenth
-     * 
-     * @throws IllegalArgumentException if currentTrack is the wrong length or
-     *                                  contains unknown instruments
-     */
-    private void progressBeat() {
-        validateTrack(currentTrack);
-        currentTrack.getInstruments().stream().filter(instrument -> {
-            return currentTrack.getPattern(instrument).get(progress);
-        }).forEach(instrument -> {
-            instrumentAudioClips.get(instrument).play();
-        });
+    // Fire events
+    listeners.forEach(listener -> listener.run(progress));
 
-        //Fire events
-        listeners.forEach(listener -> listener.run(progress));
+    progress++;
+    progress = progress % Track.TRACK_LENGTH;
+  }
 
-        progress ++;
-        progress = progress % Track.TRACK_LENGTH;
-    }
+  /**
+   * Return int which sixteenth the conductor will play next.
+   */
+  public int getProgress() {
+    return progress;
+  }
 
-    /**
-     * @return int which sixteenth the conductor will play next
-     */
-    public int getProgress() {
-        return progress;
-    }
+  /**
+   * Add a listener that listens for when the beat progresses.
+   *
+   * @param listener the listener to be added
+   */
+  public void addListener(ConductorListener listener) {
+    listeners.add(listener);
+  }
 
-    /**
-     * Add a listener that listens for when the beat progresses
-     * @param listener the listener to be added
-     */
-    public void addListener(ConductorListener listener){
-        listeners.add(listener);
-    }
+  /**
+   * Remove a listener that listens for when the beat progresses.
+   *
+   * @param listener the listener to be removed
+   */
+  public void removeListener(ConductorListener listener) {
+    listeners.remove(listener);
 
-    /**
-     * Remove a listener that listens for when the beat progresses
-     * @param listener the listener to be removed
-     */
-    public void removeListener(ConductorListener listener){
-        listeners.remove(listener);
-
-    }
-
-    
+  }
 
   /**
    * Just for playing around. Not meant for use in production

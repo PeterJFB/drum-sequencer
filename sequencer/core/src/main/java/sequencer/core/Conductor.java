@@ -21,11 +21,21 @@ public class Conductor {
   static {
     Map<String, AudioClip> instrMap = new HashMap<>();
     instrMap.put("kick", new AudioClip(
-        Conductor.class.getResource("/sequencer/core/707 Kick.wav").toExternalForm()));
-    instrMap.put("hihat",
-        new AudioClip(Conductor.class.getResource("/sequencer/core/808 CH.wav").toExternalForm()));
+        Conductor.class.getResource("707 Kick.wav").toExternalForm()));
+    instrMap.put("hihat", new AudioClip(
+        Conductor.class.getResource("808 CH.wav").toExternalForm()));
     instrMap.put("snare", new AudioClip(
-        Conductor.class.getResource("/sequencer/core/808 Snare.wav").toExternalForm()));
+        Conductor.class.getResource("808 Snare.wav").toExternalForm()));
+    instrMap.put("maraccas", new AudioClip(
+        Conductor.class.getResource("Maraccas.WAV").toExternalForm()));
+    instrMap.put("rim shot", new AudioClip(
+        Conductor.class.getResource("RimShot.WAV").toExternalForm()));
+    instrMap.put("cow bell", new AudioClip(
+        Conductor.class.getResource("CowBell.WAV").toExternalForm()));
+    instrMap.put("claves", new AudioClip(
+        Conductor.class.getResource("Claves.WAV").toExternalForm()));
+    instrMap.put("clap", new AudioClip(
+        Conductor.class.getResource("Clap.WAV").toExternalForm()));
     instrumentAudioClips = Collections.unmodifiableMap(instrMap);
   }
 

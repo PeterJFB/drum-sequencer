@@ -29,24 +29,26 @@ class TrackDeserializer extends JsonDeserializer<Track> {
   }
 
   Track deserialize(TreeNode treeNode) {
-    if (treeNode instanceof ObjectNode objectNode) {
+    if (treeNode instanceof ObjectNode) {
+      ObjectNode objectNode = (ObjectNode) treeNode;
 
       Track track = new Track();
 
       // Get track meta
       JsonNode nameNode = objectNode.get("name");
-      if (nameNode instanceof TextNode nameTextNode) {
-        track.setTrackName(nameTextNode.asText());
+      if (nameNode instanceof TextNode) {
+        track.setTrackName(nameNode.asText());
       }
 
       JsonNode artistNode = objectNode.get("artist");
-      if (artistNode instanceof TextNode artistTextNode) {
-        track.setArtistName(artistTextNode.asText());
+      if (artistNode instanceof TextNode) {
+        track.setArtistName(artistNode.asText());
       }
 
       // Get instruments and patterns
       JsonNode itemsNode = objectNode.get("instruments");
-      if (itemsNode instanceof ObjectNode instrumentPatternObject) {
+      if (itemsNode instanceof ObjectNode) {
+        ObjectNode instrumentPatternObject = (ObjectNode) itemsNode;
 
         // Get pattern
         instrumentPatternObject.fieldNames().forEachRemaining((instrument) -> {
@@ -54,11 +56,11 @@ class TrackDeserializer extends JsonDeserializer<Track> {
           List<Boolean> pattern = new ArrayList<>();
           JsonNode patternNode = instrumentPatternObject.get(instrument);
 
-          if (patternNode instanceof ArrayNode patternArrayNode) {
-            for (JsonNode valueNode : patternArrayNode) {
+          if (patternNode instanceof ArrayNode) {
+            for (JsonNode valueNode : patternNode) {
 
-              if (valueNode instanceof BooleanNode value) {
-                pattern.add(value.asBoolean());
+              if (valueNode instanceof BooleanNode) {
+                pattern.add(valueNode.asBoolean());
               } else {
                 pattern.add(false);
               }

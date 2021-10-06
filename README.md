@@ -58,9 +58,10 @@ After which the GUI will be visible on the open `6080` port
 >
 > As of now, the `gitlab/workspace-full-vnc` dockerimage is [resticted when it comes to audio support](https://www.gitpod.io/blog/native-ui-with-vnc). This makes it difficult to test the audio-specific features within the network-based IDE. While the project runs fine within gitpod, it is recommended to experience the audio-based features of the project locally.
 
-## Code quality
+## Code quality and CI
 
-Code quality is ensured by the following implementations, and are all executed when running `mvn install`.
+This project uses CI to ensure good code quality throughout the project. Code will not be merged if it doesn't pass all checks described below.
+Code quality is enforced by the following implementations:
 
 ### Tests / Jacoco
 
@@ -80,6 +81,10 @@ $ cd sequencer/ # Move into sequencer folder
 $ mvn verify # Perform all tests and store test coverage.
 # Results are now visible in sequencer/report/target/site/jacoco-aggregate/index.html
 ```
+
+### Spotbugs
+
+[Spotbugs](https://spotbugs.github.io/) will look for java-related bugs in the projects code, and also enforce good OOP practices. These are checked by running `mvn spotbugs:check`.
 
 ### Checkstyle
 

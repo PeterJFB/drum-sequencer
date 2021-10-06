@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * The {@link Track} class represents a collection of instruments programmed to a specific beat, and
@@ -157,12 +158,31 @@ public class Track {
   }
 
   /**
-   * Check if this track is equal to some Track.
-   *
-   * @param otherTrack track to compare to
-   * @return true if they are equal, false otherwise
+   * Generate hash to match our equals-method.
    */
-  public boolean equals(Track otherTrack) {
+  @Override
+  public int hashCode() {
+    return Objects.hash(trackName, artistName, instruments);
+  }
+
+
+  /**
+   * Check if this track is equal to some Track: It compares trackname, artistname, and all
+   * instruments with their patterns.
+   *
+   * @param object track to compare to
+   * @return true if tracks are equal, false otherwise
+   */
+  @Override
+  public boolean equals(Object object) {
+    if (this == object) {
+      return true;
+    }
+    if ((object == null) || (object.getClass() != this.getClass())) {
+      return false;
+    }
+
+    Track otherTrack = (Track) object;
 
     // Check if both texts are empty (is considered a valid match)
     if (!((getTrackName() == null || getTrackName().isBlank())

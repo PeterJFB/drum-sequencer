@@ -12,14 +12,18 @@ Below is a graph from [bitbucket](https://www.atlassian.com/git/tutorials/compar
 
 ## Code quality
 
+### Jacoco
+
+[Jacoco](https://www.eclemma.org/jacoco/) allowed us to see a detailed schema of current test coverage, and has proven uselful to show where to write more tests.
+
+### Spotbugs
+
+[Spotbugs](https://spotbugs.github.io/) had a small, but essential influence on our project. It revealed a few minor bugs throughout the project, while also enforcing good OOP practices. Many of these practices were already familiar, which made its implementation quite swift.
+
 ### Checkstyle
 
 [Checkstyle](https://checkstyle.sourceforge.io/) was implemented to ensure equal readability throughout the java-project.
 The current implementation is checking with the format described in the [google style guide](https://checkstyle.sourceforge.io/styleguides/google-java-style-20180523/javaguide.html), though the styleguide may be adjusted later to better suit our project.
-
-### Jacoco
-
-[Jacoco](https://www.eclemma.org/jacoco/) allowed us to see a detailed schema of current test coverage, and has proven uselful to show where to write more tests.
 
 ## Conceptual model
 
@@ -35,7 +39,7 @@ Conductor exampleConductor = new Conductor();
 exampleConductor.setTrack(exampleTrack);
 exampleTrack.setName("Example name");
 exampleTrack.setArtist("Example artist");
-``` 
+```
 
 And after the move to composer:
 
@@ -43,4 +47,4 @@ And after the move to composer:
 Composer exampleComposer = new Composer();
 exampleComposer.setTrackName("Example name");
 exampleComposer.setArtistName("Example artist");
-``` 
+```

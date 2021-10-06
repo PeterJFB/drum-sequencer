@@ -35,6 +35,10 @@ public class Conductor {
   private boolean playing;
   private List<ConductorListener> listeners;
 
+  // Used for detecting changes in BPM, and updating the timer to
+  // reflect this
+  private int lastCheckedBpm;
+
   private Track currentTrack;
 
   /**
@@ -111,7 +115,7 @@ public class Conductor {
     }
 
     if (playing) {
-      progressBeatTask.cancel();
+      stop();
     }
     progressBeatTask = new TimerTask() {
       public void run() {
@@ -119,6 +123,7 @@ public class Conductor {
       }
     };
     timer.scheduleAtFixedRate(progressBeatTask, 0, millisecondsBetweenSixteenths(Track.BPM));
+    lastCheckedBpm = Track.BPM;
     playing = true;
   }
 
@@ -128,6 +133,7 @@ public class Conductor {
   public void stop() {
     progressBeatTask.cancel();
     playing = false;
+    progress = 0;
   }
 
   /**
@@ -141,12 +147,17 @@ public class Conductor {
   }
 
   /**
-   * Runs every sixteenth. Plays everything that is set for the current sixteenth.
+   * Runs every sixteenth. Plays everything that is set for the current sixteenth
    *
    * @throws IllegalArgumentException if currentTrack is the wrong length or contains unknown
    *         instruments
    */
   private void progressBeat() {
+    // Restarts timer if BPM has changed
+    if (lastCheckedBpm != Track.BPM) {
+      start();
+      return;
+    }
     validateTrack(currentTrack);
     currentTrack.getInstruments().stream().filter(instrument -> {
       return currentTrack.getPattern(instrument).get(progress);
@@ -162,9 +173,7 @@ public class Conductor {
   }
 
   /**
-   * Get the progress in sixteenth.
-   *
-   * @return int which sixteenth the conductor will play next
+   * Return int which sixteenth the conductor will play next.
    */
   public int getProgress() {
     return progress;
@@ -186,6 +195,7 @@ public class Conductor {
    */
   public void removeListener(ConductorListener listener) {
     listeners.remove(listener);
+
   }
 
   /**

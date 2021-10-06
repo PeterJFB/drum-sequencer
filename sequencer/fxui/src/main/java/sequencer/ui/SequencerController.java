@@ -1,10 +1,12 @@
 package sequencer.ui;
 
+import java.util.Arrays;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -180,27 +182,39 @@ public class SequencerController {
     artistName.setLayoutY(header.getPrefHeight() / 2);
   }
 
-  public void addInstrument(ActionEvent e) {}
+  public void addInstrument(ActionEvent e) {
+    String instrument = ((ChoiceBox<String>) e.getSource()).getValue();
+    track.addInstrument(instrument);
+  }
 
+  /**
+   * Turns on or off a specific sixteenth.
+   *
+   * @param sixteenth sixteenth which is to be toggled
+   */
   public void toggleSixteenth(Rectangle sixteenth) {
-
-    // if (instrument != null) {
-    // int toggledIndex = track.getPattern(instrument).get(sixteenthID[0]) ? 1 : 0;
-    // // Refers to the index in a
-    // // String[] in COLORS. In other
-    // // words, which shade.
-    // String toggledColor = COLORS.get(sixteenthID[1])[toggledIndex];
-    // if (toggledIndex == 0) {
-    // DropShadow dropShadow = new DropShadow();
-    // dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
-    // dropShadow.setColor(Color.web(toggledColor));
-    // sixteenth.setEffect(dropShadow);
-    // } else {
-    // sixteenth.setEffect(null);
-    // }
-    // sixteenth.setFill(Color.web(toggledColor));
-    // track.toggleSixteenth(instrument, sixteenthID[0]);
-    // }
+    int[] sixteenthID =
+        Arrays.stream(sixteenth.getId().split(",")).mapToInt(Integer::parseInt).toArray();
+    String instrument =
+        ((ChoiceBox<String>) instrumentsPanel.lookup("#" + String.valueOf(sixteenthID[1])))
+            .getValue();
+    if (instrument != null) {
+      int toggledIndex = track.getPattern(instrument).get(sixteenthID[0]) ? 1 : 0;
+      // Refers to the index in a
+      // String[] in COLORS. In other
+      // words, which shade.
+      String toggledColor = COLORS.get(sixteenthID[1])[toggledIndex];
+      if (toggledIndex == 0) {
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
+        dropShadow.setColor(Color.web(toggledColor));
+        sixteenth.setEffect(dropShadow);
+      } else {
+        sixteenth.setEffect(null);
+      }
+      sixteenth.setFill(Color.web(toggledColor));
+      track.toggleSixteenth(instrument, sixteenthID[0]);
+    }
 
   }
 

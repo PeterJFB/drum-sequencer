@@ -1,0 +1,24 @@
+image: maven:latest
+before_script:
+  - cd sequencer
+
+stages:
+  - build
+  - test
+  - verify
+
+build:
+  stage: build
+  script:
+    - mvn compile
+
+test:
+  stage: test
+  script:
+    - mvn test
+
+checkstyle:
+  stage: verify
+  script:
+    - mvn install
+    - mvn checkstyle:check

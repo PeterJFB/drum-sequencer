@@ -20,7 +20,7 @@ Brukeren trenger et program som lar deg programmere ulike rytmeinstrumenter. Det
 
 Som en bruker av programmet og fan av å eksperimentere, ønsker jeg en enkel måte å redigere, samt håndtere avanserte rytmemønstre.
 
-I avanserte rytmemønstre trenger brukeren en måte i å _se_ hvilken takt som nettopp ble spilt av, slik at de slipper å gjette ved å "toggle" en beat å høre hvor endringen skjedde. Videre bør lagringsmetoden gjøres mer brukervennlig, ved at man bl.a. slipper å skrive inn navnet på filen som skal lastes, men heller kun bruke muspekeren og trykker på filen man ønsker å laste inn. Generelt bør også grensesnittet få økt brukskvalitet, slik at brukeren får en bedre opplevse av å bruke programmet: Bedre mapping av knapper, feedback om lagreknappen gjorde som forventet, constraint som viser at samme instrument ikke kan velges flere ganger, tooltip over ikoner uten tekst osv.
+I avanserte rytmemønstre trenger brukeren en måte i å _se_ hvilken takt som nettopp ble spilt av, slik at de slipper å gjette ved å "toggle" en beat og høre hvor endringen skjedde. Videre bør lagringsmetoden gjøres mer brukervennlig, ved at man blant annet slipper å skrive inn navnet på filen som skal lastes, men heller kun bruke muspekeren og trykker på filen man ønsker å laste inn. Generelt bør også grensesnittet få økt brukskvalitet, slik at brukeren får en bedre opplevelse av å bruke programmet. Dette inkluderer bedre mapping av knapper, feedback om lagreknappen gjorde som forventet, constraint som viser at samme instrument ikke kan velges flere ganger og tooltip over ikoner uten tekst.
 
 ### Viktig å kunne se
 

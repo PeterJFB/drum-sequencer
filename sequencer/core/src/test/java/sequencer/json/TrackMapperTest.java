@@ -15,6 +15,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import sequencer.core.Track;
 
+/**
+ * Tests consist of different ways to serialize the Track-object, and making sure everything is
+ * outputted as expected.
+ */
 public class TrackMapperTest {
 
   @Test
@@ -82,7 +86,7 @@ public class TrackMapperTest {
   }
 
   @Test
-  @DisplayName("TrackMapper should serialize and deserialize instances of Track without changig the object")
+  @DisplayName("TrackMapper should (de)serialize instances of Track without changig the object")
   public void testTrackMapperSerAndDesers() {
     Track track;
 

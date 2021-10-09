@@ -43,9 +43,9 @@ public class Track {
   }
 
   /**
-   * Get all added instruments.
+   * Get all added instruments by their name (key).
    *
-   * @return a List of instrument names
+   * @return a List of instrument names as a String.
    */
   public List<String> getInstruments() {
     return new ArrayList<>(instruments.keySet());
@@ -88,23 +88,16 @@ public class Track {
     this.artistName = artistName;
   }
 
-  private Boolean checkInstrument(List<Boolean> pattern) {
-    if (pattern == null || pattern.size() != TRACK_LENGTH) {
-      return false;
-    }
-    return true;
-  }
-
   /**
    * Adds another instrument to instruments with given values.
    *
    * @param instrument name of the new instrument
-   * @param pattern the pattern to apply with the instrument
-   * @throws IllegalArgumentException if the pattern is of an illegal format
+   * @param pattern the pattern to apply with the instrument *
+   * @throws IllegalArgumentException if the given pattern is null or has an illegal length
+   * 
    */
-  public void addInstrument(String instrument, List<Boolean> pattern) 
-      throws IllegalArgumentException {
-    if (!checkInstrument(pattern)) {
+  public void addInstrument(String instrument, List<Boolean> pattern) {
+    if (pattern == null || pattern.size() != TRACK_LENGTH) {
       throw new IllegalArgumentException(
           "Cannot add instrument. The instrument had an illegal format");
     }
@@ -117,6 +110,10 @@ public class Track {
    * @param instrument name of the new instrument
    */
   public void addInstrument(String instrument) {
+    if (getInstruments().size() == 5) {
+      throw new IllegalStateException(
+          "Cannot add instrument as it has already reached its maximum capazity of 5");
+    }
     List<Boolean> pattern = new ArrayList<>();
     for (int i = 0; i < TRACK_LENGTH; i++) {
       pattern.add(false);

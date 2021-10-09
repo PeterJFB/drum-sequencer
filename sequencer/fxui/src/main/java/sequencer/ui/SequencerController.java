@@ -24,7 +24,7 @@ import sequencer.json.TrackMapper;
 import sequencer.persistence.PersistenceHandler;
 
 /**
- * Main-controller of the sequencer.
+ * Main controller of the sequencer.
  */
 public class SequencerController {
 
@@ -48,7 +48,7 @@ public class SequencerController {
   // of all of the sections will be easily scalable and responsive, and henceforth
   // make life quite easier.
   private static final double WIDTH_OF_SIXTEENTH = 70d;
-  // Multiplying wtih an irrational number, better known as "The Golden Ratio".
+  // Multiplying the width wtih an irrational number, better known as "The Golden Ratio".
   private static final double HEIGHT_OF_SIXTEENTH = WIDTH_OF_SIXTEENTH * (1 + Math.sqrt(5)) / 2;
 
   @FXML
@@ -89,9 +89,6 @@ public class SequencerController {
    * when loading a saved track.
    */
   public void createElements() {
-    instrumentsPattern.getChildren().clear();
-    instrumentsPanel.getChildren().clear();
-
     // Giving all of the sections of the application their respective sizes and
     // layout locations:
     instrumentsPattern.setPrefSize(WIDTH_OF_SIXTEENTH * 16 + (WIDTH_OF_SIXTEENTH / 10) * 17,
@@ -144,44 +141,48 @@ public class SequencerController {
         sixteenth.setId(col + "," + row);
         sixteenth.getStyleClass().add("sixteenth");
         sixteenth.setFill(Color.web(COLORS.get(row)[1]));
-        sixteenth.setOnMouseClicked(event -> toggleSixteenth((Rectangle) event.getSource()));
+        sixteenth.setOnMouseClicked(event -> toggleSixteenth((Rectangle) event.getSource(), false));
         instrumentsPattern.getChildren().add(sixteenth);
-
-        if (row < track.getInstruments().size()) {
-          toggleSixteenth(sixteenth);
-          toggleSixteenth(sixteenth);
-        }
       }
     }
 
-    // Displaying the name of the track, and adding it to the header GridPane
-    // together with the save-button and the play-button
+    // Displaying the name of the track and the artist:
     int amountOfSavedTracks = 1;
     try {
       amountOfSavedTracks = persistenceHandler.listFilenames().size() + 1;
     } catch (Exception e) {
       // TODO: handle exception
     }
-
-    // Adding text to the track name and artist name labels, and fill-text
-    // "untitled" for the artist name and track name text fields
-    // Setting width and height for the labels and text fields
-    trackNameLabel.setText("Track name: ");
-    trackNameLabel.setLayoutX(header.getPrefWidth() / 2);
-    trackNameLabel.setLayoutY(header.getPrefHeight() / 2);
-
-    artistNameLabel.setText("Artist name: ");
-    artistNameLabel.setLayoutX(header.getPrefWidth() / 2);
-    artistNameLabel.setLayoutY(header.getPrefHeight() / 2);
-
     trackName.setText(
         track.getTrackName() != null ? track.getTrackName() : "untitled" + amountOfSavedTracks);
-    trackName.setLayoutX(header.getPrefWidth() / 2);
-    trackName.setLayoutY(header.getPrefHeight() / 2);
+    artistName.setText(track.getArtistName() != null ? track.getArtistName() : "unknown");
+  }
 
-    artistName.setText(track.getArtistName() != null ? track.getArtistName() : "untitled");
-    artistName.setLayoutX(header.getPrefWidth() / 2);
-    artistName.setLayoutY(header.getPrefHeight() / 2);
+  /**
+   * Updating elements when loading a new track, in stead of re-using createElements(), as it
+   * contains unnecessery code.
+   */
+  public void updateElements() {
+    List<String> instruments = track.getInstruments();
+    for (int row = 0; row < 5; row++) {
+      // TODO: this is unsafe
+      ChoiceBox<String> instrumentNode =
+          (ChoiceBox<String>) instrumentsPanel.lookup("#" + String.valueOf(row));
+
+      String instrument = instruments.get(row);
+      instrumentNode.setValue(instrument);
+      List<Boolean> pattern = track.getPattern(instrument);
+      for (int col = 0; col < pattern.size(); col++) {
+        Rectangle sixteenth = (Rectangle) instrumentsPattern
+            .lookup("#" + String.valueOf(col) + "," + String.valueOf(row));
+        // Checking whether the sixteenth has an effect is a quick way of checking if it is "active"
+        if (pattern.get(col) != (sixteenth.getEffect() != null)) {
+          toggleSixteenth(sixteenth, true);
+        }
+      }
+    }
+
+    trackName.setText(track.getTrackName());
   }
 
   /**
@@ -215,8 +216,10 @@ public class SequencerController {
    * Turns on or off a specific sixteenth.
    *
    * @param sixteenth sixteenth which is to be toggled
+   * @param isUpdate indicates if we're updating a track in the GUI, and if so, the sixteenth should
+   *        not be toggled in the Track class
    */
-  public void toggleSixteenth(Rectangle sixteenth) {
+  public void toggleSixteenth(Rectangle sixteenth, boolean isUpdate) {
     int[] sixteenthId =
         Arrays.stream(sixteenth.getId().split(",")).mapToInt(Integer::parseInt).toArray();
 
@@ -227,29 +230,27 @@ public class SequencerController {
       return;
     }
 
-    if (instrument != null) {
-      int toggledIndex = track.getPattern(instrument).get(sixteenthId[0]) ? 1 : 0;
-      // Refers to the index in a
-      // String[] in COLORS. In other
-      // words, which shade.
-      String toggledColor = COLORS.get(sixteenthId[1])[toggledIndex];
-      if (toggledIndex == 0) {
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
-        dropShadow.setColor(Color.web(toggledColor));
-        sixteenth.setEffect(dropShadow);
-      } else {
-        sixteenth.setEffect(null);
-      }
-      sixteenth.setFill(Color.web(toggledColor));
+    // Refers to the index in a String[] in COLORS. In other words, which shade.
+    int toggledIndex = track.getPattern(instrument).get(sixteenthId[0]) ? 1 : 0;
+    String toggledColor = COLORS.get(sixteenthId[1])[toggledIndex];
+    if (toggledIndex == 0) {
+      DropShadow dropShadow = new DropShadow();
+      dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
+      dropShadow.setColor(Color.web(toggledColor));
+      sixteenth.setEffect(dropShadow);
+    } else {
+      sixteenth.setEffect(null);
+    }
+    sixteenth.setFill(Color.web(toggledColor));
+    if (!isUpdate) {
       track.toggleSixteenth(instrument, sixteenthId[0]);
     }
 
   }
 
   /**
-   * Fires when user presses enter in the track name text field. Updates the track name for the
-   * track.
+   * Fires when user presses the "enter" key in the track name text field. Updates the track name
+   * for the track.
    */
   @FXML
   public void saveTrack() {
@@ -275,7 +276,7 @@ public class SequencerController {
     if (newTrack != null) {
       track = newTrack;
       conductor.setTrack(track);
-      createElements();
+      updateElements();
     }
   }
 

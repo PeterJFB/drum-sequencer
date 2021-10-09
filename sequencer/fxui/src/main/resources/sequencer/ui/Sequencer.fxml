@@ -22,10 +22,10 @@
 
             <Text fx:id="loadTrackText" GridPane.columnIndex="0" GridPane.rowIndex="1" onMouseClicked="#loadTrack">Load</Text>
 
-            <Text fx:id="trackNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
-            <TextField fx:id="trackName" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyTyped="#editTrackName" />
-            <Text fx:id="artistNameLabel" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
-            <TextField fx:id="artistName" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyTyped="#editArtistName" />
+            <Text fx:id="trackNameLabel" text="Track name:" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
+            <TextField fx:id="trackName" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyPressed="#editTrackName" />
+            <Text fx:id="artistNameLabel" text="Track name:" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
+            <TextField fx:id="artistName" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyPressed="#editArtistName" />
 
             <ImageView fx:id="startStopBtn" GridPane.columnIndex="5" GridPane.rowIndex="0" GridPane.halignment="RIGHT" onMouseClicked="#togglePlayingTrack">
                 <image>

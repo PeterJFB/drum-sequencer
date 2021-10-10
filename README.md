@@ -53,7 +53,11 @@ After which the GUI will be visible on the open `6080` port
 >
 > As of now, the `gitlab/workspace-full-vnc` dockerimage is [resticted when it comes to audio support](https://www.gitpod.io/blog/native-ui-with-vnc). This makes it difficult to test the audio-specific features within the network-based IDE. While the project runs fine within gitpod, it is recommended to experience the audio-based features of the project locally.
 
-## Tests
+## Code quality
+
+Code quality is ensured by the following implementations, and are all executed when running `mvn install`.
+
+### Tests
 
 Tests are run the same way both locally and on Gitpod:
 
@@ -63,6 +67,11 @@ $ mvn test # Run all tests
 ```
 
 Location of current tests are listed in the [sequencer folder](./sequencer).
+
+### Checkstyle
+
+[Checkstyle](https://checkstyle.sourceforge.io/) ensures equal readability throughout the java-project.
+`mvn checkstyle:checkstyle` will run all checkstyle-checks, all described in the [google style guide](https://checkstyle.sourceforge.io/styleguides/google-java-style-20180523/javaguide.html).
 
 ## Workflow
 

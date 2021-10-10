@@ -273,26 +273,28 @@ public class SequencerController {
   }
 
   /**
-   * Fires when user presses the "enter" key in the track name text field. Updates the track name
+   * Fires when user presses a key in the track name text field. Updates the track name
    * for the track.
    */
   @FXML
   public void editTrackName(KeyEvent e) {
+    String newTrackName = trackName.getText();
+    track.setTrackName(newTrackName);
     if (e.getCode() == KeyCode.ENTER) {
-      String newTrackName = trackName.getText();
-      track.setTrackName(newTrackName);
+      header.requestFocus();
     }
   }
 
   /**
-   * Fires when user presses the "enter" key in the artist name text field. Updates the artist name
+   * Fires when user presses a key in the artist name text field. Updates the artist name
    * for the track.
    */
   @FXML
   public void editArtistName(KeyEvent e) {
+    String newArtistName = artistName.getText();
+    track.setArtistName(newArtistName);
     if (e.getCode() == KeyCode.ENTER) {
-      String newArtistName = artistName.getText();
-      track.setArtistName(newArtistName);
+      header.requestFocus();
     }
   }
 

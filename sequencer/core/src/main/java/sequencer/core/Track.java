@@ -123,6 +123,15 @@ public class Track {
   }
 
   /**
+   * removes an instrument from instruments.
+   *
+   * @param instrument name of the instrument to be removed
+   */
+  public void removeInstrument(String instrument) {
+    instruments.remove(instrument);
+  }
+
+  /**
    * Toggles the value of the given sixteenth for the pattern of the given instrument (from true to
    * false, or vise versa).
    *

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.TextField?>
-
 
 <VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sequencer.ui.SequencerController">
     <AnchorPane>
@@ -20,14 +20,17 @@
                 </image>
             </ImageView>
 
-            <Text fx:id="loadTrackText" GridPane.columnIndex="0" GridPane.rowIndex="1" onMouseClicked="#loadTrack">Load</Text>
+            <GridPane GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <ChoiceBox fx:id="savedTracksChoiceBox" onAction="#toggleLoadBtn" value="-- Choose a track --" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <Button fx:id="loadTrackBtn" onMouseClicked="#loadTrack" text="Load ..." disable="true" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            </GridPane>
+       
+            <Text fx:id="trackNameLabel" text="Track name:" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
+            <TextField fx:id="trackName" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyPressed="#editTrackName" />
+            <Text fx:id="artistNameLabel" text="Artist name:" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
+            <TextField fx:id="artistName" GridPane.columnIndex="5" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyPressed="#editArtistName" />
 
-            <Text fx:id="trackNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
-            <TextField fx:id="trackName" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyTyped="#editTrackName" />
-            <Text fx:id="artistNameLabel" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
-            <TextField fx:id="artistName" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyTyped="#editArtistName" />
-
-            <ImageView fx:id="startStopBtn" GridPane.columnIndex="5" GridPane.rowIndex="0" GridPane.halignment="RIGHT" onMouseClicked="#togglePlayingTrack">
+            <ImageView fx:id="startStopBtn" GridPane.columnIndex="6" GridPane.rowIndex="0" GridPane.halignment="RIGHT" onMouseClicked="#togglePlayingTrack">
                 <image>
                     <Image url="@images/play.png" />
                 </image>

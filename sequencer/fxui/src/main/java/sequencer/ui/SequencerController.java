@@ -1,10 +1,12 @@
 package sequencer.ui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
@@ -24,7 +26,7 @@ import sequencer.json.TrackMapper;
 import sequencer.persistence.PersistenceHandler;
 
 /**
- * Main-controller of the sequencer.
+ * Main controller of the sequencer.
  */
 public class SequencerController {
 
@@ -32,6 +34,8 @@ public class SequencerController {
   private Track track;
   private PersistenceHandler persistenceHandler;
   private TrackMapper trackMapper;
+
+  private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
   @FXML
   void initialize() {
@@ -48,20 +52,17 @@ public class SequencerController {
   // of all of the sections will be easily scalable and responsive, and henceforth
   // make life quite easier.
   private static final double WIDTH_OF_SIXTEENTH = 70d;
-  // Multiplying wtih an irrational number, better known as "The Golden Ratio".
+  // Multiplying the width wtih an irrational number, better known as "The Golden Ratio".
   private static final double HEIGHT_OF_SIXTEENTH = WIDTH_OF_SIXTEENTH * (1 + Math.sqrt(5)) / 2;
 
   @FXML
   private GridPane header;
 
   @FXML
-  private Pane timeline;
+  private ChoiceBox<String> savedTracksChoiceBox;
 
   @FXML
-  private Pane instrumentsPanel;
-
-  @FXML
-  private Pane instrumentsPattern;
+  private Button loadTrackBtn;
 
   @FXML
   private Text trackNameLabel;
@@ -74,6 +75,16 @@ public class SequencerController {
 
   @FXML
   private TextField artistName;
+
+  @FXML
+  private Pane instrumentsPanel;
+
+  @FXML
+  private Pane timeline;
+
+  @FXML
+  private Pane instrumentsPattern;
+
 
   // The colors used as the background for the clickable sixteenth-rectangles,
   // including both shades of the same color.
@@ -89,9 +100,6 @@ public class SequencerController {
    * when loading a saved track.
    */
   public void createElements() {
-    instrumentsPattern.getChildren().clear();
-    instrumentsPanel.getChildren().clear();
-
     // Giving all of the sections of the application their respective sizes and
     // layout locations:
     instrumentsPattern.setPrefSize(WIDTH_OF_SIXTEENTH * 16 + (WIDTH_OF_SIXTEENTH / 10) * 17,
@@ -131,6 +139,7 @@ public class SequencerController {
       availableInstruments.valueProperty().addListener(
           (observable, oldValue, newValue) -> addInstrument(oldValue, newValue));
       instrumentSubPanel.getChildren().add(availableInstruments);
+      instrumentChoiceBoxes.add(availableInstruments);
 
       instrumentsPanel.getChildren().add(instrumentSubPanel);
 
@@ -144,44 +153,71 @@ public class SequencerController {
         sixteenth.setId(col + "," + row);
         sixteenth.getStyleClass().add("sixteenth");
         sixteenth.setFill(Color.web(COLORS.get(row)[1]));
-        sixteenth.setOnMouseClicked(event -> toggleSixteenth((Rectangle) event.getSource()));
+        sixteenth.setOnMouseClicked(event -> toggleSixteenth((Rectangle) event.getSource(), false));
+        sixteenth.setEffect(null);
         instrumentsPattern.getChildren().add(sixteenth);
-
-        if (row < track.getInstruments().size()) {
-          toggleSixteenth(sixteenth);
-          toggleSixteenth(sixteenth);
-        }
       }
     }
 
-    // Displaying the name of the track, and adding it to the header GridPane
-    // together with the save-button and the play-button
+    savedTracksChoiceBox.getItems().addAll(persistenceHandler.listFilenames());
+
+    // Displaying the name of the track and the artist:
     int amountOfSavedTracks = 1;
     try {
       amountOfSavedTracks = persistenceHandler.listFilenames().size() + 1;
     } catch (Exception e) {
       // TODO: handle exception
     }
-
-    // Adding text to the track name and artist name labels, and fill-text
-    // "untitled" for the artist name and track name text fields
-    // Setting width and height for the labels and text fields
-    trackNameLabel.setText("Track name: ");
-    trackNameLabel.setLayoutX(header.getPrefWidth() / 2);
-    trackNameLabel.setLayoutY(header.getPrefHeight() / 2);
-
-    artistNameLabel.setText("Artist name: ");
-    artistNameLabel.setLayoutX(header.getPrefWidth() / 2);
-    artistNameLabel.setLayoutY(header.getPrefHeight() / 2);
-
     trackName.setText(
         track.getTrackName() != null ? track.getTrackName() : "untitled" + amountOfSavedTracks);
-    trackName.setLayoutX(header.getPrefWidth() / 2);
-    trackName.setLayoutY(header.getPrefHeight() / 2);
+    artistName.setText(track.getArtistName() != null ? track.getArtistName() : "unknown");
+  }
 
-    artistName.setText(track.getArtistName() != null ? track.getArtistName() : "untitled");
-    artistName.setLayoutX(header.getPrefWidth() / 2);
-    artistName.setLayoutY(header.getPrefHeight() / 2);
+  /**
+   * Updating elements when loading a new track, in stead of re-using createElements(), as it
+   * contains unnecessery code.
+   */
+  public void updateElements() {
+    List<String> instruments = track.getInstruments();
+
+    for (int row = 0; row < 5; row++) {
+      if (row >= instruments.size()) {
+        resetPattern(String.valueOf(row));
+        continue;
+      }
+
+      String instrument = instruments.get(row);
+      ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
+      instrumentChoiceBox.setValue(instrument);
+      List<Boolean> pattern = track.getPattern(instrument);
+
+      for (int col = 0; col < pattern.size(); col++) {
+        Rectangle sixteenth = (Rectangle) instrumentsPattern
+            .lookup("#" + String.valueOf(col) + "," + String.valueOf(row));
+
+        // Checking whether the sixteenth has an effect is a quick way of checking if it is "active"
+        if (pattern.get(col) != (sixteenth.getEffect() != null)) {
+          toggleSixteenth(sixteenth, true);
+        }
+      }
+    }
+
+    trackName.setText(track.getTrackName());
+  }
+
+  /**
+   * Resets a given row by turning off every sixteenth.
+   *
+   * @param row the index as a String of the row that is to be reset
+   */
+  public void resetPattern(String row) {
+    String toggledColor = COLORS.get(Integer.parseInt(row))[1];
+    for (int i = 0; i < 16; i++) {
+      Rectangle sixteenth =
+          (Rectangle) instrumentsPattern.lookup("#" + String.valueOf(i) + "," + row);
+      sixteenth.setEffect(null);
+      sixteenth.setFill(Color.web(toggledColor));
+    }
   }
 
   /**
@@ -191,97 +227,104 @@ public class SequencerController {
    * @param newInstrument the new instrument that is to be added
    */
   public void addInstrument(String oldInstrument, String newInstrument) {
-    if (oldInstrument == null) {
-      track.addInstrument(newInstrument);
-    } else {
-      List<Boolean> oldPattern = track.getPattern(oldInstrument);
-      track.addInstrument(newInstrument, oldPattern);
-      track.removeInstrument(oldInstrument);
-    }
-  }
-
-  private String getInstrumentFromChoiceBox(Object object) {
-    if (object instanceof ChoiceBox<?>) {
-      ChoiceBox<?> choiceBox = (ChoiceBox<?>) object;
-      if (choiceBox.getValue() instanceof String) {
-        return (String) choiceBox.getValue();
+    if (!track.getInstruments().contains(newInstrument)) {
+      if (oldInstrument == null) {
+        track.addInstrument(newInstrument);
+      } else {
+        List<Boolean> oldPattern = track.getPattern(oldInstrument);
+        track.addInstrument(newInstrument, oldPattern);
+        track.removeInstrument(oldInstrument);
       }
     }
-
-    return null;
   }
 
   /**
    * Turns on or off a specific sixteenth.
    *
-   * @param sixteenth sixteenth which is to be toggled
+   * @param sixteenth the sixteenth which is to be toggled
+   * @param updatingElements indicates if we're updating a track in the GUI, and if so, the
+   *        sixteenth should not be toggled in the Track class
    */
-  public void toggleSixteenth(Rectangle sixteenth) {
+  public void toggleSixteenth(Rectangle sixteenth, boolean updatingElements) {
     int[] sixteenthId =
         Arrays.stream(sixteenth.getId().split(",")).mapToInt(Integer::parseInt).toArray();
 
-    Node instrumentNode = instrumentsPanel.lookup("#" + String.valueOf(sixteenthId[1]));
-    String instrument = getInstrumentFromChoiceBox(instrumentNode);
+    ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(sixteenthId[1]);
+    String instrument = instrumentChoiceBox.getValue();
 
-    if (instrument == null) {
-      return;
+    // Refers to the index in a String[] in COLORS. In other words, which shade of the color.
+    int toggledIndex = track.getPattern(instrument).get(sixteenthId[0]) ^ updatingElements ? 1 : 0;
+    String toggledColor = COLORS.get(sixteenthId[1])[toggledIndex];
+
+    if (toggledIndex == 0) {
+      DropShadow dropShadow = new DropShadow();
+      dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
+      dropShadow.setColor(Color.web(toggledColor));
+      sixteenth.setEffect(dropShadow);
+    } else {
+      sixteenth.setEffect(null);
     }
+    sixteenth.setFill(Color.web(toggledColor));   
 
-    if (instrument != null) {
-      int toggledIndex = track.getPattern(instrument).get(sixteenthId[0]) ? 1 : 0;
-      // Refers to the index in a
-      // String[] in COLORS. In other
-      // words, which shade.
-      String toggledColor = COLORS.get(sixteenthId[1])[toggledIndex];
-      if (toggledIndex == 0) {
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
-        dropShadow.setColor(Color.web(toggledColor));
-        sixteenth.setEffect(dropShadow);
-      } else {
-        sixteenth.setEffect(null);
-      }
-      sixteenth.setFill(Color.web(toggledColor));
+    if (!updatingElements) {
       track.toggleSixteenth(instrument, sixteenthId[0]);
     }
 
   }
 
   /**
-   * Fires when user presses enter in the track name text field. Updates the track name for the
-   * track.
+   * Fires when user presses the "enter" key in the track name text field. Updates the track name
+   * for the track.
    */
   @FXML
   public void saveTrack() {
     try {
       trackMapper.writeTrack(track, persistenceHandler.getWriterToFile(track.getTrackName()));
+      savedTracksChoiceBox.getItems().add(track.getTrackName());
     } catch (Exception e) {
       // TODO: handle exception
     }
   }
 
+
+  @FXML
+  public void toggleLoadBtn() {
+    loadTrackBtn.setDisable(false);
+  }
+
   /**
-   * Fires when user presses the load-button. Loads the pattern and metadata of the track.
+   * Fires when user presses the "Load" button. Loads the pattern and metadata of the track.
    */
   @FXML
   public void loadTrack() {
     Track newTrack = null;
     try {
-      newTrack = trackMapper.readTrack(persistenceHandler.getReaderFromFile(track.getTrackName()));
+      String trackName = savedTracksChoiceBox.getValue();
+      newTrack = trackMapper.readTrack(persistenceHandler.getReaderFromFile(trackName));
     } catch (Exception e) {
+      e.printStackTrace();
       // TODO: handle exception
     }
 
     if (newTrack != null) {
       track = newTrack;
       conductor.setTrack(track);
-      createElements();
+      Platform.runLater(new Runnable() {
+        @Override
+        public void run() {
+          updateElements();
+        }
+      });
+
+
     }
+
+    // TODO: clear choiceBox
   }
 
   /**
-   * Fires when user presses a key in the track name text field. Updates the track name
-   * for the track.
+   * Fires when user presses a key in the track name text field. Updates the track name for the
+   * track.
    */
   @FXML
   public void editTrackName(KeyEvent e) {
@@ -293,8 +336,8 @@ public class SequencerController {
   }
 
   /**
-   * Fires when user presses a key in the artist name text field. Updates the artist name
-   * for the track.
+   * Fires when user presses a key in the artist name text field. Updates the artist name for the
+   * track.
    */
   @FXML
   public void editArtistName(KeyEvent e) {

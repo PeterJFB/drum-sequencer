@@ -20,7 +20,7 @@ Detachable module which is handling all logic essential to the sequenc
 
 #### *persistence-layer* : localpersistence
 
-Detachable module which is handling local storage of classes. The modules save-handling is tailored to the project: The methods avaliable allows the user to list all files with a given filetype from a directory (e.g. a `.json` file in the `~/drumsequencer` directory), and read from/write to a specific file. The serialization must be handled by whoever is handling the `Reader`.
+Detachable module which is handling local storage of classes. The modules save-handling is tailored to the project: The methods avaliable allows the user to list all files with a given filetype from a directory (e.g. a `.json` file in the `~/drumsequencer` directory), and read from/write to a specific file. The saving is implicit, and the user is not expected to handle the files. The serialization must be handled by whoever is handling the `Reader`.
 
 ---
 
@@ -61,10 +61,29 @@ sequencer.ui ...> sequencer.persistence
 sequencer.ui ...> sequencer.json
 ```
 
+## File format for Tracks
+
+The Track-files follow JSON-formatting. The following is an example of a file:
+
+```json
+{
+    "name": "Example song",
+    "artist": "JSON Mraz",
+    "instruments" : {
+        "hihat": [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
+        "kick": [True, False, False, False, True, False, False, False, True, False, False, False, True, False, False, False]
+    }
+}
+```
+
+The root contains three nodes, "`name`", "`artist`" and "`instruments`". The "`name`" and "`artist`" nodes are text nodes containing the name of the song and the artist. The "`instruments`" node is an object node, where the key of each node is an instrument and the value is a boolean list describing which sixteenths they are playing on.
+
+
+
 ## Test-classes
 
-[`core/src/test/java/sequencer/json/TrackMapperTest.java`](./core/src/test/java/sequencer/json/TrackMapperTest.java)
-[`localpersistence/src/test/java/sequencer/persistence/PersistenceHandlerTest.java`](./localpersistence/src/test/java/sequencer/persistence/PersistenceHandlerTest.java)
+- TrackMapper: [`core/src/test/java/sequencer/json/TrackMapperTest.java`](./core/src/test/java/sequencer/json/TrackMapperTest.java)
+- PersistenceHandler: [`localpersistence/src/test/java/sequencer/persistence/PersistenceHandlerTest.java`](./localpersistence/src/test/java/sequencer/persistence/PersistenceHandlerTest.java)
 
 ## User-stories
 

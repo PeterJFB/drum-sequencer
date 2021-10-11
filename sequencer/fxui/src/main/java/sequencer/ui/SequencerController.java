@@ -35,6 +35,8 @@ public class SequencerController {
   private PersistenceHandler persistenceHandler;
   private TrackMapper trackMapper;
 
+  private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
+
   @FXML
   void initialize() {
     track = new Track();
@@ -137,6 +139,7 @@ public class SequencerController {
       availableInstruments.valueProperty().addListener(
           (observable, oldValue, newValue) -> addInstrument(oldValue, newValue));
       instrumentSubPanel.getChildren().add(availableInstruments);
+      instrumentChoiceBoxes.add(availableInstruments);
 
       instrumentsPanel.getChildren().add(instrumentSubPanel);
 
@@ -178,27 +181,15 @@ public class SequencerController {
     List<String> instruments = track.getInstruments();
 
     for (int row = 0; row < 5; row++) {
-
-      if (row == instruments.size()) {
-        break;
+      if (row >= instruments.size()) {
+        resetPattern(String.valueOf(row));
+        continue;
       }
-
-      ChoiceBox<String> instrumentNode =
-          (ChoiceBox<String>) instrumentsPanel.lookup("#" + String.valueOf(row));
 
       String instrument = instruments.get(row);
-      // instrumentNode.setValue(instrument);
+      ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
+      instrumentChoiceBox.setValue(instrument);
       List<Boolean> pattern = track.getPattern(instrument);
-
-      System.out.println(
-          Arrays.toString(pattern.toArray()));
-
-      if (false) {
-        instrumentNode.setValue("");
-        for (int i = 0; i < 16; i++) {
-          pattern.add(false);
-        }
-      }
 
       for (int col = 0; col < pattern.size(); col++) {
         Rectangle sixteenth = (Rectangle) instrumentsPattern
@@ -215,53 +206,56 @@ public class SequencerController {
   }
 
   /**
+   * Resets a given row by turning off every sixteenth.
+   *
+   * @param row the index as a String of the row that is to be reset
+   */
+  public void resetPattern(String row) {
+    String toggledColor = COLORS.get(Integer.parseInt(row))[1];
+    for (int i = 0; i < 16; i++) {
+      Rectangle sixteenth =
+          (Rectangle) instrumentsPattern.lookup("#" + String.valueOf(i) + "," + row);
+      sixteenth.setEffect(null);
+      sixteenth.setFill(Color.web(toggledColor));
+    }
+  }
+
+  /**
    * Updates a instrument, i.e. removes the old instrument and adds the new
    *
    * @param oldInstrument the old instrument that is to be removed
    * @param newInstrument the new instrument that is to be added
    */
   public void addInstrument(String oldInstrument, String newInstrument) {
-    if (oldInstrument == null) {
-      track.addInstrument(newInstrument);
-    } else {
-      List<Boolean> oldPattern = track.getPattern(oldInstrument);
-      track.addInstrument(newInstrument, oldPattern);
-      track.removeInstrument(oldInstrument);
-    }
-  }
-
-  private String getInstrumentFromChoiceBox(Object object) {
-    if (object instanceof ChoiceBox<?>) {
-      ChoiceBox<?> choiceBox = (ChoiceBox<?>) object;
-      if (choiceBox.getValue() instanceof String) {
-        return (String) choiceBox.getValue();
+    if (!track.getInstruments().contains(newInstrument)) {
+      if (oldInstrument == null) {
+        track.addInstrument(newInstrument);
+      } else {
+        List<Boolean> oldPattern = track.getPattern(oldInstrument);
+        track.addInstrument(newInstrument, oldPattern);
+        track.removeInstrument(oldInstrument);
       }
     }
-
-    return null;
   }
 
   /**
    * Turns on or off a specific sixteenth.
    *
-   * @param sixteenth sixteenth which is to be toggled
-   * @param update indicates if we're updating a track in the GUI, and if so, the sixteenth should
-   *        not be toggled in the Track class
+   * @param sixteenth the sixteenth which is to be toggled
+   * @param updatingElements indicates if we're updating a track in the GUI, and if so, the
+   *        sixteenth should not be toggled in the Track class
    */
-  public void toggleSixteenth(Rectangle sixteenth, boolean update) {
+  public void toggleSixteenth(Rectangle sixteenth, boolean updatingElements) {
     int[] sixteenthId =
         Arrays.stream(sixteenth.getId().split(",")).mapToInt(Integer::parseInt).toArray();
 
-    Node instrumentNode = instrumentsPanel.lookup("#" + String.valueOf(sixteenthId[1]));
-    String instrument = getInstrumentFromChoiceBox(instrumentNode);
+    ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(sixteenthId[1]);
+    String instrument = instrumentChoiceBox.getValue();
 
-    if (instrument == null) {
-      return;
-    }
-
-    // Refers to the index in a String[] in COLORS. In other words, which shade.
-    int toggledIndex = track.getPattern(instrument).get(sixteenthId[0]) ? 1 : 0;
+    // Refers to the index in a String[] in COLORS. In other words, which shade of the color.
+    int toggledIndex = track.getPattern(instrument).get(sixteenthId[0]) ^ updatingElements ? 1 : 0;
     String toggledColor = COLORS.get(sixteenthId[1])[toggledIndex];
+
     if (toggledIndex == 0) {
       DropShadow dropShadow = new DropShadow();
       dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
@@ -270,8 +264,9 @@ public class SequencerController {
     } else {
       sixteenth.setEffect(null);
     }
-    sixteenth.setFill(Color.web(toggledColor));
-    if (!update) {
+    sixteenth.setFill(Color.web(toggledColor));   
+
+    if (!updatingElements) {
       track.toggleSixteenth(instrument, sixteenthId[0]);
     }
 
@@ -314,8 +309,6 @@ public class SequencerController {
     if (newTrack != null) {
       track = newTrack;
       conductor.setTrack(track);
-
-
       Platform.runLater(new Runnable() {
         @Override
         public void run() {
@@ -330,8 +323,8 @@ public class SequencerController {
   }
 
   /**
-   * Fires when user presses a key in the track name text field. Updates the track name
-   * for the track.
+   * Fires when user presses a key in the track name text field. Updates the track name for the
+   * track.
    */
   @FXML
   public void editTrackName(KeyEvent e) {
@@ -343,8 +336,8 @@ public class SequencerController {
   }
 
   /**
-   * Fires when user presses a key in the artist name text field. Updates the artist name
-   * for the track.
+   * Fires when user presses a key in the artist name text field. Updates the artist name for the
+   * track.
    */
   @FXML
   public void editArtistName(KeyEvent e) {

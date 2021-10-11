@@ -103,6 +103,19 @@
                         -->
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.7</version>
+                    <executions>
+                        <execution>
+                            <id>jacoco-prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -111,5 +124,6 @@
         <module>core</module>
         <module>fxui</module>
         <module>localpersistence</module>
+        <module>report</module>
     </modules>
 </project>

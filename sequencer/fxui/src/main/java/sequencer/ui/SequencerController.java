@@ -128,7 +128,8 @@ public class SequencerController {
       if (row < track.getInstruments().size()) {
         availableInstruments.setValue(track.getInstruments().get(row));
       }
-      availableInstruments.setOnAction(event -> addInstrument(event));
+      availableInstruments.valueProperty().addListener(
+          (observable, oldValue, newValue) -> addInstrument(oldValue, newValue));
       instrumentSubPanel.getChildren().add(availableInstruments);
 
       instrumentsPanel.getChildren().add(instrumentSubPanel);
@@ -183,6 +184,22 @@ public class SequencerController {
     artistName.setLayoutY(header.getPrefHeight() / 2);
   }
 
+  /**
+   * Updates a instrument, i.e. removes the old instrument and adds the new
+   *
+   * @param oldInstrument the old instrument that is to be removed
+   * @param newInstrument the new instrument that is to be added
+   */
+  public void addInstrument(String oldInstrument, String newInstrument) {
+    if (oldInstrument == null) {
+      track.addInstrument(newInstrument);
+    } else {
+      List<Boolean> oldPattern = track.getPattern(oldInstrument);
+      track.addInstrument(newInstrument, oldPattern);
+      track.removeInstrument(oldInstrument);
+    }
+  }
+
   private String getInstrumentFromChoiceBox(Object object) {
     if (object instanceof ChoiceBox<?>) {
       ChoiceBox<?> choiceBox = (ChoiceBox<?>) object;
@@ -192,16 +209,6 @@ public class SequencerController {
     }
 
     return null;
-  }
-
-  /**
-   * EventHandler which adds the chosen instrument to track.
-   */
-  public void addInstrument(ActionEvent e) {
-    String instrument = getInstrumentFromChoiceBox(e.getSource());
-    if (instrument != null) {
-      track.addInstrument(instrument);
-    }
   }
 
   /**

@@ -100,8 +100,10 @@ public class Track {
    *
    * @param instrument name of the new instrument
    * @param pattern the pattern to apply with the instrument
+   * @throws IllegalArgumentException if the pattern is of an illegal format
    */
-  public void addInstrument(String instrument, List<Boolean> pattern) {
+  public void addInstrument(String instrument, List<Boolean> pattern) 
+      throws IllegalArgumentException {
     if (!checkInstrument(pattern)) {
       throw new IllegalArgumentException(
           "Cannot add instrument. The instrument had an illegal format");
@@ -126,8 +128,13 @@ public class Track {
    * removes an instrument from instruments.
    *
    * @param instrument name of the instrument to be removed
+   * @throws IllegalArgumentException if the instrument to be removed is not part of the track
    */
   public void removeInstrument(String instrument) {
+    if (instrument == null || !instruments.keySet().contains(instrument)) {
+      throw new IllegalArgumentException(
+          "Instrument could not be removed since it was not part of the track");
+    }
     instruments.remove(instrument);
   }
 

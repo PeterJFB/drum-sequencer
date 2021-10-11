@@ -62,9 +62,9 @@ After which the GUI will be visible on the open `6080` port
 
 Code quality is ensured by the following implementations, and are all executed when running `mvn install`.
 
-### Tests
+### Tests / Jacoco
 
-Tests are run the same way both locally and on Gitpod:
+[Junit 5](https://junit.org/junit5/) tests are run the same way both locally and on Gitpod:
 
 ```bash
 $ cd sequencer/ # Move into sequencer folder
@@ -72,6 +72,14 @@ $ mvn test # Run all tests
 ```
 
 Location of current tests are listed in the [sequencer folder](./sequencer).
+
+[Jacoco](https://www.eclemma.org/jacoco/) allows us to see the current coverage of tests, shown at the top of this document. A more detailed view can be shown by running the following methods:
+
+```bash
+$ cd sequencer/ # Move into sequencer folder
+$ mvn verify # Perform all tests and store test coverage.
+# Results are now visible in sequencer/report/target/site/jacoco-aggregate/index.html
+```
 
 ### Checkstyle
 

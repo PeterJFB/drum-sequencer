@@ -22,3 +22,9 @@ checkstyle:
   script:
     - mvn install
     - mvn checkstyle:check
+jacoco:
+  stage: verify
+  script:
+    - mvn verify
+    - cat report/target/site/jacoco-aggregate/index.html | grep -o 'Total[^%]*%' | sed -e 's/Total/Jacoco-Test-Coverage:/g'
+  coverage: '/Jacoco-Test-Coverage\s*:\s*.*(\d+.?\d*)%/'

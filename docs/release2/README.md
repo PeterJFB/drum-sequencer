@@ -16,3 +16,7 @@ Below is a graph from [bitbucket](https://www.atlassian.com/git/tutorials/compar
 
 [Checkstyle](https://checkstyle.sourceforge.io/) was implemented to ensure equal readability throughout the java-project.
 The current implementation is checking with the format described in the [google style guide](https://checkstyle.sourceforge.io/styleguides/google-java-style-20180523/javaguide.html), though the styleguide may be adjusted later to better suit our project.
+
+### Jacoco
+
+[Jacoco](https://www.eclemma.org/jacoco/) allowed us to see a detailed schema of current test coverage, and has proven uselful to show where to write more tests.

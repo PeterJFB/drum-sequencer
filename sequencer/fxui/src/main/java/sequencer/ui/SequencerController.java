@@ -84,16 +84,16 @@ public class SequencerController {
 
   // The colors used as the background for the clickable sixteenth-rectangles,
   // including both shades of the same color.
-  private static final List<String[]> COLORS = List.of(new String[] { "10C92D", "133016" }, // green
-      new String[] { "7739D4", "241932" }, // purple
-      new String[] { "CA7C10", "322414" }, // orange
-      new String[] { "1093C9", "00425E" }, // blue
-      new String[] { "C9104C", "660020" } // red
+  private static final List<String[]> COLORS = List.of(new String[] {"10C92D", "133016"}, // green
+      new String[] {"7739D4", "241932"}, // purple
+      new String[] {"CA7C10", "322414"}, // orange
+      new String[] {"1093C9", "00425E"}, // blue
+      new String[] {"C9104C", "660020"} // red
   );
 
   /**
-   * Rendering all major elements, including pattern and its current
-   * configuration. Is also called when loading a saved track.
+   * Rendering all major elements, including pattern and its current configuration. Is also called
+   * when loading a saved track.
    */
   public void createElements() {
     // Giving all of the sections of the application their respective sizes and
@@ -164,13 +164,14 @@ public class SequencerController {
     } catch (Exception e) {
       // TODO: handle exception
     }
-    trackName.setText(composer.getTrackName() != null ? composer.getTrackName() : "untitled" + amountOfSavedTracks);
+    trackName.setText(composer.getTrackName() != null ? composer.getTrackName()
+        : "untitled" + amountOfSavedTracks);
     artistName.setText(composer.getArtistName() != null ? composer.getArtistName() : "unknown");
   }
 
   /**
-   * Updating elements when loading a new track, in stead of re-using
-   * createElements(), as it contains unnecessery code.
+   * Updating elements when loading a new track, in stead of re-using createElements(), as it
+   * contains unnecessery code.
    */
   public void updateElements() {
     List<String> instruments = composer.getInstrumentsInTrack();
@@ -210,7 +211,8 @@ public class SequencerController {
   public void resetPattern(String row) {
     String toggledColor = COLORS.get(Integer.parseInt(row))[1];
     for (int i = 0; i < 16; i++) {
-      Rectangle sixteenth = (Rectangle) instrumentsPattern.lookup("#" + String.valueOf(i) + "," + row);
+      Rectangle sixteenth =
+          (Rectangle) instrumentsPattern.lookup("#" + String.valueOf(i) + "," + row);
       sixteenth.setEffect(null);
       sixteenth.setFill(Color.web(toggledColor));
     }
@@ -237,20 +239,21 @@ public class SequencerController {
   /**
    * Turns on or off a specific sixteenth.
    *
-   * @param sixteenth        the sixteenth which is to be toggled
-   * @param updatingElements indicates if we're updating a track in the GUI, and
-   *                         if so, the sixteenth should not be toggled in the
-   *                         Track class
+   * @param sixteenth the sixteenth which is to be toggled
+   * @param updatingElements indicates if we're updating a track in the GUI, and if so, the
+   *        sixteenth should not be toggled in the Track class
    */
   public void toggleSixteenth(Rectangle sixteenth, boolean updatingElements) {
-    int[] sixteenthId = Arrays.stream(sixteenth.getId().split(",")).mapToInt(Integer::parseInt).toArray();
+    int[] sixteenthId =
+        Arrays.stream(sixteenth.getId().split(",")).mapToInt(Integer::parseInt).toArray();
 
     ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(sixteenthId[1]);
     String instrument = instrumentChoiceBox.getValue();
 
     // Refers to the index in a String[] in COLORS. In other words, which shade of
     // the color.
-    int toggledIndex = composer.getTrackPattern(instrument).get(sixteenthId[0]) ^ updatingElements ? 1 : 0;
+    int toggledIndex =
+        composer.getTrackPattern(instrument).get(sixteenthId[0]) ^ updatingElements ? 1 : 0;
     String toggledColor = COLORS.get(sixteenthId[1])[toggledIndex];
 
     if (toggledIndex == 0) {
@@ -270,8 +273,8 @@ public class SequencerController {
   }
 
   /**
-   * Fires when user presses the "enter" key in the track name text field. Updates
-   * the track name for the track.
+   * Fires when user presses the "enter" key in the track name text field. Updates the track name
+   * for the track.
    */
   @FXML
   public void saveTrack() {
@@ -289,8 +292,7 @@ public class SequencerController {
   }
 
   /**
-   * Fires when user presses the "Load" button. Loads the pattern and metadata of
-   * the track.
+   * Fires when user presses the "Load" button. Loads the pattern and metadata of the track.
    */
   @FXML
   public void loadTrack() {
@@ -312,8 +314,8 @@ public class SequencerController {
   }
 
   /**
-   * Fires when user presses a key in the track name text field. Updates the track
-   * name for the track.
+   * Fires when user presses a key in the track name text field. Updates the track name for the
+   * track.
    */
   @FXML
   public void editTrackName(KeyEvent e) {
@@ -325,8 +327,8 @@ public class SequencerController {
   }
 
   /**
-   * Fires when user presses a key in the artist name text field. Updates the
-   * artist name for the track.
+   * Fires when user presses a key in the artist name text field. Updates the artist name for the
+   * track.
    */
   @FXML
   public void editArtistName(KeyEvent e) {
@@ -341,8 +343,7 @@ public class SequencerController {
   private ImageView startStopBtn;
 
   /**
-   * Fires when the "play" or "stop" button is pressed, toggling whether the track
-   * is played.
+   * Fires when the "play" or "stop" button is pressed, toggling whether the track is played.
    */
   @FXML
   public void togglePlayingTrack() {

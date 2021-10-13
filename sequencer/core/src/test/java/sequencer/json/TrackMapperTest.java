@@ -43,7 +43,7 @@ public class TrackMapperTest {
     StringBuilder snarePatternString = new StringBuilder();
     List<Boolean> snarePattern = new ArrayList<>();
 
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < Track.TRACK_LENGTH; i++) {
       kickPatternString.append(false + ",");
 
       snarePattern.add(i % 2 == 0);

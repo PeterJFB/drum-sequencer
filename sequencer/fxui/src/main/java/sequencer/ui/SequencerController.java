@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
@@ -54,6 +53,9 @@ public class SequencerController {
   private static final double WIDTH_OF_SIXTEENTH = 70d;
   // Multiplying the width wtih an irrational number, better known as "The Golden Ratio".
   private static final double HEIGHT_OF_SIXTEENTH = WIDTH_OF_SIXTEENTH * (1 + Math.sqrt(5)) / 2;
+  // The number of rows in the application, or in other words, the maximum number of instruments
+  // that can be played simultaneously.
+  private static final int NUMBER_OF_ROWS = 5;
 
   @FXML
   private GridPane header;
@@ -102,8 +104,11 @@ public class SequencerController {
   public void createElements() {
     // Giving all of the sections of the application their respective sizes and
     // layout locations:
-    instrumentsPattern.setPrefSize(WIDTH_OF_SIXTEENTH * 16 + (WIDTH_OF_SIXTEENTH / 10) * 17,
-        HEIGHT_OF_SIXTEENTH * 5 + (WIDTH_OF_SIXTEENTH / 5) * 6);
+    instrumentsPattern.setPrefSize(
+        WIDTH_OF_SIXTEENTH * Track.TRACK_LENGTH
+            + (WIDTH_OF_SIXTEENTH / 10) * (Track.TRACK_LENGTH + 1),
+        HEIGHT_OF_SIXTEENTH * NUMBER_OF_ROWS
+            + (WIDTH_OF_SIXTEENTH / NUMBER_OF_ROWS) * (NUMBER_OF_ROWS + 1));
     instrumentsPattern.setLayoutX(WIDTH_OF_SIXTEENTH * 3.5);
     instrumentsPattern.setLayoutY(WIDTH_OF_SIXTEENTH * 1.5 + HEIGHT_OF_SIXTEENTH / 3);
 
@@ -119,8 +124,9 @@ public class SequencerController {
     timeline.setLayoutY(instrumentsPanel.getLayoutY());
 
     // Using a nested loop to create the grid of rows and (col)umns:
-    for (int row = 0; row < 5; row++) {
-      double layoutY = HEIGHT_OF_SIXTEENTH * row + (WIDTH_OF_SIXTEENTH / 5) * (row + 1);
+    for (int row = 0; row < NUMBER_OF_ROWS; row++) {
+      double layoutY =
+          HEIGHT_OF_SIXTEENTH * row + (WIDTH_OF_SIXTEENTH / NUMBER_OF_ROWS) * (row + 1);
 
       // Creating the sub panels inside of instrumentsPanel, which all contains
       // their own ChoiceBox with a list of available instruments:
@@ -143,7 +149,7 @@ public class SequencerController {
 
       instrumentsPanel.getChildren().add(instrumentSubPanel);
 
-      for (int col = 0; col < 16; col++) {
+      for (int col = 0; col < Track.TRACK_LENGTH; col++) {
         // Creating all the clickable sixteenth-rectangles:
         Rectangle sixteenth = new Rectangle();
         sixteenth.setWidth(WIDTH_OF_SIXTEENTH);
@@ -161,7 +167,7 @@ public class SequencerController {
 
     savedTracksChoiceBox.getItems().addAll(persistenceHandler.listFilenames());
 
-    // Displaying the name of the track and the artist:
+    //  ing the name of the track and the artist:
     int amountOfSavedTracks = 1;
     try {
       amountOfSavedTracks = persistenceHandler.listFilenames().size() + 1;
@@ -180,7 +186,7 @@ public class SequencerController {
   public void updateElements() {
     List<String> instruments = track.getInstruments();
 
-    for (int row = 0; row < 5; row++) {
+    for (int row = 0; row < NUMBER_OF_ROWS; row++) {
       if (row >= instruments.size()) {
         resetPattern(String.valueOf(row));
         continue;
@@ -212,7 +218,7 @@ public class SequencerController {
    */
   public void resetPattern(String row) {
     String toggledColor = COLORS.get(Integer.parseInt(row))[1];
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < Track.TRACK_LENGTH; i++) {
       Rectangle sixteenth =
           (Rectangle) instrumentsPattern.lookup("#" + String.valueOf(i) + "," + row);
       sixteenth.setEffect(null);

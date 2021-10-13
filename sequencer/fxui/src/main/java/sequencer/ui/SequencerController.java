@@ -167,7 +167,7 @@ public class SequencerController {
 
     savedTracksChoiceBox.getItems().addAll(persistenceHandler.listFilenames());
 
-    //  ing the name of the track and the artist:
+    //  Displaying the name of the track and the artist:
     int amountOfSavedTracks = 1;
     try {
       amountOfSavedTracks = persistenceHandler.listFilenames().size() + 1;

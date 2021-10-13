@@ -21,7 +21,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import sequencer.core.Composer;
-import sequencer.json.TrackMapper;
 import sequencer.persistence.PersistenceHandler;
 
 /**
@@ -31,15 +30,14 @@ public class SequencerController {
 
   private Composer composer;
   private PersistenceHandler persistenceHandler;
-  private TrackMapper trackMapper;
 
   private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
   @FXML
   void initialize() {
     composer = new Composer();
-    trackMapper = new TrackMapper();
-    persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", TrackMapper.FORMAT);
+    persistenceHandler =
+        new PersistenceHandler("drum-sequencer-persistence", composer.getSerializationFormat());
 
     createElements();
   }
@@ -299,12 +297,7 @@ public class SequencerController {
     try {
       String trackName = savedTracksChoiceBox.getValue();
       composer.loadTrack(persistenceHandler.getReaderFromFile(trackName));
-      Platform.runLater(new Runnable() {
-        @Override
-        public void run() {
-          updateElements();
-        }
-      });
+      Platform.runLater(this::updateElements);
     } catch (Exception e) {
       e.printStackTrace();
       // TODO: handle exception

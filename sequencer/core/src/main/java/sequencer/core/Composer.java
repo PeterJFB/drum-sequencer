@@ -282,6 +282,14 @@ public class Composer {
   }
 
   /**
+   * Returns the serialization format for Tracks.
+   */
+  public static String getSerializationFormat() {
+    return TrackMapper.FORMAT;
+  }
+
+
+  /**
    * Saves the current track.
    */
   public void saveTrack(Writer writer) throws IOException {

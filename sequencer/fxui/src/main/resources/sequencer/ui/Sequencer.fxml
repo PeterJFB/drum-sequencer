@@ -26,9 +26,9 @@
             </GridPane>
        
             <Text fx:id="trackNameLabel" text="Track name:" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
-            <TextField fx:id="trackName" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyPressed="#editTrackName" />
+            <TextField fx:id="trackName" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyTyped="#editTrackName" />
             <Text fx:id="artistNameLabel" text="Artist name:" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
-            <TextField fx:id="artistName" GridPane.columnIndex="5" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyPressed="#editArtistName" />
+            <TextField fx:id="artistName" GridPane.columnIndex="5" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyTyped="#editArtistName" />
 
             <ImageView fx:id="startStopBtn" GridPane.columnIndex="6" GridPane.rowIndex="0" GridPane.halignment="RIGHT" onMouseClicked="#togglePlayingTrack">
                 <image>

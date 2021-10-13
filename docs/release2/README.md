@@ -20,3 +20,27 @@ The current implementation is checking with the format described in the [google 
 ### Jacoco
 
 [Jacoco](https://www.eclemma.org/jacoco/) allowed us to see a detailed schema of current test coverage, and has proven uselful to show where to write more tests.
+
+## Conceptual model
+
+### Moving from conductor to composer
+
+Previously, the conductor recieved a Track to play with a `setTrack()`-method. It validated the track at this point and could later play the track. The problem with this implementation was that the track could be mutated after it had been set in the conductor. To fix this problem with encapsulation, we now mutate the track exclusively with the composer. This will secure that the Track will never be mutated without the composer validating the change.
+
+An example of how we would create a new track before:
+
+```java
+Track exampleTrack = new Track();
+Conductor exampleConductor = new Conductor();
+exampleConductor.setTrack(exampleTrack);
+exampleTrack.setName("Example name");
+exampleTrack.setArtist("Example artist");
+``` 
+
+And after the move to composer:
+
+```java
+Composer exampleComposer = new Composer();
+exampleComposer.setTrackName("Example name");
+exampleComposer.setArtistName("Example artist");
+``` 

@@ -19,9 +19,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import sequencer.core.Conductor;
-import sequencer.core.Track;
-import sequencer.json.TrackMapper;
+import sequencer.core.Composer;
 import sequencer.persistence.PersistenceHandler;
 
 /**
@@ -29,20 +27,16 @@ import sequencer.persistence.PersistenceHandler;
  */
 public class SequencerController {
 
-  private Conductor conductor;
-  private Track track;
+  private Composer composer;
   private PersistenceHandler persistenceHandler;
-  private TrackMapper trackMapper;
 
   private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
   @FXML
   void initialize() {
-    track = new Track();
-    conductor = new Conductor();
-    conductor.setTrack(track);
-    trackMapper = new TrackMapper();
-    persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", TrackMapper.FORMAT);
+    composer = new Composer();
+    persistenceHandler =
+        new PersistenceHandler("drum-sequencer-persistence", composer.getSerializationFormat());
 
     createElements();
   }
@@ -51,7 +45,8 @@ public class SequencerController {
   // of all of the sections will be easily scalable and responsive, and henceforth
   // make life quite easier.
   private static final double WIDTH_OF_SIXTEENTH = 70d;
-  // Multiplying the width wtih an irrational number, better known as "The Golden Ratio".
+  // Multiplying the width wtih an irrational number, better known as "The Golden
+  // Ratio".
   private static final double HEIGHT_OF_SIXTEENTH = WIDTH_OF_SIXTEENTH * (1 + Math.sqrt(5)) / 2;
   // The number of rows in the application, or in other words, the maximum number of instruments
   // that can be played simultaneously.
@@ -86,7 +81,6 @@ public class SequencerController {
 
   @FXML
   private Pane instrumentsPattern;
-
 
   // The colors used as the background for the clickable sixteenth-rectangles,
   // including both shades of the same color.
@@ -138,12 +132,12 @@ public class SequencerController {
       // Creating the ChoiceBox, and adding it to the sub panel:
       ChoiceBox<String> availableInstruments = new ChoiceBox<>();
       availableInstruments.setId(String.valueOf(row));
-      availableInstruments.getItems().addAll(conductor.getAvailableInstruments());
-      if (row < track.getInstruments().size()) {
-        availableInstruments.setValue(track.getInstruments().get(row));
+      availableInstruments.getItems().addAll(composer.getAvailableInstruments());
+      if (row < composer.getInstrumentsInTrack().size()) {
+        availableInstruments.setValue(composer.getInstrumentsInTrack().get(row));
       }
-      availableInstruments.valueProperty().addListener(
-          (observable, oldValue, newValue) -> addInstrument(oldValue, newValue));
+      availableInstruments.valueProperty()
+          .addListener((observable, oldValue, newValue) -> addInstrument(oldValue, newValue));
       instrumentSubPanel.getChildren().add(availableInstruments);
       instrumentChoiceBoxes.add(availableInstruments);
 
@@ -174,9 +168,9 @@ public class SequencerController {
     } catch (Exception e) {
       // TODO: handle exception
     }
-    trackName.setText(
-        track.getTrackName() != null ? track.getTrackName() : "untitled" + amountOfSavedTracks);
-    artistName.setText(track.getArtistName() != null ? track.getArtistName() : "unknown");
+    trackName.setText(composer.getTrackName() != null ? composer.getTrackName()
+        : "untitled" + amountOfSavedTracks);
+    artistName.setText(composer.getArtistName() != null ? composer.getArtistName() : "unknown");
   }
 
   /**
@@ -184,7 +178,7 @@ public class SequencerController {
    * contains unnecessery code.
    */
   public void updateElements() {
-    List<String> instruments = track.getInstruments();
+    List<String> instruments = composer.getInstrumentsInTrack();
 
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
       if (row >= instruments.size()) {
@@ -195,20 +189,22 @@ public class SequencerController {
       String instrument = instruments.get(row);
       ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
       instrumentChoiceBox.setValue(instrument);
-      List<Boolean> pattern = track.getPattern(instrument);
+      List<Boolean> pattern = composer.getTrackPattern(instrument);
 
       for (int col = 0; col < pattern.size(); col++) {
         Rectangle sixteenth = (Rectangle) instrumentsPattern
             .lookup("#" + String.valueOf(col) + "," + String.valueOf(row));
 
-        // Checking whether the sixteenth has an effect is a quick way of checking if it is "active"
+        // Checking whether the sixteenth has an effect is a quick way of checking if it
+        // is "active"
         if (pattern.get(col) != (sixteenth.getEffect() != null)) {
           toggleSixteenth(sixteenth, true);
         }
       }
     }
 
-    trackName.setText(track.getTrackName());
+    trackName.setText(composer.getTrackName());
+    artistName.setText(composer.getArtistName());
   }
 
   /**
@@ -233,13 +229,13 @@ public class SequencerController {
    * @param newInstrument the new instrument that is to be added
    */
   public void addInstrument(String oldInstrument, String newInstrument) {
-    if (!track.getInstruments().contains(newInstrument)) {
+    if (!composer.getInstrumentsInTrack().contains(newInstrument)) {
       if (oldInstrument == null) {
-        track.addInstrument(newInstrument);
+        composer.addInstrumentToTrack(newInstrument);
       } else {
-        List<Boolean> oldPattern = track.getPattern(oldInstrument);
-        track.addInstrument(newInstrument, oldPattern);
-        track.removeInstrument(oldInstrument);
+        List<Boolean> oldPattern = composer.getTrackPattern(oldInstrument);
+        composer.addInstrumentToTrack(newInstrument, oldPattern);
+        composer.removeInstrumentFromTrack(oldInstrument);
       }
     }
   }
@@ -258,8 +254,10 @@ public class SequencerController {
     ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(sixteenthId[1]);
     String instrument = instrumentChoiceBox.getValue();
 
-    // Refers to the index in a String[] in COLORS. In other words, which shade of the color.
-    int toggledIndex = track.getPattern(instrument).get(sixteenthId[0]) ^ updatingElements ? 1 : 0;
+    // Refers to the index in a String[] in COLORS. In other words, which shade of
+    // the color.
+    int toggledIndex =
+        composer.getTrackPattern(instrument).get(sixteenthId[0]) ^ updatingElements ? 1 : 0;
     String toggledColor = COLORS.get(sixteenthId[1])[toggledIndex];
 
     if (toggledIndex == 0) {
@@ -270,10 +268,10 @@ public class SequencerController {
     } else {
       sixteenth.setEffect(null);
     }
-    sixteenth.setFill(Color.web(toggledColor));   
+    sixteenth.setFill(Color.web(toggledColor));
 
     if (!updatingElements) {
-      track.toggleSixteenth(instrument, sixteenthId[0]);
+      composer.toggleTrackSixteenth(instrument, sixteenthId[0]);
     }
 
   }
@@ -285,13 +283,12 @@ public class SequencerController {
   @FXML
   public void saveTrack() {
     try {
-      trackMapper.writeTrack(track, persistenceHandler.getWriterToFile(track.getTrackName()));
-      savedTracksChoiceBox.getItems().add(track.getTrackName());
+      composer.saveTrack(persistenceHandler.getWriterToFile(composer.getTrackName()));
+      savedTracksChoiceBox.getItems().add(composer.getTrackName());
     } catch (Exception e) {
       // TODO: handle exception
     }
   }
-
 
   @FXML
   public void toggleLoadBtn() {
@@ -303,26 +300,13 @@ public class SequencerController {
    */
   @FXML
   public void loadTrack() {
-    Track newTrack = null;
     try {
       String trackName = savedTracksChoiceBox.getValue();
-      newTrack = trackMapper.readTrack(persistenceHandler.getReaderFromFile(trackName));
+      composer.loadTrack(persistenceHandler.getReaderFromFile(trackName));
+      Platform.runLater(this::updateElements);
     } catch (Exception e) {
       e.printStackTrace();
       // TODO: handle exception
-    }
-
-    if (newTrack != null) {
-      track = newTrack;
-      conductor.setTrack(track);
-      Platform.runLater(new Runnable() {
-        @Override
-        public void run() {
-          updateElements();
-        }
-      });
-
-
     }
 
     // TODO: clear choiceBox
@@ -335,7 +319,7 @@ public class SequencerController {
   @FXML
   public void editTrackName(KeyEvent e) {
     String newTrackName = trackName.getText();
-    track.setTrackName(newTrackName);
+    composer.setTrackName(newTrackName);
     if (e.getCode() == KeyCode.ENTER) {
       header.requestFocus();
     }
@@ -348,7 +332,7 @@ public class SequencerController {
   @FXML
   public void editArtistName(KeyEvent e) {
     String newArtistName = artistName.getText();
-    track.setArtistName(newArtistName);
+    composer.setArtistName(newArtistName);
     if (e.getCode() == KeyCode.ENTER) {
       header.requestFocus();
     }
@@ -363,11 +347,11 @@ public class SequencerController {
   @FXML
   public void togglePlayingTrack() {
     String toggledImageUrl;
-    if (conductor.isPlaying()) {
-      conductor.stop();
+    if (composer.isPlaying()) {
+      composer.stop();
       toggledImageUrl = "images/play.png";
     } else {
-      conductor.start();
+      composer.start();
       toggledImageUrl = "images/stop.png";
     }
     startStopBtn.setImage(new Image(getClass().getResource(toggledImageUrl).toExternalForm()));

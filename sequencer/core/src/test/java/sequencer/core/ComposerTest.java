@@ -1,5 +1,6 @@
 package sequencer.core;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -7,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.List;
 
 import java.util.stream.IntStream;
@@ -85,5 +88,39 @@ public class ComposerTest {
     assertFalse(composer.isPlaying());
     composer.stop();
     assertFalse(composer.isPlaying());
+  }
+
+  @Test
+  @DisplayName("Test writing and reading a track")
+  public void writeAndRead() {
+    composer.setTrackName("trackName");
+    composer.setArtistName("artistName");
+    composer.addInstrumentToTrack("kick");
+    composer.toggleTrackSixteenth("kick", 0);
+    List<Boolean> snarePattern = new ArrayList<Boolean>(Arrays.asList(new Boolean[16]));
+    Collections.fill(snarePattern, Boolean.FALSE);
+    snarePattern.set(8, true);
+    composer.addInstrumentToTrack("snare", snarePattern);
+
+    StringWriter stringWriter = new StringWriter();
+    assertDoesNotThrow(() -> composer.saveTrack(stringWriter));
+
+    StringReader stringReader = new StringReader(stringWriter.toString());
+
+    Composer composer2 = new Composer();
+    assertDoesNotThrow(() -> composer2.loadTrack(stringReader));
+    assertEquals("trackName", composer2.getTrackName());
+    assertEquals("artistName", composer2.getArtistName());
+    // Check that the only instruments in track are snare and kick
+    assertFalse(composer2.getInstrumentsInTrack().isEmpty());
+    assertTrue(composer2.getInstrumentsInTrack().stream()
+        .allMatch(instrument -> instrument.equals("snare") || instrument.equals("kick")));
+    // Check that the kick only plays on the 0th sixteenth
+    assertTrue(IntStream.range(0, 16)
+        .allMatch(index -> composer2.getTrackPattern("kick").get(index) == (index == 0)));
+    // Check that the snare only plays on the 8th sixteenth
+    assertTrue(IntStream.range(0, 16)
+        .allMatch(index -> composer2.getTrackPattern("snare").get(index) == (index == 8)));
+
   }
 }

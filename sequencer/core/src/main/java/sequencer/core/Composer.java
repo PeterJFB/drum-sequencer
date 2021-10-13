@@ -196,6 +196,13 @@ public class Composer {
   }
 
   /**
+   * Returns the track lenght.
+   */
+  public static int getTrackLength() {
+    return Track.TRACK_LENGTH;
+  }
+
+  /**
    * Sets the current track's name.
    *
    * @param trackName the new name

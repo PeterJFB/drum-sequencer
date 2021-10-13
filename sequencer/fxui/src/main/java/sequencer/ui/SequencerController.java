@@ -36,7 +36,7 @@ public class SequencerController {
   void initialize() {
     composer = new Composer();
     persistenceHandler =
-        new PersistenceHandler("drum-sequencer-persistence", composer.getSerializationFormat());
+        new PersistenceHandler("drum-sequencer-persistence", Composer.getSerializationFormat());
 
     createElements();
   }
@@ -99,8 +99,8 @@ public class SequencerController {
     // Giving all of the sections of the application their respective sizes and
     // layout locations:
     instrumentsPattern.setPrefSize(
-        WIDTH_OF_SIXTEENTH * Track.TRACK_LENGTH
-            + (WIDTH_OF_SIXTEENTH / 10) * (Track.TRACK_LENGTH + 1),
+        WIDTH_OF_SIXTEENTH * Composer.getTrackLength()
+            + (WIDTH_OF_SIXTEENTH / 10) * (Composer.getTrackLength() + 1),
         HEIGHT_OF_SIXTEENTH * NUMBER_OF_ROWS
             + (WIDTH_OF_SIXTEENTH / NUMBER_OF_ROWS) * (NUMBER_OF_ROWS + 1));
     instrumentsPattern.setLayoutX(WIDTH_OF_SIXTEENTH * 3.5);
@@ -143,7 +143,7 @@ public class SequencerController {
 
       instrumentsPanel.getChildren().add(instrumentSubPanel);
 
-      for (int col = 0; col < Track.TRACK_LENGTH; col++) {
+      for (int col = 0; col < Composer.getTrackLength(); col++) {
         // Creating all the clickable sixteenth-rectangles:
         Rectangle sixteenth = new Rectangle();
         sixteenth.setWidth(WIDTH_OF_SIXTEENTH);
@@ -161,7 +161,7 @@ public class SequencerController {
 
     savedTracksChoiceBox.getItems().addAll(persistenceHandler.listFilenames());
 
-    //  Displaying the name of the track and the artist:
+    // Displaying the name of the track and the artist:
     int amountOfSavedTracks = 1;
     try {
       amountOfSavedTracks = persistenceHandler.listFilenames().size() + 1;
@@ -214,7 +214,7 @@ public class SequencerController {
    */
   public void resetPattern(String row) {
     String toggledColor = COLORS.get(Integer.parseInt(row))[1];
-    for (int i = 0; i < Track.TRACK_LENGTH; i++) {
+    for (int i = 0; i < Composer.getTrackLength(); i++) {
       Rectangle sixteenth =
           (Rectangle) instrumentsPattern.lookup("#" + String.valueOf(i) + "," + row);
       sixteenth.setEffect(null);

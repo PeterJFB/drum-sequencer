@@ -108,10 +108,6 @@ public class Composer {
    * @throws IllegalStateException if Composer has no track to play
    */
   public void start() {
-    if (currentTrack == null) {
-      throw new IllegalStateException("Cannot start when track is not set");
-    }
-
     if (playing) {
       stop();
     }
@@ -156,11 +152,11 @@ public class Composer {
       start();
       return;
     }
-    currentTrack.getInstruments().stream().filter(instrument -> {
-      return currentTrack.getPattern(instrument).get(progress);
-    }).forEach(instrument -> {
-      instrumentAudioClips.get(instrument).play();
-    });
+    currentTrack.getInstruments().stream()
+        .filter(instrument -> currentTrack.getPattern(instrument).get(progress))
+        .forEach(instrument -> {
+          instrumentAudioClips.get(instrument).play();
+        });
 
     // Fire events
     listeners.forEach(listener -> listener.run(progress));

@@ -3,36 +3,26 @@ package sequencer.core;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.Random;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Tests for the composer.
  */
 public class ComposerTest {
   private Composer composer;
-  private Random random;
-
-  /**
-   * Check if track in composer matches with the given track (Given that the composer's getters
-   * work).
-   * 
-   * @param composer the composer to check
-   * @param track The track to compare to
-   * @return true if the track matches
-   */
-  public boolean trackMatch(Composer composer, Track track) {
-    return true;
-  }
 
   @BeforeEach
   public void createComposer() {
     composer = new Composer();
-    random = new Random();
   }
 
   @Test
@@ -52,9 +42,11 @@ public class ComposerTest {
   public void checkPatternSettersAndGetters() {
     assertTrue(composer.getInstrumentsInTrack().isEmpty());
     composer.addInstrumentToTrack("kick");
-    composer.addInstrumentToTrack("snare");
     composer.toggleTrackSixteenth("kick", 0);
-    composer.toggleTrackSixteenth("snare", 8);
+    List<Boolean> snarePattern = new ArrayList<Boolean>(Arrays.asList(new Boolean[16]));
+    Collections.fill(snarePattern, Boolean.FALSE);
+    snarePattern.set(8, true);
+    composer.addInstrumentToTrack("snare", snarePattern);
 
     // Check that the only instruments in track are snare and kick
     assertFalse(composer.getInstrumentsInTrack().isEmpty());
@@ -66,6 +58,19 @@ public class ComposerTest {
     // Check that the snare only plays on the 8th sixteenth
     assertTrue(IntStream.range(0, 16)
         .allMatch(index -> composer.getTrackPattern("snare").get(index) == (index == 8)));
+  }
+
+  @Test
+  @DisplayName("Removing instruments")
+  public void checkRemovingInstruments() {
+    assertTrue(composer.getInstrumentsInTrack().isEmpty());
+    composer.addInstrumentToTrack("kick");
+    composer.addInstrumentToTrack("snare");
+    composer.removeInstrumentFromTrack("kick");
+
+    assertFalse(composer.getInstrumentsInTrack().isEmpty());
+    assertTrue(composer.getInstrumentsInTrack().stream()
+        .allMatch(instrument -> instrument.equals("snare")));
   }
 
   @Test

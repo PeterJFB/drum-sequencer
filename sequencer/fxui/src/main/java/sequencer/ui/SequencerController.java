@@ -3,6 +3,12 @@ package sequencer.ui;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -19,6 +25,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import sequencer.core.Composer;
 import sequencer.persistence.PersistenceHandler;
 
@@ -48,7 +55,8 @@ public class SequencerController {
   // Multiplying the width wtih an irrational number, better known as "The Golden
   // Ratio".
   private static final double HEIGHT_OF_SIXTEENTH = WIDTH_OF_SIXTEENTH * (1 + Math.sqrt(5)) / 2;
-  // The number of rows in the application, or in other words, the maximum number of instruments
+  // The number of rows in the application, or in other words, the maximum number
+  // of instruments
   // that can be played simultaneously.
   private static final int NUMBER_OF_ROWS = 5;
 
@@ -132,6 +140,7 @@ public class SequencerController {
       // Creating the ChoiceBox, and adding it to the sub panel:
       ChoiceBox<String> availableInstruments = new ChoiceBox<>();
       availableInstruments.setId(String.valueOf(row));
+      availableInstruments.getStyleClass().add("availableInstrumentsChoiceBox");
       availableInstruments.getItems().addAll(composer.getAvailableInstruments());
       if (row < composer.getInstrumentsInTrack().size()) {
         availableInstruments.setValue(composer.getInstrumentsInTrack().get(row));
@@ -157,6 +166,7 @@ public class SequencerController {
         sixteenth.setEffect(null);
         instrumentsPattern.getChildren().add(sixteenth);
       }
+
     }
 
     savedTracksChoiceBox.getItems().addAll(persistenceHandler.listFilenames());
@@ -254,12 +264,15 @@ public class SequencerController {
     ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(sixteenthId[1]);
     String instrument = instrumentChoiceBox.getValue();
 
+    if (instrument == null) {
+      return;
+    }
+
     // Refers to the index in a String[] in COLORS. In other words, which shade of
     // the color.
     int toggledIndex =
         composer.getTrackPattern(instrument).get(sixteenthId[0]) ^ updatingElements ? 1 : 0;
     String toggledColor = COLORS.get(sixteenthId[1])[toggledIndex];
-
     if (toggledIndex == 0) {
       DropShadow dropShadow = new DropShadow();
       dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
@@ -285,11 +298,15 @@ public class SequencerController {
     try {
       composer.saveTrack(persistenceHandler.getWriterToFile(composer.getTrackName()));
       savedTracksChoiceBox.getItems().add(composer.getTrackName());
+      displayStatusMsg("Track saved.", true);
     } catch (Exception e) {
-      // TODO: handle exception
+      displayStatusMsg("Failed to save track.", false);
     }
   }
 
+  /**
+   * Fires when the user selects a value from the ChoiceBox containing saved instruments.
+   */
   @FXML
   public void toggleLoadBtn() {
     loadTrackBtn.setDisable(false);
@@ -304,9 +321,9 @@ public class SequencerController {
       String trackName = savedTracksChoiceBox.getValue();
       composer.loadTrack(persistenceHandler.getReaderFromFile(trackName));
       Platform.runLater(this::updateElements);
+      displayStatusMsg(composer.getTrackName() + " loaded.", true);
     } catch (Exception e) {
-      e.printStackTrace();
-      // TODO: handle exception
+      displayStatusMsg("Failed to load track.", false);
     }
 
     // TODO: clear choiceBox
@@ -355,6 +372,91 @@ public class SequencerController {
       toggledImageUrl = "images/stop.png";
     }
     startStopBtn.setImage(new Image(getClass().getResource(toggledImageUrl).toExternalForm()));
+  }
+
+  @FXML
+  private StackPane statusMsg;
+
+  @FXML
+  private Rectangle statusMsgBackground;
+
+  @FXML
+  private GridPane statusMsgContent;
+
+  @FXML
+  private ImageView statusMsgIcon;
+
+  @FXML
+  private Text statusMsgText;
+
+  /**
+   * Displaying a status message to the user, regarding either success (e.g. track being saved) or
+   * fail (e.g.: fai lure to load track).
+   *
+   * @param msg the message to be displayed
+   * @param success indicates whether the message is a success or not (fail). This is utilized to
+   *        decide which color to use (green => success, red => fail)
+   */
+  public void displayStatusMsg(String msg, boolean success) {
+    statusMsg.setLayoutX(WIDTH_OF_SIXTEENTH);
+    statusMsg.setLayoutY(HEIGHT_OF_SIXTEENTH * 5);
+
+    Color backgroundColor = success ? Color.web("#c3e6cd") : Color.web("#fdd4cd");
+    statusMsgBackground.setFill(backgroundColor);
+    statusMsgBackground.setWidth(WIDTH_OF_SIXTEENTH * 4);
+    statusMsgBackground.setHeight(WIDTH_OF_SIXTEENTH * 1.3);
+
+    String statusMsgIconUrl = success ? "images/checked.png" : "images/x-mark.png";
+    statusMsgIcon.setImage(new Image(getClass().getResource(statusMsgIconUrl).toExternalForm()));
+
+    String textColor = success ? "#419e6d" : "#c92213";
+    statusMsgText.setFill(Color.web(textColor));
+    statusMsgText.setText(msg);
+
+    statusMsgBackground.setStyle("-fx-stroke:" + textColor + ";");
+    statusMsgText.setWrappingWidth(statusMsgBackground.getWidth() * 0.7);
+
+    playStatusMsgTransition(true);
+    // Removing the message after 4 seconds (4000L):
+    Timer timer = new Timer();
+    timer.schedule(new TimerTask() {
+      @Override
+      public void run() {
+        Platform.runLater(() -> {
+          playStatusMsgTransition(false);
+        });
+      }
+    }, 4000L);
+
+  }
+
+  /**
+   * Creating the Fade and Translate transitions for the status message, and playing them parallel
+   * to each other.
+   *
+   * @param enter indicating whether the message is to be entered into the scene, or otherwise made
+   *        to leave
+   */
+  private void playStatusMsgTransition(boolean enter) {
+    FadeTransition fadeTransition =
+        new FadeTransition(Duration.millis(1400), statusMsg);
+    int duration = enter ? 1400 : 4000;
+    TranslateTransition translateTransition =
+        new TranslateTransition(Duration.millis(duration), statusMsg);
+    if (enter) {
+      fadeTransition.setFromValue(0.0f);
+      fadeTransition.setToValue(1.0f);
+      translateTransition.setFromY(0);
+      translateTransition.setToY(HEIGHT_OF_SIXTEENTH / 3);
+    } else {
+      fadeTransition.setFromValue(1.0f);
+      fadeTransition.setToValue(0.0f);
+      translateTransition.setFromY(HEIGHT_OF_SIXTEENTH / 3);
+      translateTransition.setToY(HEIGHT_OF_SIXTEENTH * 2);
+    }
+    ParallelTransition parallelTransition = new ParallelTransition();
+    parallelTransition.getChildren().addAll(fadeTransition, translateTransition);
+    parallelTransition.play();
   }
 
 }

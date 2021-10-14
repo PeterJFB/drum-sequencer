@@ -107,7 +107,7 @@ public class ComposerTest {
 
     StringReader stringReader = new StringReader(stringWriter.toString());
 
-    Composer composer2 = new Composer();
+    Composer composer2 = new Composer(false, true);
     assertDoesNotThrow(() -> composer2.loadTrack(stringReader));
     assertEquals("trackName", composer2.getTrackName());
     assertEquals("artistName", composer2.getArtistName());

@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,22 @@ public class Composer {
   private TimerTask progressBeatTask;
   private boolean playing;
   private List<ComposerListener> listeners;
+  private static Map<String, String> instrumentAudioClipFileNames;
+
+  static {
+    Map<String, String> fileNameMap = new HashMap<>();
+    fileNameMap.put("kick", "707 Kick.wav");
+    fileNameMap.put("hihat", "808 CH.wav");
+    fileNameMap.put("snare", "808 Snare.wav");
+    fileNameMap.put("maraccas", "Maraccas.WAV");
+    fileNameMap.put("rim shot", "RimShot.WAV");
+    fileNameMap.put("cow bell", "CowBell.WAV");
+    fileNameMap.put("claves", "Claves.WAV");
+    fileNameMap.put("clap", "Clap.WAV");
+    instrumentAudioClipFileNames = Collections.unmodifiableMap(fileNameMap);
+
+  }
+
   private Map<String, AudioClip> instrumentAudioClips;
 
   // Used for detecting changes in BPM, and updating the timer to
@@ -58,25 +75,10 @@ public class Composer {
     currentTrack = new Track();
     trackMapper = new TrackMapper();
     instrumentAudioClips = new HashMap<>();
-    if (!testMode) {
-      instrumentAudioClips.put("kick",
-          new AudioClip(Composer.class.getResource("707 Kick.wav").toExternalForm()));
-      instrumentAudioClips.put("hihat",
-          new AudioClip(Composer.class.getResource("808 CH.wav").toExternalForm()));
-      instrumentAudioClips.put("snare",
-          new AudioClip(Composer.class.getResource("808 Snare.wav").toExternalForm()));
-      instrumentAudioClips.put("maraccas",
-          new AudioClip(Composer.class.getResource("Maraccas.WAV").toExternalForm()));
-      instrumentAudioClips.put("rim shot",
-          new AudioClip(Composer.class.getResource("RimShot.WAV").toExternalForm()));
-      instrumentAudioClips.put("cow bell",
-          new AudioClip(Composer.class.getResource("CowBell.WAV").toExternalForm()));
-      instrumentAudioClips.put("claves",
-          new AudioClip(Composer.class.getResource("Claves.WAV").toExternalForm()));
-      instrumentAudioClips.put("clap",
-          new AudioClip(Composer.class.getResource("Clap.WAV").toExternalForm()));
-    }
 
+    instrumentAudioClipFileNames.keySet().stream().filter(instrument -> !testMode)
+        .forEach(instrument -> instrumentAudioClips.put(instrument, new AudioClip(Composer.class
+            .getResource(instrumentAudioClipFileNames.get(instrument)).toExternalForm())));
 
   }
 
@@ -87,7 +89,7 @@ public class Composer {
    *         instrumentAudioClips
    */
   public Collection<String> getAvailableInstruments() {
-    return new ArrayList<>(instrumentAudioClips.keySet());
+    return new ArrayList<>(instrumentAudioClipFileNames.keySet());
   }
 
   private void setTrack(Track track) {

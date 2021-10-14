@@ -44,10 +44,14 @@ public class SequencerController {
   @FXML
   void initialize() {
     composer = new Composer();
+    composer.addListener(progress -> {
+      Platform.runLater(() -> addBorderToSixteenths(progress));
+    });
     persistenceHandler =
         new PersistenceHandler("drum-sequencer-persistence", Composer.getSerializationFormat());
 
     createElements();
+    addBorderToSixteenths(0);
   }
 
   // By utilizing a constant throughout the code, the sizes and layout locations
@@ -85,9 +89,6 @@ public class SequencerController {
   private Pane timeline;
 
   @FXML
-  private Rectangle progressBar;
-
-  @FXML
   private Pane instrumentsPattern;
 
   // The colors used as the background for the clickable sixteenth-rectangles,
@@ -98,6 +99,7 @@ public class SequencerController {
       new String[] {"1093C9", "00425E"}, // blue
       new String[] {"C9104C", "660020"} // red
   );
+  private static final String progressBorderColor = "FCBA03"; // Yellow
 
   private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
@@ -126,11 +128,6 @@ public class SequencerController {
     timeline.setPrefSize(instrumentsPattern.getPrefWidth(), HEIGHT_OF_SIXTEENTH / 3);
     timeline.setLayoutX(instrumentsPattern.getLayoutX());
     timeline.setLayoutY(instrumentsPanel.getLayoutY());
-
-    progressBar.setWidth(2.5);
-    progressBar.setHeight(instrumentsPanel.getPrefHeight());
-    progressBar.setLayoutX(instrumentsPattern.getLayoutX());
-    progressBar.setLayoutY(instrumentsPanel.getLayoutY());
 
     // Using a nested loop to create the grid of rows and (col)umns:
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
@@ -191,15 +188,13 @@ public class SequencerController {
         double height = i == 0 ? timeline.getPrefHeight() / 2 : timeline.getPrefHeight() / 4;
         line.setHeight(height);
         line.setWidth(2);
-        double extraLayoutX =
-            i == 0 ? WIDTH_OF_SIXTEENTH / 2 : 0;
+        double extraLayoutX = i == 0 ? WIDTH_OF_SIXTEENTH / 2 : 0;
         line.setLayoutX(
             (WIDTH_OF_SIXTEENTH / 2) * col + (WIDTH_OF_SIXTEENTH / 10) * (col + 1) + extraLayoutX);
         line.setLayoutY(timeline.getLayoutY());
 
         timeline.getChildren().add(line);
 
-        System.out.println(line.getLayoutX() + "," + line.getLayoutY());
 
         line.toFront();
       }
@@ -444,11 +439,9 @@ public class SequencerController {
     String toggledImageUrl;
     if (composer.isPlaying()) {
       composer.stop();
-      progressBar.setLayoutX(instrumentsPattern.getLayoutX());
       toggledImageUrl = "images/play.png";
     } else {
       composer.start();
-      // moveProgressBar();
       toggledImageUrl = "images/stop.png";
     }
     startStopBtn.setImage(new Image(getClass().getResource(toggledImageUrl).toExternalForm()));
@@ -539,21 +532,18 @@ public class SequencerController {
   }
 
   /**
-   * Fires when the user presses the "play" button, and moves the progress bar along the track
-   * pattern.
+   * Sets s border around all sixteenths in a column.
+   * 
+   * @param column the column to set a border around
    */
-  public void moveProgressBar() {
-
-    TranslateTransition translateTransition =
-        new TranslateTransition(Duration.millis(1000), progressBar);
-    translateTransition.setFromX(0);
-    translateTransition.setToX(instrumentsPattern.getPrefWidth());
-    translateTransition.setCycleCount(1);
-
-    // ParallelTransition parallelTransition = new ParallelTransition();
-    // parallelTransition.getChildren().add(translateTransition);
-    translateTransition.setCycleCount(Timeline.INDEFINITE);
-    translateTransition.play();
+  public void addBorderToSixteenths(int column) {
+    // Remove all borders
+    instrumentsPattern.getChildren().forEach(sixteenth -> ((Rectangle) sixteenth).setStroke(null));
+    // Set the borders of all squares in the correct column
+    for (int row = 0; row < NUMBER_OF_ROWS; row++) {
+      Rectangle sixteenth = (Rectangle) instrumentsPattern.lookup("#" + column + "," + row);
+      sixteenth.setStroke(Color.web(progressBorderColor));
+    }
 
   }
 

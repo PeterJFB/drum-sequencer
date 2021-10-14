@@ -63,12 +63,12 @@ public class ComposerTest {
         "Did not expect other instruments than snare and kick");
     // Check that the kick only plays on the 0th sixteenth
     assertTrue(
-        IntStream.range(0, 16)
+        IntStream.range(0, Track.TRACK_LENGTH)
             .allMatch(index -> composer.getTrackPattern("kick").get(index) == (index == 0)),
         "Expected kick only to be active during index 0");
     // Check that the snare only plays on the 8th sixteenth
     assertTrue(
-        IntStream.range(0, 16)
+        IntStream.range(0, Track.TRACK_LENGTH)
             .allMatch(index -> composer.getTrackPattern("snare").get(index) == (index == 8)),
         "Expected snare only to be active during index 8");
   }

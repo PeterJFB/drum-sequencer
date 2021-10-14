@@ -345,7 +345,7 @@ public class SequencerController {
   public void saveTrack() {
     try {
       if (persistenceHandler.isFileInDirectory(composer.getTrackName())) {
-        displayStatusMsg(composer.getTrackName() + " already exists in directory", false);
+        displayStatusMsg("Track name " + composer.getTrackName() + " is already taken", false);
         return;
       }
       composer.saveTrack(persistenceHandler.getWriterToFile(composer.getTrackName()));

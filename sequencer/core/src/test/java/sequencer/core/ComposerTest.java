@@ -25,7 +25,7 @@ public class ComposerTest {
 
   @BeforeEach
   public void createComposer() {
-    composer = new Composer();
+    composer = new Composer(false, true);
   }
 
   @Test

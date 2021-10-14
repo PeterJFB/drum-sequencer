@@ -20,32 +20,12 @@ import sequencer.json.TrackMapper;
  */
 public class Composer {
 
-  private static final Map<String, AudioClip> instrumentAudioClips;
-
-  static {
-    Map<String, AudioClip> instrMap = new HashMap<>();
-    instrMap.put("kick",
-        new AudioClip(Composer.class.getResource("707 Kick.wav").toExternalForm()));
-    instrMap.put("hihat", new AudioClip(Composer.class.getResource("808 CH.wav").toExternalForm()));
-    instrMap.put("snare",
-        new AudioClip(Composer.class.getResource("808 Snare.wav").toExternalForm()));
-    instrMap.put("maraccas",
-        new AudioClip(Composer.class.getResource("Maraccas.WAV").toExternalForm()));
-    instrMap.put("rim shot",
-        new AudioClip(Composer.class.getResource("RimShot.WAV").toExternalForm()));
-    instrMap.put("cow bell",
-        new AudioClip(Composer.class.getResource("CowBell.WAV").toExternalForm()));
-    instrMap.put("claves",
-        new AudioClip(Composer.class.getResource("Claves.WAV").toExternalForm()));
-    instrMap.put("clap", new AudioClip(Composer.class.getResource("Clap.WAV").toExternalForm()));
-    instrumentAudioClips = Collections.unmodifiableMap(instrMap);
-  }
-
   private int progress; // How many sixteenths of the measure has been played
   private Timer timer;
   private TimerTask progressBeatTask;
   private boolean playing;
   private List<ComposerListener> listeners;
+  private Map<String, AudioClip> instrumentAudioClips;
 
   // Used for detecting changes in BPM, and updating the timer to
   // reflect this
@@ -60,7 +40,7 @@ public class Composer {
    * Composer constructor. Equal to Composer(true). Use this in production.
    */
   public Composer() {
-    this(true);
+    this(true, false);
   }
 
   /**
@@ -69,14 +49,33 @@ public class Composer {
    * @param createDaemonTimer If the timer should be a daemon thread. See
    *        {@linktourl https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html#setDaemon(boolean)}.
    *        If set to false, the composer will not stop when the window is closed
+   * @param testMode If testMode is set to true, the AudioClips will not be loaded
    */
-  public Composer(boolean createDaemonTimer) {
+  public Composer(boolean createDaemonTimer, boolean testMode) {
     progress = 0;
     timer = new Timer(createDaemonTimer);
     playing = false;
     listeners = new ArrayList<>();
     currentTrack = new Track();
     trackMapper = new TrackMapper();
+
+    instrumentAudioClips = new HashMap<>();
+    instrumentAudioClips.put("kick",
+        new AudioClip(Composer.class.getResource("707 Kick.wav").toExternalForm()));
+    instrumentAudioClips.put("hihat",
+        new AudioClip(Composer.class.getResource("808 CH.wav").toExternalForm()));
+    instrumentAudioClips.put("snare",
+        new AudioClip(Composer.class.getResource("808 Snare.wav").toExternalForm()));
+    instrumentAudioClips.put("maraccas",
+        new AudioClip(Composer.class.getResource("Maraccas.WAV").toExternalForm()));
+    instrumentAudioClips.put("rim shot",
+        new AudioClip(Composer.class.getResource("RimShot.WAV").toExternalForm()));
+    instrumentAudioClips.put("cow bell",
+        new AudioClip(Composer.class.getResource("CowBell.WAV").toExternalForm()));
+    instrumentAudioClips.put("claves",
+        new AudioClip(Composer.class.getResource("Claves.WAV").toExternalForm()));
+    instrumentAudioClips.put("clap",
+        new AudioClip(Composer.class.getResource("Clap.WAV").toExternalForm()));
   }
 
   /**

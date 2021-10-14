@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
@@ -137,11 +138,14 @@ public class SequencerController {
       instrumentSubPanel.setLayoutY(layoutY + timeline.getPrefHeight());
       instrumentSubPanel.getStyleClass().add("instrumentSubPanel");
 
-      // Creating the ChoiceBox, and adding it to the sub panel:
+      // Creating the instrument ChoiceBox, and adding it to the sub panel:
       ChoiceBox<String> availableInstruments = new ChoiceBox<>();
       availableInstruments.setId(String.valueOf(row));
       availableInstruments.getStyleClass().add("availableInstrumentsChoiceBox");
-      availableInstruments.getItems().addAll(composer.getAvailableInstruments());
+      List<String> instrumentsNotUsed = composer.getAvailableInstruments().stream()
+          .filter(instrument -> !composer.getInstrumentsInTrack().contains(instrument))
+          .collect(Collectors.toList());
+      availableInstruments.getItems().addAll(instrumentsNotUsed);
       if (row < composer.getInstrumentsInTrack().size()) {
         availableInstruments.setValue(composer.getInstrumentsInTrack().get(row));
       }
@@ -188,16 +192,20 @@ public class SequencerController {
    * contains unnecessery code.
    */
   public void updateElements() {
+    updateInstrumentChoiceBoxAlternatives();
+    
     List<String> instruments = composer.getInstrumentsInTrack();
 
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
+      ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
+
       if (row >= instruments.size()) {
         resetPattern(String.valueOf(row));
+        instrumentChoiceBox.setValue("");
         continue;
       }
 
       String instrument = instruments.get(row);
-      ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
       instrumentChoiceBox.setValue(instrument);
       List<Boolean> pattern = composer.getTrackPattern(instrument);
 
@@ -215,6 +223,27 @@ public class SequencerController {
 
     trackName.setText(composer.getTrackName());
     artistName.setText(composer.getArtistName());
+  }
+
+  /**
+   * Updating all the choiceboxes for instruments when a new instrument has been added to the track.
+   * This is to make sure that the instrument won't be possible to chose in another instrument row 
+   * anymore, and so that if a new instrument has become avalible it will be possible to choose in 
+   * all instrument rows again.
+   */
+  private void updateInstrumentChoiceBoxAlternatives() {
+    List<String> instrumentsInTrack = composer.getInstrumentsInTrack();
+    List<String> instrumentsNotUsed = composer.getAvailableInstruments().stream()
+          .filter(instrument -> !instrumentsInTrack.contains(instrument))
+          .collect(Collectors.toList());
+    for (int row = 0; row < NUMBER_OF_ROWS; row++) {
+      ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
+      String instrumentChosen = instrumentChoiceBox.getValue();
+      List<String> instrumentsToRemove = instrumentChoiceBox.getItems();
+      instrumentsToRemove.remove(instrumentChosen);
+      instrumentChoiceBox.getItems().removeAll(instrumentsToRemove);
+      instrumentChoiceBox.getItems().addAll(instrumentsNotUsed);
+    }
   }
 
   /**
@@ -239,14 +268,16 @@ public class SequencerController {
    * @param newInstrument the new instrument that is to be added
    */
   public void addInstrument(String oldInstrument, String newInstrument) {
-    if (!composer.getInstrumentsInTrack().contains(newInstrument)) {
-      if (oldInstrument == null) {
+    if (!composer.getInstrumentsInTrack().contains(newInstrument) 
+        && !newInstrument.isBlank() && newInstrument != null) {
+      if (oldInstrument == null || oldInstrument.isBlank()) {
         composer.addInstrumentToTrack(newInstrument);
       } else {
         List<Boolean> oldPattern = composer.getTrackPattern(oldInstrument);
         composer.addInstrumentToTrack(newInstrument, oldPattern);
         composer.removeInstrumentFromTrack(oldInstrument);
       }
+      updateInstrumentChoiceBoxAlternatives();
     }
   }
 

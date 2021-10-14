@@ -59,6 +59,10 @@ public class Track {
    *         instruments
    */
   public List<Boolean> getPattern(String instrument) {
+    if (instrument == null || !instruments.keySet().contains(instrument)) {
+      throw new IllegalArgumentException(
+          "Could not find pattern for instrument since it was not part of the track");
+    }
     return new ArrayList<>(instruments.get(instrument));
   }
 

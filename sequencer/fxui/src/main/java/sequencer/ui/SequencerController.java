@@ -1,5 +1,6 @@
 package sequencer.ui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -179,14 +180,7 @@ public class SequencerController {
     savedTracksChoiceBox.getItems().addAll(persistenceHandler.listFilenames());
 
     // Displaying the name of the track and the artist:
-    int amountOfSavedTracks = 1;
-    try {
-      amountOfSavedTracks = persistenceHandler.listFilenames().size() + 1;
-    } catch (Exception e) {
-      // TODO: handle exception
-    }
-    trackName.setText(composer.getTrackName() != null ? composer.getTrackName()
-        : "untitled" + amountOfSavedTracks);
+    trackName.setText(composer.getTrackName() != null ? composer.getTrackName() : "untitled");
     artistName.setText(composer.getArtistName() != null ? composer.getArtistName() : "unknown");
   }
 
@@ -196,7 +190,7 @@ public class SequencerController {
    */
   public void updateElements() {
     updateInstrumentChoiceBoxAlternatives();
-    
+
     List<String> instruments = composer.getInstrumentsInTrack();
 
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
@@ -230,15 +224,15 @@ public class SequencerController {
 
   /**
    * Updating all the choiceboxes for instruments when a new instrument has been added to the track.
-   * This is to make sure that the instrument won't be possible to chose in another instrument row 
-   * anymore, and so that if a new instrument has become avalible it will be possible to choose in 
+   * This is to make sure that the instrument won't be possible to chose in another instrument row
+   * anymore, and so that if a new instrument has become avalible it will be possible to choose in
    * all instrument rows again.
    */
   private void updateInstrumentChoiceBoxAlternatives() {
     List<String> instrumentsInTrack = composer.getInstrumentsInTrack();
     List<String> instrumentsNotUsed = composer.getAvailableInstruments().stream()
-          .filter(instrument -> !instrumentsInTrack.contains(instrument))
-          .collect(Collectors.toList());
+        .filter(instrument -> !instrumentsInTrack.contains(instrument))
+        .collect(Collectors.toList());
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
       ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
       String instrumentChosen = instrumentChoiceBox.getValue();
@@ -280,21 +274,21 @@ public class SequencerController {
     // Only runs the if when the new instrument isn't already in track and is not empty
     // If so, the method is called because a new track is loaded, not because the user added an
     // instrument, and nothing is to be done.
-    if (!composer.getInstrumentsInTrack().contains(newInstrument) 
+    if (!composer.getInstrumentsInTrack().contains(newInstrument)
         && !newInstrument.isBlank() && newInstrument != null) {
-      if (newInstrument.equals(NO_INSTRUMENT_TEXT) 
+      if (newInstrument.equals(NO_INSTRUMENT_TEXT)
           && (oldInstrument == null || oldInstrument.isBlank())) {
         // If the new instrument is NO_INSTRUMENT_TEXT and the old is empty, nothing is done
       } else if (newInstrument.equals(NO_INSTRUMENT_TEXT)) {
-        // If the new instrument is NO_INSTRUMENT_TEXT 
+        // If the new instrument is NO_INSTRUMENT_TEXT
         // and the old isn't empty the old instrument is removed
         composer.removeInstrumentFromTrack(oldInstrument);
       } else if (oldInstrument == null || oldInstrument.isBlank()) {
-        // If the new instrument isn't NO_INSTRUMENT_TEXT 
+        // If the new instrument isn't NO_INSTRUMENT_TEXT
         // and the old is empty the new instrument is added
         composer.addInstrumentToTrack(newInstrument);
       } else {
-        // If the new instrument isn't NO_INSTRUMENT_TEXT 
+        // If the new instrument isn't NO_INSTRUMENT_TEXT
         // and the old isn't empty the old is removed and the new is added
         List<Boolean> oldPattern = composer.getTrackPattern(oldInstrument);
         composer.addInstrumentToTrack(newInstrument, oldPattern);
@@ -350,10 +344,16 @@ public class SequencerController {
   @FXML
   public void saveTrack() {
     try {
+      if (persistenceHandler.isFileInDirectory(composer.getTrackName())) {
+        displayStatusMsg(composer.getTrackName() + " already exists in directory", false);
+        return;
+      }
       composer.saveTrack(persistenceHandler.getWriterToFile(composer.getTrackName()));
       savedTracksChoiceBox.getItems().add(composer.getTrackName());
       displayStatusMsg("Track saved.", true);
-    } catch (Exception e) {
+    } catch (IllegalArgumentException e) {
+      displayStatusMsg("Track name has an invalid format.", false);
+    } catch (IOException e) {
       displayStatusMsg("Failed to save track.", false);
     }
   }
@@ -379,8 +379,6 @@ public class SequencerController {
     } catch (Exception e) {
       displayStatusMsg("Failed to load track.", false);
     }
-
-    // TODO: clear choiceBox
   }
 
   /**

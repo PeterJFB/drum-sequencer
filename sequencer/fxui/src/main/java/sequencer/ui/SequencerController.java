@@ -61,6 +61,8 @@ public class SequencerController {
   // that can be played simultaneously.
   private static final int NUMBER_OF_ROWS = 5;
 
+  private static final String NO_INSTRUMENT_TEXT = "ingen instrument";
+
   @FXML
   private GridPane header;
 
@@ -146,6 +148,7 @@ public class SequencerController {
           .filter(instrument -> !composer.getInstrumentsInTrack().contains(instrument))
           .collect(Collectors.toList());
       availableInstruments.getItems().addAll(instrumentsNotUsed);
+      availableInstruments.getItems().add(NO_INSTRUMENT_TEXT);
       if (row < composer.getInstrumentsInTrack().size()) {
         availableInstruments.setValue(composer.getInstrumentsInTrack().get(row));
       }
@@ -239,10 +242,16 @@ public class SequencerController {
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
       ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
       String instrumentChosen = instrumentChoiceBox.getValue();
+      if (instrumentChosen != null && instrumentChosen.equals(NO_INSTRUMENT_TEXT)) {
+        instrumentChosen = null;
+        instrumentChoiceBox.setValue("");
+        resetPattern(Integer.toString(row));
+      }
       List<String> instrumentsToRemove = instrumentChoiceBox.getItems();
       instrumentsToRemove.remove(instrumentChosen);
       instrumentChoiceBox.getItems().removeAll(instrumentsToRemove);
       instrumentChoiceBox.getItems().addAll(instrumentsNotUsed);
+      instrumentChoiceBox.getItems().add(NO_INSTRUMENT_TEXT);
     }
   }
 
@@ -268,11 +277,25 @@ public class SequencerController {
    * @param newInstrument the new instrument that is to be added
    */
   public void addInstrument(String oldInstrument, String newInstrument) {
+    // Only runs the if when the new instrument isn't already in track and is not empty
+    // If so, the method is called because a new track is loaded, not because the user added an
+    // instrument, and nothing is to be done.
     if (!composer.getInstrumentsInTrack().contains(newInstrument) 
         && !newInstrument.isBlank() && newInstrument != null) {
-      if (oldInstrument == null || oldInstrument.isBlank()) {
+      if (newInstrument.equals(NO_INSTRUMENT_TEXT) 
+          && (oldInstrument == null || oldInstrument.isBlank())) {
+        // If the new instrument is NO_INSTRUMENT_TEXT and the old is empty, nothing is done
+      } else if (newInstrument.equals(NO_INSTRUMENT_TEXT)) {
+        // If the new instrument is NO_INSTRUMENT_TEXT 
+        // and the old isn't empty the old instrument is removed
+        composer.removeInstrumentFromTrack(oldInstrument);
+      } else if (oldInstrument == null || oldInstrument.isBlank()) {
+        // If the new instrument isn't NO_INSTRUMENT_TEXT 
+        // and the old is empty the new instrument is added
         composer.addInstrumentToTrack(newInstrument);
       } else {
+        // If the new instrument isn't NO_INSTRUMENT_TEXT 
+        // and the old isn't empty the old is removed and the new is added
         List<Boolean> oldPattern = composer.getTrackPattern(oldInstrument);
         composer.addInstrumentToTrack(newInstrument, oldPattern);
         composer.removeInstrumentFromTrack(oldInstrument);

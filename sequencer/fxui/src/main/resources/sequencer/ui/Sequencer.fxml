@@ -62,12 +62,15 @@
                     <RowConstraints vgrow="ALWAYS" />
                 </rowConstraints>
             </GridPane>
+            
+            <StackPane GridPane.columnIndex="4">
+                <ImageView fx:id="startStopBtn" onMouseClicked="#togglePlayingTrack">
+                    <image>
+                        <Image url="@images/play.png" />
+                    </image>
+                </ImageView>
+            </StackPane>
 
-            <ImageView fx:id="startStopBtn" onMouseClicked="#togglePlayingTrack" GridPane.columnIndex="4">
-                <image>
-                    <Image url="@images/play.png" />
-                </image>
-            </ImageView>
             <columnConstraints>
                 <ColumnConstraints hgrow="ALWAYS" />
                 <ColumnConstraints hgrow="ALWAYS" />
@@ -82,8 +85,12 @@
         </GridPane>
         
         <Pane fx:id="instrumentsPanel" />
+
         <Pane fx:id="timeline" />
+
         <Pane fx:id="instrumentsPattern" />
+
+        <Rectangle fx:id="progressBar" />
 
         <StackPane fx:id="statusMsg">
             <Rectangle fx:id="statusMsgBackground" />

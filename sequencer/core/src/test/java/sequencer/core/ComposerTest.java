@@ -45,7 +45,8 @@ public class ComposerTest {
     assertTrue(composer.getInstrumentsInTrack().isEmpty());
     composer.addInstrumentToTrack("kick");
     composer.toggleTrackSixteenth("kick", 0);
-    List<Boolean> snarePattern = new ArrayList<Boolean>(Arrays.asList(new Boolean[16]));
+    List<Boolean> snarePattern =
+        new ArrayList<Boolean>(Arrays.asList(new Boolean[Track.TRACK_LENGTH]));
     Collections.fill(snarePattern, Boolean.FALSE);
     snarePattern.set(8, true);
     composer.addInstrumentToTrack("snare", snarePattern);
@@ -96,7 +97,8 @@ public class ComposerTest {
     composer.setArtistName("artistName");
     composer.addInstrumentToTrack("kick");
     composer.toggleTrackSixteenth("kick", 0);
-    List<Boolean> snarePattern = new ArrayList<Boolean>(Arrays.asList(new Boolean[16]));
+    List<Boolean> snarePattern =
+        new ArrayList<Boolean>(Arrays.asList(new Boolean[Track.TRACK_LENGTH]));
     Collections.fill(snarePattern, Boolean.FALSE);
     snarePattern.set(8, true);
     composer.addInstrumentToTrack("snare", snarePattern);
@@ -115,10 +117,10 @@ public class ComposerTest {
     assertTrue(composer2.getInstrumentsInTrack().stream()
         .allMatch(instrument -> instrument.equals("snare") || instrument.equals("kick")));
     // Check that the kick only plays on the 0th sixteenth
-    assertTrue(IntStream.range(0, 16)
+    assertTrue(IntStream.range(0, Track.TRACK_LENGTH)
         .allMatch(index -> composer2.getTrackPattern("kick").get(index) == (index == 0)));
     // Check that the snare only plays on the 8th sixteenth
-    assertTrue(IntStream.range(0, 16)
+    assertTrue(IntStream.range(0, Track.TRACK_LENGTH)
         .allMatch(index -> composer2.getTrackPattern("snare").get(index) == (index == 8)));
 
   }

@@ -58,24 +58,27 @@ public class Composer {
     listeners = new ArrayList<>();
     currentTrack = new Track();
     trackMapper = new TrackMapper();
-
     instrumentAudioClips = new HashMap<>();
-    instrumentAudioClips.put("kick",
-        new AudioClip(Composer.class.getResource("707 Kick.wav").toExternalForm()));
-    instrumentAudioClips.put("hihat",
-        new AudioClip(Composer.class.getResource("808 CH.wav").toExternalForm()));
-    instrumentAudioClips.put("snare",
-        new AudioClip(Composer.class.getResource("808 Snare.wav").toExternalForm()));
-    instrumentAudioClips.put("maraccas",
-        new AudioClip(Composer.class.getResource("Maraccas.WAV").toExternalForm()));
-    instrumentAudioClips.put("rim shot",
-        new AudioClip(Composer.class.getResource("RimShot.WAV").toExternalForm()));
-    instrumentAudioClips.put("cow bell",
-        new AudioClip(Composer.class.getResource("CowBell.WAV").toExternalForm()));
-    instrumentAudioClips.put("claves",
-        new AudioClip(Composer.class.getResource("Claves.WAV").toExternalForm()));
-    instrumentAudioClips.put("clap",
-        new AudioClip(Composer.class.getResource("Clap.WAV").toExternalForm()));
+    if (!testMode) {
+      instrumentAudioClips.put("kick",
+          new AudioClip(Composer.class.getResource("707 Kick.wav").toExternalForm()));
+      instrumentAudioClips.put("hihat",
+          new AudioClip(Composer.class.getResource("808 CH.wav").toExternalForm()));
+      instrumentAudioClips.put("snare",
+          new AudioClip(Composer.class.getResource("808 Snare.wav").toExternalForm()));
+      instrumentAudioClips.put("maraccas",
+          new AudioClip(Composer.class.getResource("Maraccas.WAV").toExternalForm()));
+      instrumentAudioClips.put("rim shot",
+          new AudioClip(Composer.class.getResource("RimShot.WAV").toExternalForm()));
+      instrumentAudioClips.put("cow bell",
+          new AudioClip(Composer.class.getResource("CowBell.WAV").toExternalForm()));
+      instrumentAudioClips.put("claves",
+          new AudioClip(Composer.class.getResource("Claves.WAV").toExternalForm()));
+      instrumentAudioClips.put("clap",
+          new AudioClip(Composer.class.getResource("Clap.WAV").toExternalForm()));
+    }
+
+
   }
 
   /**

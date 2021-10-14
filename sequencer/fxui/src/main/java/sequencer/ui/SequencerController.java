@@ -41,8 +41,6 @@ public class SequencerController {
   private Composer composer;
   private PersistenceHandler persistenceHandler;
 
-  private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
-
   @FXML
   void initialize() {
     composer = new Composer();
@@ -60,8 +58,7 @@ public class SequencerController {
   // Ratio".
   private static final double HEIGHT_OF_SIXTEENTH = WIDTH_OF_SIXTEENTH * (1 + Math.sqrt(5)) / 2;
   // The number of rows in the application, or in other words, the maximum number
-  // of instruments
-  // that can be played simultaneously.
+  // of instruments that can be played simultaneously.
   private static final int NUMBER_OF_ROWS = 5;
 
   private static final String NO_INSTRUMENT_TEXT = "ingen instrument";
@@ -76,12 +73,6 @@ public class SequencerController {
   private Button loadTrackBtn;
 
   @FXML
-  private Text trackNameLabel;
-
-  @FXML
-  private Text artistNameLabel;
-
-  @FXML
   private TextField trackName;
 
   @FXML
@@ -94,6 +85,9 @@ public class SequencerController {
   private Pane timeline;
 
   @FXML
+  private Rectangle progressBar;
+
+  @FXML
   private Pane instrumentsPattern;
 
   // The colors used as the background for the clickable sixteenth-rectangles,
@@ -104,6 +98,8 @@ public class SequencerController {
       new String[] {"1093C9", "00425E"}, // blue
       new String[] {"C9104C", "660020"} // red
   );
+
+  private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
   /**
    * Rendering all major elements, including pattern and its current configuration. Is also called
@@ -131,6 +127,11 @@ public class SequencerController {
     timeline.setLayoutX(instrumentsPattern.getLayoutX());
     timeline.setLayoutY(instrumentsPanel.getLayoutY());
 
+    progressBar.setWidth(2.5);
+    progressBar.setHeight(instrumentsPanel.getPrefHeight());
+    progressBar.setLayoutX(instrumentsPattern.getLayoutX());
+    progressBar.setLayoutY(instrumentsPanel.getLayoutY());
+
     // Using a nested loop to create the grid of rows and (col)umns:
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
       double layoutY =
@@ -152,9 +153,6 @@ public class SequencerController {
           .collect(Collectors.toList());
       availableInstruments.getItems().addAll(instrumentsNotUsed);
       availableInstruments.getItems().add(NO_INSTRUMENT_TEXT);
-      if (row < composer.getInstrumentsInTrack().size()) {
-        availableInstruments.setValue(composer.getInstrumentsInTrack().get(row));
-      }
       availableInstruments.valueProperty()
           .addListener((observable, oldValue, newValue) -> addInstrument(oldValue, newValue));
       instrumentSubPanel.getChildren().add(availableInstruments);
@@ -184,6 +182,29 @@ public class SequencerController {
     // Displaying the name of the track and the artist:
     trackName.setText(composer.getTrackName() != null ? composer.getTrackName() : "untitled");
     artistName.setText(composer.getArtistName() != null ? composer.getArtistName() : "unknown");
+
+    // Creating the vertical lines in the timeline section:
+    for (int col = 0; col < Composer.getTrackLength(); col++) {
+      for (int i = 0; i < 2; i++) {
+        Rectangle line = new Rectangle();
+        line.getStyleClass().add("line");
+        double height = i == 0 ? timeline.getPrefHeight() / 2 : timeline.getPrefHeight() / 4;
+        line.setHeight(height);
+        line.setWidth(2);
+        double extraLayoutX =
+            i == 0 ? WIDTH_OF_SIXTEENTH / 2 : 0;
+        line.setLayoutX(
+            (WIDTH_OF_SIXTEENTH / 2) * col + (WIDTH_OF_SIXTEENTH / 10) * (col + 1) + extraLayoutX);
+        line.setLayoutY(timeline.getLayoutY());
+
+        timeline.getChildren().add(line);
+
+        System.out.println(line.getLayoutX() + "," + line.getLayoutY());
+
+        line.toFront();
+      }
+    }
+
   }
 
   /**
@@ -394,9 +415,9 @@ public class SequencerController {
   public void editTrackName(KeyEvent e) {
     String newTrackName = trackName.getText();
     composer.setTrackName(newTrackName);
-    if (e.getCode() == KeyCode.ENTER) {
-      header.requestFocus();
-    }
+    // if (e.getCode() == KeyCode.ENTER) {
+    // header.requestFocus();
+    // }
   }
 
   /**
@@ -423,9 +444,11 @@ public class SequencerController {
     String toggledImageUrl;
     if (composer.isPlaying()) {
       composer.stop();
+      progressBar.setLayoutX(instrumentsPattern.getLayoutX());
       toggledImageUrl = "images/play.png";
     } else {
       composer.start();
+      // moveProgressBar();
       toggledImageUrl = "images/stop.png";
     }
     startStopBtn.setImage(new Image(getClass().getResource(toggledImageUrl).toExternalForm()));
@@ -513,6 +536,25 @@ public class SequencerController {
     ParallelTransition parallelTransition = new ParallelTransition();
     parallelTransition.getChildren().addAll(fadeTransition, translateTransition);
     parallelTransition.play();
+  }
+
+  /**
+   * Fires when the user presses the "play" button, and moves the progress bar along the track
+   * pattern.
+   */
+  public void moveProgressBar() {
+
+    TranslateTransition translateTransition =
+        new TranslateTransition(Duration.millis(1000), progressBar);
+    translateTransition.setFromX(0);
+    translateTransition.setToX(instrumentsPattern.getPrefWidth());
+    translateTransition.setCycleCount(1);
+
+    // ParallelTransition parallelTransition = new ParallelTransition();
+    // parallelTransition.getChildren().add(translateTransition);
+    translateTransition.setCycleCount(Timeline.INDEFINITE);
+    translateTransition.play();
+
   }
 
 }

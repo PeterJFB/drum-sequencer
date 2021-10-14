@@ -132,6 +132,7 @@ public class Composer {
     progressBeatTask.cancel();
     playing = false;
     progress = 0;
+    listeners.forEach(listener -> listener.run(progress));
   }
 
   /**

@@ -7,7 +7,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
-import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -93,7 +92,7 @@ public class SequencerController {
       new String[] {"1093C9", "00425E"}, // blue
       new String[] {"C9104C", "660020"} // red
   );
-  private static final String progressBorderColor = "FCBA03"; // Yellow
+  private static final String PROGRESS_BORDER_COLOR = "FCBA03"; // Yellow
 
   private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
@@ -479,7 +478,7 @@ public class SequencerController {
 
   /**
    * Sets s border around all sixteenths in a column.
-   * 
+   *
    * @param column the column to set a border around
    */
   public void addBorderToSixteenths(int column) {
@@ -488,7 +487,7 @@ public class SequencerController {
     // Set the borders of all squares in the correct column
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
       Rectangle sixteenth = (Rectangle) instrumentsPattern.lookup("#" + column + "," + row);
-      sixteenth.setStroke(Color.web(progressBorderColor));
+      sixteenth.setStroke(Color.web(PROGRESS_BORDER_COLOR));
     }
 
   }

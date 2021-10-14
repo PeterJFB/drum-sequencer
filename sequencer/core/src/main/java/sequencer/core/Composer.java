@@ -20,32 +20,28 @@ import sequencer.json.TrackMapper;
  */
 public class Composer {
 
-  private static final Map<String, AudioClip> instrumentAudioClips;
-
-  static {
-    Map<String, AudioClip> instrMap = new HashMap<>();
-    instrMap.put("kick",
-        new AudioClip(Composer.class.getResource("707 Kick.wav").toExternalForm()));
-    instrMap.put("hihat", new AudioClip(Composer.class.getResource("808 CH.wav").toExternalForm()));
-    instrMap.put("snare",
-        new AudioClip(Composer.class.getResource("808 Snare.wav").toExternalForm()));
-    instrMap.put("maraccas",
-        new AudioClip(Composer.class.getResource("Maraccas.WAV").toExternalForm()));
-    instrMap.put("rim shot",
-        new AudioClip(Composer.class.getResource("RimShot.WAV").toExternalForm()));
-    instrMap.put("cow bell",
-        new AudioClip(Composer.class.getResource("CowBell.WAV").toExternalForm()));
-    instrMap.put("claves",
-        new AudioClip(Composer.class.getResource("Claves.WAV").toExternalForm()));
-    instrMap.put("clap", new AudioClip(Composer.class.getResource("Clap.WAV").toExternalForm()));
-    instrumentAudioClips = Collections.unmodifiableMap(instrMap);
-  }
-
   private int progress; // How many sixteenths of the measure has been played
   private Timer timer;
   private TimerTask progressBeatTask;
   private boolean playing;
   private List<ComposerListener> listeners;
+  private static Map<String, String> instrumentAudioClipFileNames;
+
+  static {
+    Map<String, String> fileNameMap = new HashMap<>();
+    fileNameMap.put("kick", "707 Kick.wav");
+    fileNameMap.put("hihat", "808 CH.wav");
+    fileNameMap.put("snare", "808 Snare.wav");
+    fileNameMap.put("maraccas", "Maraccas.WAV");
+    fileNameMap.put("rim shot", "RimShot.WAV");
+    fileNameMap.put("cow bell", "CowBell.WAV");
+    fileNameMap.put("claves", "Claves.WAV");
+    fileNameMap.put("clap", "Clap.WAV");
+    instrumentAudioClipFileNames = Collections.unmodifiableMap(fileNameMap);
+
+  }
+
+  private Map<String, AudioClip> instrumentAudioClips;
 
   // Used for detecting changes in BPM, and updating the timer to
   // reflect this
@@ -60,7 +56,7 @@ public class Composer {
    * Composer constructor. Equal to Composer(true). Use this in production.
    */
   public Composer() {
-    this(true);
+    this(true, false);
   }
 
   /**
@@ -69,14 +65,21 @@ public class Composer {
    * @param createDaemonTimer If the timer should be a daemon thread. See
    *        {@linktourl https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html#setDaemon(boolean)}.
    *        If set to false, the composer will not stop when the window is closed
+   * @param testMode If testMode is set to true, the AudioClips will not be loaded
    */
-  public Composer(boolean createDaemonTimer) {
+  public Composer(boolean createDaemonTimer, boolean testMode) {
     progress = 0;
     timer = new Timer(createDaemonTimer);
     playing = false;
     listeners = new ArrayList<>();
     currentTrack = new Track();
     trackMapper = new TrackMapper();
+    instrumentAudioClips = new HashMap<>();
+
+    instrumentAudioClipFileNames.keySet().stream().filter(instrument -> !testMode)
+        .forEach(instrument -> instrumentAudioClips.put(instrument, new AudioClip(Composer.class
+            .getResource(instrumentAudioClipFileNames.get(instrument)).toExternalForm())));
+
   }
 
   /**
@@ -86,7 +89,7 @@ public class Composer {
    *         instrumentAudioClips
    */
   public Collection<String> getAvailableInstruments() {
-    return new ArrayList<>(instrumentAudioClips.keySet());
+    return new ArrayList<>(instrumentAudioClipFileNames.keySet());
   }
 
   private void setTrack(Track track) {
@@ -108,10 +111,6 @@ public class Composer {
    * @throws IllegalStateException if Composer has no track to play
    */
   public void start() {
-    if (currentTrack == null) {
-      throw new IllegalStateException("Cannot start when track is not set");
-    }
-
     if (playing) {
       stop();
     }
@@ -156,11 +155,11 @@ public class Composer {
       start();
       return;
     }
-    currentTrack.getInstruments().stream().filter(instrument -> {
-      return currentTrack.getPattern(instrument).get(progress);
-    }).forEach(instrument -> {
-      instrumentAudioClips.get(instrument).play();
-    });
+    currentTrack.getInstruments().stream()
+        .filter(instrument -> currentTrack.getPattern(instrument).get(progress))
+        .forEach(instrument -> {
+          instrumentAudioClips.get(instrument).play();
+        });
 
     // Fire events
     listeners.forEach(listener -> listener.run(progress));

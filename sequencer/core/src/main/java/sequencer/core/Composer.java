@@ -24,7 +24,7 @@ public class Composer {
   private Timer timer;
   private TimerTask progressBeatTask;
   private boolean playing;
-  private List<ComposerListener> listeners;
+  private Collection<ComposerListener> listeners;
   private static Map<String, String> instrumentAudioClipFileNames;
 
   static {

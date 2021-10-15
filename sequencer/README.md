@@ -4,15 +4,15 @@ Drum sequencer is an application which lets users quickly create, edit
 
 ## Project overview
 
-Project is currently divided into three *layers*, each represented as different modules:
+Project is currently in a monolithic architecture, divided into three *layers*. Each layer is represented by the following modules:
 
-#### *application-layer* : fxui
+#### *presentation-layer* : fxui
 
-Essential module responsible for rendering all graphics within the application. The module is using `javafx` to render in a window, and delegating all logic to the **core** and **localpersistence** modules.
+Essential module responsible for rendering all graphics within the application. The module is using `javafx` to render in a window, and delegating all logic to the **core** module, and storage to the **localpersistence** module.
 
 ---
 
-#### *domain-layer* : core
+#### *application-layer* : core
 
 Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all important class-info can be serialized to a json-format through the `jackson` dependency.
 
@@ -24,42 +24,7 @@ Detachable module which is handling local storage of classes. The modu
 
 ---
 
-```plantuml
-skinparam BackgroundColor transparent
-skinparam ComponentFontStyle bold
-skinparam PackageFontStyle plain
-
-component fxui {
- package sequencer.ui {
- }
-}
-component core {
-    package sequencer.core {}
-    package sequencer.json {}
-}
-component localpersistence {
-    package sequencer.persistence {}
-}
-
-component javafx {
-}
-component fxml {
-}
-component "javafx-media" {
-}
-component jackson {
-}
-
-fxui ...> javafx
-fxui ...> fxml
-
-core ...> "javafx-media"
-core ...> jackson
-
-sequencer.ui ...> sequencer.core
-sequencer.ui ...> sequencer.persistence
-sequencer.ui ...> sequencer.json
-```
+![project overview as a diagram](./../docs/release2/project-overview.png)
 
 ## File format for Tracks
 
@@ -77,8 +42,6 @@ The Track-files follow JSON-formatting. The following is an example of a file:
 ```
 
 The root contains three nodes, "`name`", "`artist`" and "`instruments`". The "`name`" and "`artist`" nodes are text nodes containing the name of the song and the artist. The "`instruments`" node is an object node, where the key of each node is an instrument and the value is a boolean list describing which sixteenths they are playing on.
-
-
 
 ## Test-classes
 

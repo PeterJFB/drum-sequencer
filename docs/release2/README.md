@@ -10,6 +10,63 @@ Moving into the second release, we decided to make it easer to se the the stable
 Below is a graph from [bitbucket](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) showing an example of our workflow:
 <img src="https://wac-cdn.atlassian.com/dam/jcr:34c86360-8dea-4be4-92f7-6597d4d5bfae/02%20Feature%20branches.svg?cdnVersion=1826" width=800></img>
 
+## Project overview
+
+Project overview was already elaborated in the first release, as a result of discussions with our TA. Minor adjustments were made, as these terms did not perfectly reflect the technical terms we later learned in IT1901:
+
+- _application_ -> _presentation_
+- _domain_ -> _application_
+
+The following renaming is purely a linguistic change, as it has not changed the relation between these modules.
+
+We have also explicitly stated we use a monolithic architechure, as the entire project is structured in a single tier. We expect this to change in later releases.
+
+The diagram of essential modules has received a few modifications. This was a result of more comprehensive encapsulation of the core-module, making our diagrams better resemble the three layers described in our projects readme:
+
+![project overview as a diagram](./project-overview.png)
+
+<!--
+```plantuml
+skinparam BackgroundColor transparent
+skinparam ComponentFontStyle bold
+skinparam PackageFontStyle plain
+
+component fxui {
+ package sequencer.ui {
+ }
+}
+component core {
+    package sequencer.core {}
+    package sequencer.json {}
+}
+component localpersistence {
+    package sequencer.persistence {}
+}
+
+component javafx {
+}
+component fxml {
+}
+component "javafx-media" {
+}
+component jackson {
+}
+
+
+sequencer.ui ...> sequencer.core
+sequencer.core .right.> sequencer.json
+sequencer.json ...> sequencer.persistence
+
+fxui .left.> javafx
+fxui .left.> fxml
+
+
+core .right.> "javafx-media"
+core .right.> jackson
+```
+
+-->
+
 ## Code quality
 
 ### Jacoco

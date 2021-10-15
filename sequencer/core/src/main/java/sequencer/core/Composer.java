@@ -291,7 +291,7 @@ public class Composer {
 
   /**
    * Saves the current track.
-   * 
+   *
    * @param writer the writer that writes the track
    */
   public void saveTrack(Writer writer) throws IOException {

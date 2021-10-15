@@ -179,26 +179,6 @@ public class SequencerController {
         : "untitled" + amountOfSavedTracks);
     artistName.setText(composer.getArtistName() != null ? composer.getArtistName() : "unknown");
 
-    // Creating the vertical lines in the timeline section:
-    for (int col = 0; col < Composer.getTrackLength(); col++) {
-      for (int i = 0; i < 2; i++) {
-        Rectangle line = new Rectangle();
-        line.getStyleClass().add("line");
-        double height = i == 0 ? timeline.getPrefHeight() / 2 : timeline.getPrefHeight() / 4;
-        line.setHeight(height);
-        line.setWidth(2);
-        double extraLayoutX = i == 0 ? WIDTH_OF_SIXTEENTH / 2 : 0;
-        line.setLayoutX(
-            (WIDTH_OF_SIXTEENTH / 2) * col + (WIDTH_OF_SIXTEENTH / 10) * (col + 1) + extraLayoutX);
-        line.setLayoutY(timeline.getLayoutY());
-
-        timeline.getChildren().add(line);
-
-
-        line.toFront();
-      }
-    }
-
   }
 
   /**

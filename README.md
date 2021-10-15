@@ -82,6 +82,7 @@ $ mvn verify # Perform all tests and store test coverage.
 # Results are now visible in sequencer/report/target/site/jacoco-aggregate/index.html
 ```
 
+> Test coverage is reported as very low (~40%) in gitlab. This is because we skip testing the UI during CI. To get accurate coverage, run Jacoco locally.
 ### Spotbugs
 
 [Spotbugs](https://spotbugs.github.io/) will look for java-related bugs in the projects code, and also enforce good OOP practices. These are checked by running `mvn spotbugs:check`.

@@ -113,7 +113,7 @@ public class PersistenceHandler {
     filename = trimFiletype(filename);
 
     // Create dircetory if it does not exist
-    if (!getSaveDirectoryPath().toFile().exists() && getSaveDirectoryPath().toFile().mkdirs()) {
+    if (!getSaveDirectoryPath().toFile().exists() && !getSaveDirectoryPath().toFile().mkdirs()) {
       throw new IOException("Program was unable to write to the given file.");
     }
 

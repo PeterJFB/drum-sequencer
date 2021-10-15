@@ -11,7 +11,6 @@ import java.util.TimerTask;
 import java.util.stream.Collectors;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
-import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -41,15 +40,17 @@ public class SequencerController {
   private Composer composer;
   private PersistenceHandler persistenceHandler;
 
-  private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
-
   @FXML
   void initialize() {
     composer = new Composer();
+    composer.addListener(progress -> {
+      Platform.runLater(() -> addBorderToSixteenths(progress));
+    });
     persistenceHandler =
         new PersistenceHandler("drum-sequencer-persistence", Composer.getSerializationFormat());
 
     createElements();
+    addBorderToSixteenths(0);
   }
 
   // By utilizing a constant throughout the code, the sizes and layout locations
@@ -60,8 +61,7 @@ public class SequencerController {
   // Ratio".
   private static final double HEIGHT_OF_SIXTEENTH = WIDTH_OF_SIXTEENTH * (1 + Math.sqrt(5)) / 2;
   // The number of rows in the application, or in other words, the maximum number
-  // of instruments
-  // that can be played simultaneously.
+  // of instruments that can be played simultaneously.
   private static final int NUMBER_OF_ROWS = 5;
 
   private static final String NO_INSTRUMENT_TEXT = "ingen instrument";
@@ -74,12 +74,6 @@ public class SequencerController {
 
   @FXML
   private Button loadTrackBtn;
-
-  @FXML
-  private Text trackNameLabel;
-
-  @FXML
-  private Text artistNameLabel;
 
   @FXML
   private TextField trackName;
@@ -104,6 +98,9 @@ public class SequencerController {
       new String[] {"1093C9", "00425E"}, // blue
       new String[] {"C9104C", "660020"} // red
   );
+  private static final String PROGRESS_BORDER_COLOR = "FCBA03"; // Yellow
+
+  private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
   /**
    * Rendering all major elements, including pattern and its current configuration. Is also called
@@ -152,9 +149,6 @@ public class SequencerController {
           .collect(Collectors.toList());
       availableInstruments.getItems().addAll(instrumentsNotUsed);
       availableInstruments.getItems().add(NO_INSTRUMENT_TEXT);
-      if (row < composer.getInstrumentsInTrack().size()) {
-        availableInstruments.setValue(composer.getInstrumentsInTrack().get(row));
-      }
       availableInstruments.valueProperty()
           .addListener((observable, oldValue, newValue) -> addInstrument(oldValue, newValue));
       instrumentSubPanel.getChildren().add(availableInstruments);
@@ -184,6 +178,7 @@ public class SequencerController {
     // Displaying the name of the track and the artist:
     trackName.setText(composer.getTrackName() != null ? composer.getTrackName() : "untitled");
     artistName.setText(composer.getArtistName() != null ? composer.getArtistName() : "unknown");
+
   }
 
   /**
@@ -394,9 +389,9 @@ public class SequencerController {
   public void editTrackName(KeyEvent e) {
     String newTrackName = trackName.getText();
     composer.setTrackName(newTrackName);
-    if (e.getCode() == KeyCode.ENTER) {
-      header.requestFocus();
-    }
+    // if (e.getCode() == KeyCode.ENTER) {
+    // header.requestFocus();
+    // }
   }
 
   /**
@@ -513,6 +508,22 @@ public class SequencerController {
     ParallelTransition parallelTransition = new ParallelTransition();
     parallelTransition.getChildren().addAll(fadeTransition, translateTransition);
     parallelTransition.play();
+  }
+
+  /**
+   * Sets s border around all sixteenths in a column.
+   *
+   * @param column the column to set a border around
+   */
+  public void addBorderToSixteenths(int column) {
+    // Remove all borders
+    instrumentsPattern.getChildren().forEach(sixteenth -> ((Rectangle) sixteenth).setStroke(null));
+    // Set the borders of all squares in the correct column
+    for (int row = 0; row < NUMBER_OF_ROWS; row++) {
+      Rectangle sixteenth = (Rectangle) instrumentsPattern.lookup("#" + column + "," + row);
+      sixteenth.setStroke(Color.web(PROGRESS_BORDER_COLOR));
+    }
+
   }
 
 }

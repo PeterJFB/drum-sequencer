@@ -10,7 +10,8 @@
         cursor: hand;
 }
 
-#savedTracksChoiceBox, #loadTrackBtn {
+#loadTrackBtn,
+#savedTracksChoiceBox {
     -fx-font-size: 25px;
         font-size: 25px;
     -fx-cursor: hand;
@@ -90,6 +91,11 @@
         border-color: #373737;
 }
 
+.availableInstrumentsChoiceBox {
+    -fx-cursor: hand;
+        cursor: hand;
+} 
+
 #savedTracksChoiceBox .label,
 .availableInstrumentsChoiceBox .label {
     -fx-text-fill: white;
@@ -121,6 +127,11 @@
 #timeline {
     -fx-background-color: #D9CFFE;
         background-color: #D9CFFE;
+}
+
+#progressBar {
+    -fx-fill: white;
+        fill: white;
 }
 
 #instrumentsPattern {

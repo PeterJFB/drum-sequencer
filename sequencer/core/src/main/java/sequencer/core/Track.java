@@ -97,7 +97,7 @@ public class Track {
    * Adds another instrument to instruments with given values.
    *
    * @param instrument name of the new instrument
-   * @param pattern the pattern to apply with the instrument *
+   * @param pattern the pattern to apply with the instrument
    * @throws IllegalArgumentException if the given pattern is null or has an illegal length
    * 
    */

@@ -15,7 +15,7 @@ import javafx.scene.media.AudioClip;
 import sequencer.json.TrackMapper;
 
 /**
- * The {@link Composer} class handles the playback of a given track, keeping track of and ensuring
+ * The {@link Composer} class handles the playback of a given track, mutating the track and ensuring
  * each sound is played at the correct sixteenth beat.
  */
 public class Composer {
@@ -47,13 +47,12 @@ public class Composer {
   // reflect this
   private int lastCheckedBpm;
 
-  // Objects for saving and loading tracks
   private TrackMapper trackMapper;
 
   private Track currentTrack;
 
   /**
-   * Composer constructor. Equal to Composer(true). Use this in production.
+   * Composer constructor. Equal to Composer(true, false). Use this in production.
    */
   public Composer() {
     this(true, false);
@@ -107,8 +106,6 @@ public class Composer {
   /**
    * Sets up a scheduled timer task to fire progressBeat(), where the time between sixteenths is
    * calculated in millisecondsBetweenSixteenths().
-   *
-   * @throws IllegalStateException if Composer has no track to play
    */
   public void start() {
     if (playing) {
@@ -145,9 +142,6 @@ public class Composer {
 
   /**
    * Runs every sixteenth. Plays everything that is set for the current sixteenth
-   *
-   * @throws IllegalArgumentException if currentTrack is the wrong length or contains unknown
-   *         instruments
    */
   private void progressBeat() {
     // Restarts timer if BPM has changed
@@ -250,7 +244,7 @@ public class Composer {
   }
 
   /**
-   * Adds an instrument to the current track.
+   * Adds an instrument to the current track with a given pattern.
    *
    * @param instrument the instrument to add
    * @param pattern the pattern of the instrument
@@ -297,6 +291,8 @@ public class Composer {
 
   /**
    * Saves the current track.
+   *
+   * @param writer the writer that writes the track
    */
   public void saveTrack(Writer writer) throws IOException {
     trackMapper.writeTrack(currentTrack, writer);

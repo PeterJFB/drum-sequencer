@@ -129,11 +129,6 @@
         background-color: #D9CFFE;
 }
 
-.line {
-    -fx-fill: #785EDF;
-        fill: #785EDF;
-}
-
 #progressBar {
     -fx-fill: white;
         fill: white;

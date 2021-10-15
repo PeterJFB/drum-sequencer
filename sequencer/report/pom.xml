@@ -21,7 +21,7 @@
         <dependency>
             <groupId>it1901.sequencer</groupId>
             <artifactId>fxui</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>

@@ -6,7 +6,7 @@
     <parent>
         <groupId>it1901.sequencer</groupId>
         <artifactId>parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>report</artifactId>
@@ -15,13 +15,13 @@
         <dependency>
             <groupId>it1901.sequencer</groupId>
             <artifactId>core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>it1901.sequencer</groupId>
             <artifactId>localpersistence</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>

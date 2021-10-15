@@ -6,6 +6,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * Main-class to intialize the application.
+ */
 public class SequencerApp extends Application {
 
   @Override

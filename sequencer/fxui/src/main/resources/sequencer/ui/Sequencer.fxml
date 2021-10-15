@@ -1,41 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.TextField?>
 
-
-<VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sequencer.ui.SequencerController">
+<VBox fx:id="root" stylesheets="@style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sequencer.ui.SequencerController">
     <AnchorPane>
-        <GridPane fx:id="header">
-            <ImageView fx:id="saveTrackBtn" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="LEFT" onMouseClicked="#saveTrack">
-                <image>
-                    <Image url="@images/save.png" />
-                </image>
-            </ImageView>
+        <GridPane fx:id="header" alignment="TOP_CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            
+            <StackPane fx:id="saveTrackBtn" onMouseClicked="#saveTrack" GridPane.columnIndex="0">
+                <ImageView>
+                    <image>
+                        <Image url="@images/save.png" />
+                    </image>
+                </ImageView>
+            </StackPane>
 
-            <Text fx:id="loadTrackText" GridPane.columnIndex="0" GridPane.rowIndex="1" onMouseClicked="#loadTrack">Load</Text>
+            <GridPane fx:id="loadTracks" GridPane.columnIndex="1">
+                <ChoiceBox fx:id="savedTracksChoiceBox" onAction="#toggleLoadBtn" value="-- Choose a track --" GridPane.columnIndex="0" />
+                <Button fx:id="loadTrackBtn" disable="true" onMouseClicked="#loadTrack" text="Load" GridPane.columnIndex="1" />
+                <columnConstraints>
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints vgrow="ALWAYS" />
+                </rowConstraints>
+            </GridPane>
+            
+            <GridPane fx:id="trackNamePane" GridPane.columnIndex="2">
+                <Text fx:id="trackNameLabel" text="TRACK NAME" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
+                <TextField fx:id="trackName" onKeyTyped="#editTrackName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints vgrow="ALWAYS" />
+                    <RowConstraints vgrow="ALWAYS" />
+                </rowConstraints>
+            </GridPane>
 
-            <Text fx:id="trackNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
-            <TextField fx:id="trackName" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyPressed="#editTrackName" />
-            <Text fx:id="artistNameLabel" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.halignment="CENTER" />
-            <TextField fx:id="artistName" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.halignment="CENTER" onKeyPressed="#editArtistName" />
+            <GridPane fx:id="artistNamePane" GridPane.columnIndex="3">
+                <Text fx:id="artistNameLabel" text="ARTIST NAME" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
+                <TextField fx:id="artistName" onKeyTyped="#editArtistName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints vgrow="ALWAYS" />
+                    <RowConstraints vgrow="ALWAYS" />
+                </rowConstraints>
+            </GridPane>
+            
+            <StackPane GridPane.columnIndex="4">
+                <ImageView fx:id="startStopBtn" onMouseClicked="#togglePlayingTrack">
+                    <image>
+                        <Image url="@images/play.png" />
+                    </image>
+                </ImageView>
+            </StackPane>
 
-            <ImageView fx:id="startStopBtn" GridPane.columnIndex="5" GridPane.rowIndex="0" GridPane.halignment="RIGHT" onMouseClicked="#togglePlayingTrack">
-                <image>
-                    <Image url="@images/play.png" />
-                </image>
-            </ImageView>
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" />
+                <ColumnConstraints hgrow="ALWAYS" />
+                <ColumnConstraints hgrow="ALWAYS" />
+                <ColumnConstraints hgrow="ALWAYS" />
+                <ColumnConstraints hgrow="ALWAYS" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="ALWAYS" />
+            </rowConstraints>
 
         </GridPane>
+        
         <Pane fx:id="instrumentsPanel" />
+
         <Pane fx:id="timeline" />
+
         <Pane fx:id="instrumentsPattern" />
+
+        <Rectangle fx:id="progressBar" />
+
+        <StackPane fx:id="statusMsg">
+            <Rectangle fx:id="statusMsgBackground" />
+
+            <GridPane fx:id="statusMsgContent" alignment="CENTER">
+
+                <ImageView fx:id="statusMsgIcon" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS">
+                    <image>
+                        <Image url="@#" />
+                    </image>
+                </ImageView>
+                <Text fx:id="statusMsgText" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" />
+                
+                <columnConstraints>
+                    <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+                    <ColumnConstraints halignment="CENTER" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints vgrow="ALWAYS" />
+                </rowConstraints>
+
+            </GridPane>
+        </StackPane>
+
+
+
+
     </AnchorPane>
 </VBox>

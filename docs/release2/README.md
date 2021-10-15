@@ -1,0 +1,107 @@
+# Drum sequencer release 2
+
+## Changes in git workflow
+
+Moving into the second release, we decided to make it easer to se the the stable versions of our application. We were inspired by the [gitflow workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow), an expansion of the trunk-based developement which separates features, releases and developement into separate branches. This transition was easy to make, as we already were familiar and used a lot of the branching methods described in this document. The following branches were used:
+
+- [main branch](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/) contains the latest release, and is only updated by the latter branch. This branch was previously named master. Both are well-recognized standards, and we chose main as it was a simple change, yet significant in regards to the latest shift.
+- [develop branch](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/tree/develop) contains the non-released features. All features will be branched from and merged with this branch.
+
+Below is a graph from [bitbucket](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) showing an example of our workflow:
+<img src="https://wac-cdn.atlassian.com/dam/jcr:34c86360-8dea-4be4-92f7-6597d4d5bfae/02%20Feature%20branches.svg?cdnVersion=1826" width=800></img>
+
+## Project overview
+
+Project overview was already elaborated in the first release, as a result of discussions with our TA. Minor adjustments were made, as these terms did not perfectly reflect the technical terms we later learned in IT1901:
+
+- _application_ -> _presentation_
+- _domain_ -> _application_
+
+The following renaming is purely a linguistic change, as it has not changed the relation between these modules.
+
+We have also explicitly stated we use a monolithic architechure, as the entire project is structured in a single tier. We expect this to change in later releases.
+
+The diagram of essential modules has received a few modifications. This was a result of more comprehensive encapsulation of the core-module, making our diagrams better resemble the three layers described in our projects readme:
+
+![project overview as a diagram](./project-overview.png)
+
+<!--
+```plantuml
+skinparam BackgroundColor transparent
+skinparam ComponentFontStyle bold
+skinparam PackageFontStyle plain
+
+component fxui {
+ package sequencer.ui {
+ }
+}
+component core {
+    package sequencer.core {}
+    package sequencer.json {}
+}
+component localpersistence {
+    package sequencer.persistence {}
+}
+
+component javafx {
+}
+component fxml {
+}
+component "javafx-media" {
+}
+component jackson {
+}
+
+
+sequencer.ui ...> sequencer.core
+sequencer.core .right.> sequencer.json
+sequencer.json ...> sequencer.persistence
+
+fxui .left.> javafx
+fxui .left.> fxml
+
+
+core .right.> "javafx-media"
+core .right.> jackson
+```
+
+-->
+
+## Code quality
+
+### Jacoco
+
+[Jacoco](https://www.eclemma.org/jacoco/) allowed us to see a detailed schema of current test coverage, and has proven uselful to show where to write more tests.
+
+### Spotbugs
+
+[Spotbugs](https://spotbugs.github.io/) had a small, but essential influence on our project. It revealed a few minor bugs throughout the project, while also enforcing good OOP practices. Many of these practices were already familiar, which made its implementation quite swift.
+
+### Checkstyle
+
+[Checkstyle](https://checkstyle.sourceforge.io/) was implemented to ensure equal readability throughout the java-project.
+The current implementation is checking with the format described in the [google style guide](https://checkstyle.sourceforge.io/styleguides/google-java-style-20180523/javaguide.html), though the styleguide may be adjusted later to better suit our project.
+
+## Conceptual model
+
+### Moving from conductor to composer
+
+Previously, the conductor recieved a Track to play with a `setTrack()`-method. It validated the track at this point and could later play the track. The problem with this implementation was that the track could be mutated after it had been set in the conductor. To fix this problem with encapsulation, we now mutate the track exclusively with the composer. This will secure that the Track will never be mutated without the composer validating the change.
+
+An example of how we would create a new track before:
+
+```java
+Track exampleTrack = new Track();
+Conductor exampleConductor = new Conductor();
+exampleConductor.setTrack(exampleTrack);
+exampleTrack.setName("Example name");
+exampleTrack.setArtist("Example artist");
+```
+
+And after the move to composer:
+
+```java
+Composer exampleComposer = new Composer();
+exampleComposer.setTrackName("Example name");
+exampleComposer.setArtistName("Example artist");
+```

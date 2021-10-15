@@ -1,0 +1,40 @@
+variables:
+  SKIP_UI_TESTS: -Dtest=!SequencerControllerTest -DfailIfNoTests=false
+
+image: maven:3-openjdk-16
+before_script:
+  - cd sequencer
+
+stages:
+  - build
+  - test
+  - verify
+
+build:
+  stage: build
+  script:
+    - mvn compile
+
+test:
+  stage: test
+  script:
+    - mvn test $SKIP_UI_TESTS
+
+checkstyle:
+  stage: verify
+  script:
+    - mvn install $SKIP_UI_TESTS
+    - mvn checkstyle:check
+
+spotbugs:
+  stage: verify
+  script:
+    - mvn install $SKIP_UI_TESTS
+    - mvn spotbugs:check
+
+jacoco:
+  stage: verify
+  script:
+    - mvn verify $SKIP_UI_TESTS
+    - cat report/target/site/jacoco-aggregate/index.html | grep -o 'Total[^%]*%' | sed -e 's/Total/Jacoco-Test-Coverage:/g'
+  coverage: '/Jacoco-Test-Coverage[^%]+[>](\d+.?\d*)%/'

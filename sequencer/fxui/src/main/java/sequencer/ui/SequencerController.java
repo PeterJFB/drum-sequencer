@@ -1,6 +1,8 @@
 package sequencer.ui;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -347,7 +349,9 @@ public class SequencerController {
         displayStatusMsg("Track name " + composer.getTrackName() + " is already taken", false);
         return;
       }
-      composer.saveTrack(persistenceHandler.getWriterToFile(composer.getTrackName()));
+      Writer writer = persistenceHandler.getWriterToFile(composer.getTrackName());
+      composer.saveTrack(writer);
+      writer.close();
       savedTracksChoiceBox.getItems().add(composer.getTrackName());
       displayStatusMsg("Track saved.", true);
     } catch (IllegalArgumentException e) {
@@ -372,7 +376,9 @@ public class SequencerController {
   public void loadTrack() {
     try {
       String trackName = savedTracksChoiceBox.getValue();
-      composer.loadTrack(persistenceHandler.getReaderFromFile(trackName));
+      Reader reader = persistenceHandler.getReaderFromFile(trackName);
+      composer.loadTrack(reader);
+      reader.close();
       Platform.runLater(this::updateElements);
       displayStatusMsg(composer.getTrackName() + " loaded.", true);
     } catch (Exception e) {

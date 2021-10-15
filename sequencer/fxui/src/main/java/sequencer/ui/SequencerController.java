@@ -443,7 +443,7 @@ public class SequencerController {
 
   /**
    * Displaying a status message to the user, regarding either success (e.g. track being saved) or
-   * fail (e.g.: fai lure to load track).
+   * fail (e.g.: failure to load track).
    *
    * @param msg the message to be displayed
    * @param success indicates whether the message is a success or not (fail). This is utilized to
@@ -511,7 +511,7 @@ public class SequencerController {
   }
 
   /**
-   * Sets s border around all sixteenths in a column.
+   * Sets a border around all sixteenths in a column.
    *
    * @param column the column to set a border around
    */

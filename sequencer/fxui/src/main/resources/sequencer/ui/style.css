@@ -66,12 +66,6 @@
         border-color: white;
 }
 
-/* This does not work optimally, as the user cannot unfocus */
-/* #trackName:focused, #artistName:focused {
-    -fx-border-color: #CA7C10;
-        border-color: #CA7C10;
-} */
-
 #startStopBtn {
     -fx-cursor: hand;
         cursor: hand;

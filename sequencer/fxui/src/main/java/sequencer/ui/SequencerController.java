@@ -274,8 +274,7 @@ public class SequencerController {
     // Only runs the if when the new instrument isn't already in track and is not empty
     // If so, the method is called because a new track is loaded, not because the user added an
     // instrument, and nothing is to be done.
-    if (!composer.getInstrumentsInTrack().contains(newInstrument)
-        && !newInstrument.isBlank() && newInstrument != null) {
+    if (!composer.getInstrumentsInTrack().contains(newInstrument) && !newInstrument.isBlank()) {
       if (newInstrument.equals(NO_INSTRUMENT_TEXT)
           && (oldInstrument == null || oldInstrument.isBlank())) {
         // If the new instrument is NO_INSTRUMENT_TEXT and the old is empty, nothing is done
@@ -490,8 +489,7 @@ public class SequencerController {
    *        to leave
    */
   private void playStatusMsgTransition(boolean enter) {
-    FadeTransition fadeTransition =
-        new FadeTransition(Duration.millis(1400), statusMsg);
+    FadeTransition fadeTransition = new FadeTransition(Duration.millis(1400), statusMsg);
     int duration = enter ? 1400 : 4000;
     TranslateTransition translateTransition =
         new TranslateTransition(Duration.millis(duration), statusMsg);

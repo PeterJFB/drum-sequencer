@@ -12,7 +12,7 @@ Below is a graph from [bitbucket](https://www.atlassian.com/git/tutorials/compar
 
 ## Project overview
 
-Project overview was already elaborated in the first release, as a result of discussions with our TA. Minor adjustments was made, as these terms did not perfectly reflect the technical terms we later learned in it1901:
+Project overview was already elaborated in the first release, as a result of discussions with our TA. Minor adjustments were made, as these terms did not perfectly reflect the technical terms we later learned in IT1901:
 
 - _application_ -> _presentation_
 - _domain_ -> _application_

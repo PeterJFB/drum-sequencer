@@ -50,7 +50,7 @@ public class Composer {
   // reflect this
   private int lastCheckedBpm;
 
-  private TrackMapper trackMapper;
+  private TrackMapperInterface trackMapper;
 
   private Track currentTrack;
 
@@ -85,7 +85,6 @@ public class Composer {
     playing = false;
     listeners = new ArrayList<>();
     currentTrack = new Track();
-    trackMapper = new TrackMapper();
     instrumentAudioClips = new HashMap<>();
 
     try (BufferedReader instrumentReader = new BufferedReader(
@@ -107,7 +106,12 @@ public class Composer {
 
   }
 
-
+  /**
+   * Set Track Mapper for writing an reading tracks.
+   */
+  public void setTrackMapper(TrackMapperInterface newTrackMapper) {
+    trackMapper = newTrackMapper;
+  }
 
   /**
    * Looks through avaliable audio clips and returns them.
@@ -183,12 +187,10 @@ public class Composer {
         .forEach(instrument -> {
           instrumentAudioClips.get(instrument).play();
         });
-
-    // Fire events
-    listeners.forEach(listener -> listener.run(progress));
-
     progress++;
     progress = progress % Track.TRACK_LENGTH;
+    // Fire events
+    listeners.forEach(listener -> listener.run(progress));
   }
 
   /**
@@ -322,6 +324,7 @@ public class Composer {
    * Saves the current track.
    *
    * @param writer the writer that writes the track
+   * @throws IOException if the writing fails
    */
   public void saveTrack(Writer writer) throws IOException {
     trackMapper.writeTrack(currentTrack, writer);
@@ -331,6 +334,7 @@ public class Composer {
    * Loads a track.
    *
    * @param reader the reader of the track to load
+   * @throws IOException if the reading fails
    */
   public void loadTrack(Reader reader) throws IOException {
     Track newTrack = null;

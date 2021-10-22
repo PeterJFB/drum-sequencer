@@ -30,6 +30,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sequencer.core.Composer;
+import sequencer.json.TrackMapper;
 import sequencer.persistence.PersistenceHandler;
 
 /**
@@ -43,6 +44,7 @@ public class SequencerController {
   @FXML
   void initialize() {
     composer = new Composer();
+    composer.setTrackMapper(new TrackMapper());
     composer.addListener(progress -> {
       Platform.runLater(() -> addBorderToSixteenths(progress));
     });

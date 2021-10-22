@@ -55,6 +55,16 @@ public class Composer {
   private Track currentTrack;
 
   /**
+   * Factory function that creates a composer that does not load audio files, nor stops the when the
+   * user thread is stopped. Use this only for testing.
+   *
+   * @return a new composer for testing
+   */
+  public static Composer createTestComposer() {
+    return new Composer(false, true);
+  }
+
+  /**
    * Composer constructor. Equal to Composer(true, false). Use this in production.
    */
   public Composer() {
@@ -69,7 +79,7 @@ public class Composer {
    *        If set to false, the composer will not stop when the window is closed
    * @param testMode If testMode is set to true, the AudioClips will not be loaded
    */
-  public Composer(boolean createDaemonTimer, boolean testMode) {
+  private Composer(boolean createDaemonTimer, boolean testMode) {
     progress = 0;
     timer = new Timer(createDaemonTimer);
     playing = false;
@@ -96,6 +106,8 @@ public class Composer {
     // .getResource(instrumentAudioClipFileNames.get(instrument)).toExternalForm())));
 
   }
+
+
 
   /**
    * Looks through avaliable audio clips and returns them.

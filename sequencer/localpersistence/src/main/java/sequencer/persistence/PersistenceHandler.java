@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 /**
  * the {@code PersistenceHandler} class is tailored to save and load local files from a given
@@ -26,12 +26,11 @@ public class PersistenceHandler {
   private String acceptedFiletype;
   private FilenameFilter filenameFilter;
 
-  // CHECKSTYLE:OFF
   /**
    * Initialize the class with a name of the directory which will store the files, and the filetype
    * which will be used.
    *
-   * @param saveDirectory the relative path which will used to store the files
+   * @param saveDirectory the relative path from $HOME which will used to store the files
    * @param acceptedFiletype the {@code filetype}, which will be trailing the . after
    *        {@code filename}
    * @throws IllegalArgumentException if {@code acceptedFileType} is null, blank or only contains
@@ -59,7 +58,7 @@ public class PersistenceHandler {
   /**
    * Change the name of the save directory.
    *
-   * @param saveDirectory the relative path which will used to store the files
+   * @param saveDirectory the relative path from $HOME which will used to store the files
    * @throws IllegalArgumentException if saveDirectory is empty or blank
    * @throws InvalidPathException if path is invalid given by {@code Path.of()}
    */
@@ -101,16 +100,28 @@ public class PersistenceHandler {
   // Persistence-methods
 
   /**
+   * Write to file with the given consumer.
+   *
+   * @param filename the {@code filename}, not including the {@code filetype}, which is set with
+   *        {@code setAcceptedFiletype()}
+   * @param consumer the {@code consumer} which can write the given file
+   */
+  public void writeToFile(String filename, Consumer<Writer> consumer) throws IOException {
+    try (Writer writer = getWriterToFile(filename)) {
+      consumer.accept(writer);
+    }
+  }
+
+  /**
    * Gets the Writer which will write to a file with the given filename.
    *
    * @param filename the {@code filename}, not including the {@code filetype}, which is set with
    *        {@code setAcceptedFiletype()}
    * @throws IllegalArgumentException if filename is null, blank or only contains filetype
    */
-  public Writer getWriterToFile(String filename) throws IOException {
+  protected Writer getWriterToFile(String filename) throws IOException {
 
     validateFilename(filename);
-    filename = trimFiletype(filename);
 
     // Create dircetory if it does not exist
     if (!getSaveDirectoryPath().toFile().exists() && !getSaveDirectoryPath().toFile().mkdirs()) {
@@ -126,6 +137,20 @@ public class PersistenceHandler {
     return writer;
   }
 
+
+  /**
+   * Read contents of file with the given consumer.
+   *
+   * @param filename the {@code filename}, not including the {@code filetype}, which is set with
+   *        {@code setAcceptedFiletype()}
+   * @param consumer the {@code consumer} which can read contents the given file
+   */
+  public void readFromFile(String filename, Consumer<Reader> consumer) throws IOException {
+    try (Reader reader = getReaderFromFile(filename)) {
+      consumer.accept(reader);
+    }
+  }
+
   /**
    * Gets the Reader which can be used to read contents of the file.
    *
@@ -135,7 +160,7 @@ public class PersistenceHandler {
    *         name
    * @throws FileNotFoundException if no file exists with it the give filename
    */
-  public Reader getReaderFromFile(String filename) throws IOException {
+  protected Reader getReaderFromFile(String filename) throws IOException {
 
     validateFilename(filename);
 
@@ -143,8 +168,6 @@ public class PersistenceHandler {
       throw new FileNotFoundException("filename %s is not in the directory. avaliable files are %s"
           .formatted(filename, listFilenames()));
     }
-
-    filename = trimFiletype(filename);
 
     Reader reader =
         new FileReader(
@@ -166,8 +189,8 @@ public class PersistenceHandler {
     }
 
     return Arrays.stream(saveDirectoryPath.toFile().list(filenameFilter)).map((name) -> {
-      return name.substring(0, name.indexOf("." + acceptedFiletype));
-    }).collect(Collectors.toList());
+      return name.substring(0, name.length() - getAcceptedFiletype().length() - 1);
+    }).toList();
   }
 
   /**
@@ -180,27 +203,11 @@ public class PersistenceHandler {
   public boolean isFileInDirectory(String filename) {
 
     validateFilename(filename);
-    filename = trimFiletype(filename);
 
     return listFilenames().contains(filename);
   }
 
   // Helpers
-
-  /**
-   * Trim {@code name} if it contains {@code acceptedFiletype}.
-   *
-   * @param name the {@code name} which will be trimmed
-   * @throws IllegalArgumentException if name is null or blank
-   */
-  private String trimFiletype(String name) {
-    if (name == null || name.isBlank()) {
-      throw new IllegalArgumentException("name cannot be null or blank");
-    }
-    return name.endsWith("." + getAcceptedFiletype())
-        ? name.substring(0, name.length() - getAcceptedFiletype().length() - 1)
-        : name;
-  }
 
   /**
    * Throws relevant exceptions if the filename is in an invalid format.
@@ -213,9 +220,8 @@ public class PersistenceHandler {
       throw new IllegalArgumentException("filename cannot be null or blank");
     }
 
-    if (trimFiletype(filename).isBlank()) {
-      throw new IllegalArgumentException(
-          "filename should contain name, not just filetype: " + filename);
+    if (Path.of(filename).getNameCount() > 1) {
+      throw new IllegalArgumentException("filename should not be a path: " + filename);
     }
   }
 

@@ -1,7 +1,12 @@
 package sequencer.persistence;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
@@ -12,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -38,22 +42,22 @@ public class PersistenceHandlerTest {
 
     // Valid initializations
     ph = new PersistenceHandler(testDirectory, ".json");
-    Assertions.assertEquals("json", ph.getAcceptedFiletype());
-    Assertions.assertTrue(ph.getSaveDirectoryPath().endsWith(Path.of(testDirectory)));
+    assertEquals("json", ph.getAcceptedFiletype());
+    assertTrue(ph.getSaveDirectoryPath().endsWith(Path.of(testDirectory)));
 
     ph = new PersistenceHandler(testDirectory, "json");
-    Assertions.assertEquals("json", ph.getAcceptedFiletype());
+    assertEquals("json", ph.getAcceptedFiletype());
 
     // Invalid initializations
     for (String invalidFiletype : Arrays.asList(null, "", "test.json", "..json", "json.")) {
-      Assertions.assertThrows(IllegalArgumentException.class, () -> {
+      assertThrows(IllegalArgumentException.class, () -> {
         new PersistenceHandler(testDirectory, invalidFiletype);
       }, "PersistenceHandler should throw exception when filetype argument is of invalid format: "
           + invalidFiletype);
     }
 
     for (String invalidSaveDirecory : Arrays.asList(null, "")) {
-      Assertions.assertThrows(IllegalArgumentException.class, () -> {
+      assertThrows(IllegalArgumentException.class, () -> {
         new PersistenceHandler(invalidSaveDirecory, ".json");
       }, "PersistenceHandler should throw exception when saveDirectory"
           + "argument is invalid: "
@@ -62,7 +66,7 @@ public class PersistenceHandlerTest {
 
 
     for (String invalidSaveDirecory : Arrays.asList("\0")) {
-      Assertions.assertThrows(InvalidPathException.class, () -> {
+      assertThrows(InvalidPathException.class, () -> {
         new PersistenceHandler(invalidSaveDirecory, ".json");
       }, "PersistenceHandler should throw exception when saveDirectory"
           + "argument contains invalid characters: "
@@ -84,9 +88,9 @@ public class PersistenceHandlerTest {
 
 
     // TEST
-
-    for (String invalidFilename : Arrays.asList(null, "", ".json")) {
-      Assertions.assertThrows(IllegalArgumentException.class, () -> {
+    for (String invalidFilename : Arrays.asList(null, "",
+        "..%svirus".formatted(File.separator), "config%ssensitive".formatted(File.separator))) {
+      assertThrows(IllegalArgumentException.class, () -> {
         ph.getReaderFromFile(invalidFilename);
       }, "PersistenceHandler should throw exception the requested filename is invalid: "
           + invalidFilename);
@@ -108,7 +112,7 @@ public class PersistenceHandlerTest {
 
     List<String> emptyFilenames = ph.listFilenames();
 
-    Assertions.assertEquals(new ArrayList<>(), emptyFilenames,
+    assertEquals(new ArrayList<>(), emptyFilenames,
         "Test directory should not contain files of the same type before performing tests: "
             + emptyFilenames.toArray());
 
@@ -116,32 +120,29 @@ public class PersistenceHandlerTest {
 
     try (Writer w = ph.getWriterToFile(filename)) {
       w.write(content);
-      w.close();
     } catch (IOException e) {
       fail("Attempted to write to file, but an unexcepted IOException was thrown.");
     }
 
     String loadedContent = "";
-    try (
-        Reader r = ph.getReaderFromFile(filename)) {
+    try (Reader r = ph.getReaderFromFile(filename)) {
       int intValue;
       while ((intValue = r.read()) != -1) {
         loadedContent += (char) intValue;
       }
-      r.close();
     } catch (IOException e) {
       fail("Attempted to read from file, but an unexcepted IOException was thrown.");
       e.printStackTrace();
     }
 
-    Assertions.assertEquals(content, loadedContent,
+    assertEquals(content, loadedContent,
         "Content in file should be equal to content written to file "
             + "(expected %s, but loaded content was %s)."
                 .formatted(content, loadedContent));
 
     // TEARDOWN
 
-    Assertions.assertDoesNotThrow(() -> {
+    assertDoesNotThrow(() -> {
       Path.of(ph.getSaveDirectoryPath().toString(), filename + filetype).toFile().delete();
     }, "File was not in the expected directory");
 
@@ -168,10 +169,10 @@ public class PersistenceHandlerTest {
     List<String> emptyFilenames1 = ph1.listFilenames();
     List<String> emptyFilenames2 = ph2.listFilenames();
 
-    Assertions.assertEquals(new ArrayList<>(), emptyFilenames1,
+    assertEquals(new ArrayList<>(), emptyFilenames1,
         "Test directory should not contain files of the same type before performing tests: "
             + emptyFilenames1);
-    Assertions.assertEquals(new ArrayList<>(), emptyFilenames2,
+    assertEquals(new ArrayList<>(), emptyFilenames2,
         "Test directory should not contain files of the same type before performing tests: "
             + emptyFilenames2);
 
@@ -198,22 +199,22 @@ public class PersistenceHandlerTest {
 
     List<String> filenames = ph1.listFilenames();
 
-    Assertions.assertEquals(numberOfFiles, filenames.size(),
+    assertEquals(numberOfFiles, filenames.size(),
         "Number of avaliable files did not match number of saved files (expected %s, actual %s)"
             .formatted(numberOfFiles, filenames.size()));
 
     for (int i = 0; i < numberOfFiles; i++) {
-      Assertions.assertTrue(filenames.contains(filename + i),
+      assertTrue(filenames.contains(filename + i),
           "Expected filename was not in the list: " + filename + i);
     }
 
-    Assertions.assertThrows(FileNotFoundException.class, () -> {
+    assertThrows(FileNotFoundException.class, () -> {
       ph1.getReaderFromFile(filename + numberOfFiles);
     }, "Attempting to load a file which is not in list should throw exception");
 
     // TEARDOWN
 
-    Assertions.assertDoesNotThrow(() -> {
+    assertDoesNotThrow(() -> {
       for (int i = 0; i < numberOfFiles; i++) {
         Path.of(ph1.getSaveDirectoryPath().toString(), filename + i + filetype1).toFile().delete();
       }

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import sequencer.core.Track;
-import sequencer.core.TrackMapperInterface;
+import sequencer.core.TrackSerializationInterface;
 
 /**
  * The {@code TrackMapper} class will handle all serialization of {@link Track} class and its
@@ -14,7 +14,7 @@ import sequencer.core.TrackMapperInterface;
  * streams, though the {@link IOException} must be handled separately.
  */
 
-public class TrackMapper implements TrackMapperInterface {
+public class TrackMapper implements TrackSerializationInterface {
   private ObjectMapper mapper;
   public static final String FORMAT = "json";
 

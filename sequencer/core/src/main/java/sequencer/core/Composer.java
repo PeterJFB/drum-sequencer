@@ -34,7 +34,7 @@ public class Composer {
   // reflect this
   private int lastCheckedBpm;
 
-  private TrackMapperInterface trackMapper;
+  private TrackSerializationInterface trackSerializer;
 
   private Track currentTrack;
 
@@ -97,8 +97,8 @@ public class Composer {
   /**
    * Set Track Mapper for writing an reading tracks.
    */
-  public void setTrackMapper(TrackMapperInterface newTrackMapper) {
-    trackMapper = newTrackMapper;
+  public void setTrackMapper(TrackSerializationInterface newTrackSerializer) {
+    trackSerializer = newTrackSerializer;
   }
 
   /**
@@ -315,7 +315,7 @@ public class Composer {
    * @throws IOException if the writing fails
    */
   public void saveTrack(Writer writer) throws IOException {
-    trackMapper.writeTrack(currentTrack, writer);
+    trackSerializer.writeTrack(currentTrack, writer);
   }
 
   /**
@@ -326,7 +326,7 @@ public class Composer {
    */
   public void loadTrack(Reader reader) throws IOException {
     Track newTrack = null;
-    newTrack = trackMapper.readTrack(reader);
+    newTrack = trackSerializer.readTrack(reader);
 
     if (newTrack == null) {
       return;

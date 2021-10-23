@@ -2,13 +2,12 @@ package sequencer.core;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,21 +27,6 @@ public class Composer {
   private TimerTask progressBeatTask;
   private boolean playing;
   private Collection<ComposerListener> listeners;
-  private static Map<String, String> instrumentAudioClipFileNames;
-
-  static {
-    Map<String, String> fileNameMap = new HashMap<>();
-    fileNameMap.put("kick", "707 Kick.wav");
-    fileNameMap.put("hihat", "808 CH.wav");
-    fileNameMap.put("snare", "808 Snare.wav");
-    fileNameMap.put("maraccas", "Maraccas.WAV");
-    fileNameMap.put("rim shot", "RimShot.WAV");
-    fileNameMap.put("cow bell", "CowBell.WAV");
-    fileNameMap.put("claves", "Claves.WAV");
-    fileNameMap.put("clap", "Clap.WAV");
-    instrumentAudioClipFileNames = Collections.unmodifiableMap(fileNameMap);
-
-  }
 
   private Map<String, AudioClip> instrumentAudioClips;
 
@@ -86,23 +70,27 @@ public class Composer {
     listeners = new ArrayList<>();
     currentTrack = new Track();
     instrumentAudioClips = new HashMap<>();
-
     try (BufferedReader instrumentReader = new BufferedReader(
-        new FileReader(Composer.class.getResource("instrumentNames.csv").getFile()))) {
+        new InputStreamReader(Composer.class.getResource("instrumentNames.csv").openStream()))) {
+
       String line;
       while ((line = instrumentReader.readLine()) != null) {
         String[] instrument = line.split(",");
-        instrumentAudioClips.put(instrument[0], new AudioClip(Composer.class
-            .getResource(instrumentAudioClipFileNames.get(instrument[1])).toExternalForm()));
+        if (testMode) {
+          // Don't load audio during testing. This is because audio is never played, and can't load
+          // during CI
+          instrumentAudioClips.put(instrument[0], null);
+        } else {
+          instrumentAudioClips.put(instrument[0], new AudioClip(Composer.class
+              .getResource(instrument[1]).toExternalForm()));
+        }
+
       }
     } catch (FileNotFoundException e) {
       System.err.println("Could not find instrumentNames.csv");
     } catch (IOException e) {
       System.err.println("Could not close instrumentReader");
     }
-    // instrumentAudioClipFileNames.keySet().stream().filter(instrument -> !testMode)
-    // .forEach(instrument -> instrumentAudioClips.put(instrument, new AudioClip(Composer.class
-    // .getResource(instrumentAudioClipFileNames.get(instrument)).toExternalForm())));
 
   }
 
@@ -120,7 +108,7 @@ public class Composer {
    *         instrumentAudioClips
    */
   public Collection<String> getAvailableInstruments() {
-    return new ArrayList<>(instrumentAudioClipFileNames.keySet());
+    return new ArrayList<>(instrumentAudioClips.keySet());
   }
 
   private void setTrack(Track track) {

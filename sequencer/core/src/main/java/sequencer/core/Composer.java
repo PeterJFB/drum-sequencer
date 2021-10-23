@@ -1,5 +1,8 @@
 package sequencer.core;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -75,9 +78,22 @@ public class Composer {
     trackMapper = new TrackMapper();
     instrumentAudioClips = new HashMap<>();
 
-    instrumentAudioClipFileNames.keySet().stream().filter(instrument -> !testMode)
-        .forEach(instrument -> instrumentAudioClips.put(instrument, new AudioClip(Composer.class
-            .getResource(instrumentAudioClipFileNames.get(instrument)).toExternalForm())));
+    try (BufferedReader instrumentReader = new BufferedReader(
+        new FileReader(Composer.class.getResource("instrumentNames.csv").getFile()))) {
+      String line;
+      while ((line = instrumentReader.readLine()) != null) {
+        String[] instrument = line.split(",");
+        instrumentAudioClips.put(instrument[0], new AudioClip(Composer.class
+            .getResource(instrumentAudioClipFileNames.get(instrument[1])).toExternalForm()));
+      }
+    } catch (FileNotFoundException e) {
+      System.err.println("Could not find instrumentNames.csv");
+    } catch (IOException e) {
+      System.err.println("Could not close instrumentReader");
+    }
+    // instrumentAudioClipFileNames.keySet().stream().filter(instrument -> !testMode)
+    // .forEach(instrument -> instrumentAudioClips.put(instrument, new AudioClip(Composer.class
+    // .getResource(instrumentAudioClipFileNames.get(instrument)).toExternalForm())));
 
   }
 

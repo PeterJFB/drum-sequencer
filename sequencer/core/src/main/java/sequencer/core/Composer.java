@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -71,7 +72,8 @@ public class Composer {
     currentTrack = new Track();
     instrumentAudioClips = new HashMap<>();
     try (BufferedReader instrumentReader = new BufferedReader(
-        new InputStreamReader(Composer.class.getResource("instrumentNames.csv").openStream()))) {
+        new InputStreamReader(Composer.class.getResource("instrumentNames.csv").openStream(),
+            StandardCharsets.UTF_8))) {
 
       String line;
       while ((line = instrumentReader.readLine()) != null) {

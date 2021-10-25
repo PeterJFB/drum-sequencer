@@ -64,7 +64,8 @@ public class SequencerController {
   // Ratio".
   private static final double HEIGHT_OF_SIXTEENTH = WIDTH_OF_SIXTEENTH * (1 + Math.sqrt(5)) / 2;
   // The number of rows in the application, or in other words, the maximum number
-  // of instruments that can be played simultaneously.
+  // of instruments that can be played simultaneously. This can be safely changed according to one's
+  // needs.
   private static final int NUMBER_OF_ROWS = 5;
 
   private static final String NO_INSTRUMENT_TEXT = "ingen instrument";
@@ -106,10 +107,11 @@ public class SequencerController {
   private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
   /**
-   * Rendering all major elements, including pattern and its current configuration. Is also called
-   * when loading a saved track.
+   * Rendering all major elements, including all the sixteenth rectangles. WIDTH_OF_SIXTEENTH is
+   * heavily utilized, and makes the application quite responsive according to one's needs (e.g.
+   * scaling).
    */
-  public void createElements() {
+  private void createElements() {
     // Giving all of the sections of the application their respective sizes and
     // layout locations:
     instrumentsPattern.setPrefSize(
@@ -167,9 +169,8 @@ public class SequencerController {
         sixteenth.setLayoutX(WIDTH_OF_SIXTEENTH * col + (WIDTH_OF_SIXTEENTH / 10) * (col + 1));
         sixteenth.setLayoutY(layoutY);
         sixteenth.setId(col + "," + row);
-        // sixteenths.add(sixteenth);
         sixteenth.getStyleClass().add("sixteenth");
-        sixteenth.setFill(Color.web(COLORS.get(row)[1]));
+        sixteenth.setFill(Color.web(COLORS.get(row % COLORS.size())[1]));
         sixteenth.setOnMouseClicked(event -> toggleSixteenth((Rectangle) event.getSource(), false));
         instrumentsPattern.getChildren().add(sixteenth);
       }
@@ -177,18 +178,13 @@ public class SequencerController {
     }
 
     savedTracksChoiceBox.getItems().addAll(persistenceHandler.listFilenames());
-
-    // Displaying the name of the track and the artist:
-    trackName.setText(composer.getTrackName() != null ? composer.getTrackName() : "untitled");
-    artistName.setText(composer.getArtistName() != null ? composer.getArtistName() : "unknown");
-
   }
 
   /**
    * Updating elements when loading a new track, in stead of re-using createElements(), as it
    * contains unnecessery code.
    */
-  public void updateElements() {
+  private void updateElements() {
     updateInstrumentChoiceBoxAlternatives();
 
     List<String> instruments = composer.getInstrumentsInTrack();
@@ -253,8 +249,8 @@ public class SequencerController {
    *
    * @param row the index as a String of the row that is to be reset
    */
-  public void resetPattern(int row) {
-    String toggledColor = COLORS.get(row)[1];
+  private void resetPattern(int row) {
+    String toggledColor = COLORS.get(row % COLORS.size())[1];
     for (int col = 0; col < Composer.getTrackLength(); col++) {
       Rectangle sixteenth =
           (Rectangle) instrumentsPattern.getChildren().get(row * Composer.getTrackLength() + col);
@@ -269,7 +265,7 @@ public class SequencerController {
    * @param oldInstrument the old instrument that is to be removed
    * @param newInstrument the new instrument that is to be added
    */
-  public void addInstrument(String oldInstrument, String newInstrument) {
+  private void addInstrument(String oldInstrument, String newInstrument) {
     // Only runs the if when the new instrument isn't already in track and is not empty
     // If so, the method is called because a new track is loaded, not because the user added an
     // instrument, and nothing is to be done.
@@ -303,7 +299,7 @@ public class SequencerController {
    * @param updatingElements indicates if we're updating a track in the GUI, and if so, the
    *        sixteenth should not be toggled in the Track class
    */
-  public void toggleSixteenth(Rectangle sixteenth, boolean updatingElements) {
+  private void toggleSixteenth(Rectangle sixteenth, boolean updatingElements) {
     int[] sixteenthId =
         Arrays.stream(sixteenth.getId().split(",")).mapToInt(Integer::parseInt).toArray();
 
@@ -318,7 +314,7 @@ public class SequencerController {
     // the color.
     int toggledIndex =
         composer.getTrackPattern(instrument).get(sixteenthId[0]) ^ updatingElements ? 1 : 0;
-    String toggledColor = COLORS.get(sixteenthId[1])[toggledIndex];
+    String toggledColor = COLORS.get(sixteenthId[1] % COLORS.size())[toggledIndex];
     if (toggledIndex == 0) {
       DropShadow dropShadow = new DropShadow();
       dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
@@ -340,7 +336,7 @@ public class SequencerController {
    * for the track.
    */
   @FXML
-  public void saveTrack() {
+  private void saveTrack() {
     try {
       if (persistenceHandler.isFileInDirectory(composer.getTrackName())) {
         displayStatusMsg("Track name " + composer.getTrackName() + " is already taken", false);
@@ -372,7 +368,7 @@ public class SequencerController {
    * Fires when the user selects a value from the ChoiceBox containing saved instruments.
    */
   @FXML
-  public void toggleLoadBtn() {
+  private void toggleLoadBtn() {
     loadTrackBtn.setDisable(false);
   }
 
@@ -380,7 +376,7 @@ public class SequencerController {
    * Fires when user presses the "Load" button. Loads the pattern and metadata of the track.
    */
   @FXML
-  public void loadTrack() {
+  private void loadTrack() {
     try {
       String trackName = savedTracksChoiceBox.getValue();
       persistenceHandler.readFromFile(trackName, (reader) -> {
@@ -404,7 +400,7 @@ public class SequencerController {
    * track.
    */
   @FXML
-  public void editTrackName(KeyEvent e) {
+  private void editTrackName(KeyEvent e) {
     String newTrackName = trackName.getText();
     composer.setTrackName(newTrackName);
     if (e.getCode() == KeyCode.ENTER) {
@@ -417,7 +413,7 @@ public class SequencerController {
    * track.
    */
   @FXML
-  public void editArtistName(KeyEvent e) {
+  private void editArtistName(KeyEvent e) {
     String newArtistName = artistName.getText();
     composer.setArtistName(newArtistName);
     if (e.getCode() == KeyCode.ENTER) {
@@ -437,7 +433,7 @@ public class SequencerController {
    * Fires when the "play" or "stop" button is pressed, toggling whether the track is played.
    */
   @FXML
-  public void togglePlayingTrack() {
+  private void togglePlayingTrack() {
     if (composer.isPlaying()) {
       composer.stop();
       startStopBtn.setImage(PLAY_IMAGE);
@@ -475,7 +471,7 @@ public class SequencerController {
    * @param success indicates whether the message is a success or not (fail). This is utilized to
    *        decide which color to use (green => success, red => fail)
    */
-  public void displayStatusMsg(String msg, boolean success) {
+  private void displayStatusMsg(String msg, boolean success) {
     statusMsg.setLayoutX(WIDTH_OF_SIXTEENTH);
     statusMsg.setLayoutY(HEIGHT_OF_SIXTEENTH * 5);
 
@@ -542,9 +538,9 @@ public class SequencerController {
   /**
    * Sets a border around all sixteenths in a column.
    *
-   * @param column the column to set a border around
+   * @param column the column of the sixteenths to set a border around
    */
-  public void addBorderToSixteenths(int column) {
+  private void addBorderToSixteenths(int column) {
     // Remove all borders
     instrumentsPattern.getChildren().forEach(sixteenth -> ((Rectangle) sixteenth).setStroke(null));
     // Set the borders of all squares in the correct column

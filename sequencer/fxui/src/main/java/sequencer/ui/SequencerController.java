@@ -103,6 +103,7 @@ public class SequencerController {
   );
   private static final String PROGRESS_BORDER_COLOR = "FCBA03"; // Yellow
 
+  private List<Rectangle> sixteenths = new ArrayList<>();
   private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
   /**
@@ -167,10 +168,10 @@ public class SequencerController {
         sixteenth.setLayoutX(WIDTH_OF_SIXTEENTH * col + (WIDTH_OF_SIXTEENTH / 10) * (col + 1));
         sixteenth.setLayoutY(layoutY);
         sixteenth.setId(col + "," + row);
+        sixteenths.add(sixteenth);
         sixteenth.getStyleClass().add("sixteenth");
         sixteenth.setFill(Color.web(COLORS.get(row)[1]));
         sixteenth.setOnMouseClicked(event -> toggleSixteenth((Rectangle) event.getSource(), false));
-        sixteenth.setEffect(null);
         instrumentsPattern.getChildren().add(sixteenth);
       }
 
@@ -197,7 +198,7 @@ public class SequencerController {
       ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
 
       if (row >= instruments.size()) {
-        resetPattern(String.valueOf(row));
+        resetPattern(row);
         instrumentChoiceBox.setValue("");
         continue;
       }
@@ -207,9 +208,7 @@ public class SequencerController {
       List<Boolean> pattern = composer.getTrackPattern(instrument);
 
       for (int col = 0; col < pattern.size(); col++) {
-        Rectangle sixteenth = (Rectangle) instrumentsPattern
-            .lookup("#" + String.valueOf(col) + "," + String.valueOf(row));
-
+        Rectangle sixteenth = sixteenths.get(row * Composer.getTrackLength() + col);
         // Checking whether the sixteenth has an effect is a quick way of checking if it
         // is "active"
         if (pattern.get(col) != (sixteenth.getEffect() != null)) {
@@ -239,7 +238,7 @@ public class SequencerController {
       if (instrumentChosen != null && instrumentChosen.equals(NO_INSTRUMENT_TEXT)) {
         instrumentChosen = null;
         instrumentChoiceBox.setValue("");
-        resetPattern(Integer.toString(row));
+        resetPattern(row);
       }
       List<String> instrumentsToRemove = instrumentChoiceBox.getItems();
       instrumentsToRemove.remove(instrumentChosen);
@@ -254,11 +253,10 @@ public class SequencerController {
    *
    * @param row the index as a String of the row that is to be reset
    */
-  public void resetPattern(String row) {
-    String toggledColor = COLORS.get(Integer.parseInt(row))[1];
-    for (int i = 0; i < Composer.getTrackLength(); i++) {
-      Rectangle sixteenth =
-          (Rectangle) instrumentsPattern.lookup("#" + String.valueOf(i) + "," + row);
+  public void resetPattern(int row) {
+    String toggledColor = COLORS.get(row)[1];
+    for (int col = 0; col < Composer.getTrackLength(); col++) {
+      Rectangle sixteenth = sixteenths.get(row * Composer.getTrackLength() + col);
       sixteenth.setEffect(null);
       sixteenth.setFill(Color.web(toggledColor));
     }
@@ -408,9 +406,9 @@ public class SequencerController {
   public void editTrackName(KeyEvent e) {
     String newTrackName = trackName.getText();
     composer.setTrackName(newTrackName);
-    // if (e.getCode() == KeyCode.ENTER) {
-    // header.requestFocus();
-    // }
+    if (e.getCode() == KeyCode.ENTER) {
+      header.requestFocus();
+    }
   }
 
   /**
@@ -539,7 +537,7 @@ public class SequencerController {
     instrumentsPattern.getChildren().forEach(sixteenth -> ((Rectangle) sixteenth).setStroke(null));
     // Set the borders of all squares in the correct column
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
-      Rectangle sixteenth = (Rectangle) instrumentsPattern.lookup("#" + column + "," + row);
+      Rectangle sixteenth = sixteenths.get(row * Composer.getTrackLength() + column);
       sixteenth.setStroke(Color.web(PROGRESS_BORDER_COLOR));
     }
 

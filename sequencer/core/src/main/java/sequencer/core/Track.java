@@ -60,7 +60,7 @@ public class Track {
    *         instruments
    */
   public List<Boolean> getPattern(String instrument) {
-    if (instrument == null || !instruments.keySet().contains(instrument)) {
+    if (instrument == null || !instruments.containsKey(instrument)) {
       throw new IllegalArgumentException(
           "Could not find pattern for instrument since it was not part of the track");
     }
@@ -133,7 +133,7 @@ public class Track {
    * @throws IllegalArgumentException if the instrument to be removed is not part of the track
    */
   public void removeInstrument(String instrument) {
-    if (instrument == null || !instruments.keySet().contains(instrument)) {
+    if (instrument == null || !instruments.containsKey(instrument)) {
       throw new IllegalArgumentException(
           "Instrument could not be removed since it was not part of the track");
     }

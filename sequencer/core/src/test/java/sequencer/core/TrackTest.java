@@ -172,17 +172,5 @@ public class TrackTest {
       assertThrows(IllegalArgumentException.class, () -> track.toggleSixteenth(instrument, 20), 
           "Did not throw exception when toggeling sixteenth with index out of bounds");
     }
-  
-    @Test
-    @DisplayName("Check equals method")
-    public void testEquals() {
-      Track track2 = new Track();
-      IntStream.range(0, instruments.size()).forEach((index) -> {
-        track2.addInstrument(instruments.get(index), patterns.get(index));
-      });
-      assertTrue(track.equals(track2));
-      track2.removeInstrument(instruments.get(0));
-      assertFalse(track.equals(track2));
-    }
   }
 }

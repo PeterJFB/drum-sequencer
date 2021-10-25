@@ -70,7 +70,7 @@ public class SequencerController {
   // The number of rows in the application, or in other words, the maximum number
   // of instruments that can be played simultaneously. This can be safely changed
   // according to one's needs.
-  private static final int NUMBER_OF_ROWS = 5;
+  protected static final int NUMBER_OF_ROWS = 5;
 
   @FXML
   private GridPane header;

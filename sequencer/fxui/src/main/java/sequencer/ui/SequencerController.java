@@ -53,7 +53,6 @@ public class SequencerController {
         new PersistenceHandler("drum-sequencer-persistence", Composer.getSerializationFormat());
 
     createElements();
-    addBorderToSixteenths(0);
   }
 
   // By utilizing a constant throughout the code, the sizes and layout locations
@@ -108,8 +107,7 @@ public class SequencerController {
 
   /**
    * Rendering all major elements, including all the sixteenth rectangles. WIDTH_OF_SIXTEENTH is
-   * heavily utilized, and makes the application quite responsive according to one's needs (e.g.
-   * scaling).
+   * heavily utilized, and makes the application responsive according to one's needs (e.g. scaling).
    */
   private void createElements() {
     // Giving all of the sections of the application their respective sizes and
@@ -177,6 +175,8 @@ public class SequencerController {
 
     }
 
+    addBorderToSixteenths(0);
+
     savedTracksChoiceBox.getItems().addAll(persistenceHandler.listFilenames());
   }
 
@@ -185,7 +185,7 @@ public class SequencerController {
    * contains unnecessery code.
    */
   private void updateElements() {
-    updateInstrumentChoiceBoxAlternatives();
+    updateInstrumentAlternatives();
 
     List<String> instruments = composer.getInstrumentsInTrack();
 
@@ -218,12 +218,11 @@ public class SequencerController {
   }
 
   /**
-   * Updating all the choiceboxes for instruments when a new instrument has been added to the track.
-   * This is to make sure that the instrument won't be possible to chose in another instrument row
-   * anymore, and so that if a new instrument has become avalible it will be possible to choose in
-   * all instrument rows again.
+   * Updating all the ChoiceBoxes containing instruments whenever a new instrument has been added to
+   * the track. This is to make sure that the specified instrument will not be accesible elsewhere.
+   * In addition, if an instrument becomes avalible, it will be accesible in all of the rows again.
    */
-  private void updateInstrumentChoiceBoxAlternatives() {
+  private void updateInstrumentAlternatives() {
     List<String> instrumentsInTrack = composer.getInstrumentsInTrack();
     List<String> instrumentsNotUsed = composer.getAvailableInstruments().stream()
         .filter(instrument -> !instrumentsInTrack.contains(instrument))
@@ -260,7 +259,7 @@ public class SequencerController {
   }
 
   /**
-   * Updates a instrument, i.e. removes the old instrument and adds the new
+   * Updates an instrument, i.e. removes the old instrument and adds the new.
    *
    * @param oldInstrument the old instrument that is to be removed
    * @param newInstrument the new instrument that is to be added
@@ -288,12 +287,12 @@ public class SequencerController {
         composer.addInstrumentToTrack(newInstrument, oldPattern);
         composer.removeInstrumentFromTrack(oldInstrument);
       }
-      updateInstrumentChoiceBoxAlternatives();
+      updateInstrumentAlternatives();
     }
   }
 
   /**
-   * Turns on or off a specific sixteenth.
+   * Toggles a specific sixteenth.
    *
    * @param sixteenth the sixteenth which is to be toggled
    * @param updatingElements indicates if we're updating a track in the GUI, and if so, the
@@ -332,8 +331,8 @@ public class SequencerController {
   }
 
   /**
-   * Fires when user presses the "enter" key in the track name text field. Updates the track name
-   * for the track.
+   * Fires when user presses the save button, and saves the pattern and metadata of the track made
+   * in the UI.
    */
   @FXML
   private void saveTrack() {
@@ -365,7 +364,7 @@ public class SequencerController {
   }
 
   /**
-   * Fires when the user selects a value from the ChoiceBox containing saved instruments.
+   * Fires when the user selects an option from the ChoiceBox containing available instruments.
    */
   @FXML
   private void toggleLoadBtn() {
@@ -396,29 +395,21 @@ public class SequencerController {
   }
 
   /**
-   * Fires when user presses a key in the track name text field. Updates the track name for the
+   * Fires when the text in the trackName TextField changes, and updates the track name for the
    * track.
    */
   @FXML
-  private void editTrackName(KeyEvent e) {
-    String newTrackName = trackName.getText();
-    composer.setTrackName(newTrackName);
-    if (e.getCode() == KeyCode.ENTER) {
-      header.requestFocus();
-    }
+  private void editTrackName() {
+    composer.setTrackName(trackName.getText());
   }
 
   /**
-   * Fires when user presses a key in the artist name text field. Updates the artist name for the
+   * Fires when the text in the artistName TextField changes, and updates the artist name for the
    * track.
    */
   @FXML
-  private void editArtistName(KeyEvent e) {
-    String newArtistName = artistName.getText();
-    composer.setArtistName(newArtistName);
-    if (e.getCode() == KeyCode.ENTER) {
-      header.requestFocus();
-    }
+  private void editArtistName() {
+    composer.setArtistName(artistName.getText());
   }
 
   @FXML

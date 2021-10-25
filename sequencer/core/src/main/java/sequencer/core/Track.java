@@ -149,7 +149,7 @@ public class Track {
    * @throws IllegalArgumentException if instrument is not a key in instruments, or sixteenth (the
    *         index) is out of bounds
    */
-  public void toggleSixteenth(String instrument, Integer sixteenth)
+  public void toggleSixteenth(String instrument, int sixteenth)
       throws IllegalArgumentException {
     List<Boolean> pattern = instruments.get(instrument);
     if (pattern == null) {

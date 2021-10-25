@@ -337,7 +337,7 @@ public class SequencerController {
    */
   @FXML
   private void saveTrack() {
-    try {
+    try (Writer writer = persistenceHandler.getWriterToFile(composer.getTrackName())) {
       if (persistenceHandler.isFileInDirectory(composer.getTrackName())) {
         displayStatusMsg("Track name " + composer.getTrackName() + " is already taken", false);
         return;
@@ -353,7 +353,7 @@ public class SequencerController {
 
       // Track is successfully saved
       savedTracksChoiceBox.getItems().add(composer.getTrackName());
-      displayStatusMsg("Track saved.", true);
+      displayStatusMsg(composer.getTrackName() + " saved.", true);
       
     } catch (IllegalArgumentException e) {
       displayStatusMsg("Track name has an invalid format.", false);

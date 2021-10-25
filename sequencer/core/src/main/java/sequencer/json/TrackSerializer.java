@@ -19,7 +19,7 @@ class TrackSerializer extends JsonSerializer<Track> {
     jsonGen.writeStringField("name", track.getTrackName());
     jsonGen.writeStringField("artist", track.getArtistName());
     jsonGen.writeObjectFieldStart("instruments");
-    List<String> instruments = track.getInstruments();
+    List<String> instruments = track.getInstrumentNames();
     Collections.reverse(instruments);
     for (String instrument : instruments) {
       jsonGen.writeObjectField(instrument, track.getPattern(instrument));

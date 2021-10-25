@@ -48,7 +48,7 @@ public class Track {
    *
    * @return a List of instrument names as a String.
    */
-  public List<String> getInstruments() {
+  public List<String> getInstrumentNames() {
     return new ArrayList<>(instruments.keySet());
   }
 
@@ -115,7 +115,7 @@ public class Track {
    * @param instrument name of the new instrument
    */
   public void addInstrument(String instrument) {
-    if (getInstruments().size() == 5) {
+    if (getInstrumentNames().size() == 5) {
       throw new IllegalStateException(
           "Cannot add instrument as it has already reached its maximum capazity of 5");
     }
@@ -222,8 +222,8 @@ public class Track {
     }
 
     // Check if the instrument names are equal
-    List<String> instruments = getInstruments();
-    List<String> otherInstruments = otherTrack.getInstruments();
+    List<String> instruments = getInstrumentNames();
+    List<String> otherInstruments = otherTrack.getInstrumentNames();
     if (!instruments.equals(otherInstruments)) {
       return false;
     }

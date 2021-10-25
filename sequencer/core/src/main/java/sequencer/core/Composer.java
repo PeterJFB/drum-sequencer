@@ -171,7 +171,7 @@ public class Composer {
       start();
       return;
     }
-    currentTrack.getInstruments().stream()
+    currentTrack.getInstrumentNames().stream()
         .filter(instrument -> currentTrack.getPattern(instrument).get(progress))
         .forEach(instrument -> {
           instrumentAudioClips.get(instrument).play();
@@ -251,7 +251,7 @@ public class Composer {
    * Returns a list of all instruments in the current track.
    */
   public List<String> getInstrumentsInTrack() {
-    return currentTrack.getInstruments();
+    return currentTrack.getInstrumentNames();
   }
 
   /**

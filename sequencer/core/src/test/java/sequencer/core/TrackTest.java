@@ -32,7 +32,7 @@ public class TrackTest {
   @DisplayName("Check that all fields in track are as expected after initialization")
   public static void testConstructor() {
     Track track = new Track();
-    assertEquals(0, track.getInstruments().size());
+    assertEquals(0, track.getInstrumentNames().size());
     assertEquals(null, track.getTrackName());
     assertEquals(null, track.getArtistName());
   }
@@ -98,7 +98,7 @@ public class TrackTest {
     public void testInstrumentsGetter() {
       List<String> instruments = new ArrayList<>(Arrays.asList("inst1", "inst2", "inst3"));
       instruments.stream().forEach(instrument -> track.addInstrument(instrument));
-      List<String> actualInstruments = track.getInstruments();
+      List<String> actualInstruments = track.getInstrumentNames();
       Collections.sort(actualInstruments);
       assertEquals(instruments, actualInstruments);
     }
@@ -152,10 +152,10 @@ public class TrackTest {
     public void testRemoveInstrument() {
       assertThrows(IllegalArgumentException.class, () -> track.removeInstrument("finnes ikke"), 
           "Did not throw exception when removing instrument that was not part of track");
-      assertTrue(track.getInstruments().contains(instruments.get(0)));
+      assertTrue(track.getInstrumentNames().contains(instruments.get(0)));
       assertDoesNotThrow(() -> track.removeInstrument(instruments.get(0)), 
           "Did not expect removing instrument to throw an exception");
-      assertFalse(track.getInstruments().contains(instruments.get(0)));
+      assertFalse(track.getInstrumentNames().contains(instruments.get(0)));
     }
 
     @Test

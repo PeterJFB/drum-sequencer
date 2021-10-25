@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,8 +34,8 @@ public class TrackTest {
   public static void testConstructor() {
     Track track = new Track();
     assertEquals(0, track.getInstrumentNames().size());
-    assertEquals(null, track.getTrackName());
-    assertEquals(null, track.getArtistName());
+    assertNull(track.getTrackName());
+    assertNull(track.getArtistName());
   }
 
   /**

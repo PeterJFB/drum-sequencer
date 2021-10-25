@@ -103,7 +103,6 @@ public class SequencerController {
   );
   private static final String PROGRESS_BORDER_COLOR = "FCBA03"; // Yellow
 
-  private List<Rectangle> sixteenths = new ArrayList<>();
   private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
   /**
@@ -168,7 +167,7 @@ public class SequencerController {
         sixteenth.setLayoutX(WIDTH_OF_SIXTEENTH * col + (WIDTH_OF_SIXTEENTH / 10) * (col + 1));
         sixteenth.setLayoutY(layoutY);
         sixteenth.setId(col + "," + row);
-        sixteenths.add(sixteenth);
+        // sixteenths.add(sixteenth);
         sixteenth.getStyleClass().add("sixteenth");
         sixteenth.setFill(Color.web(COLORS.get(row)[1]));
         sixteenth.setOnMouseClicked(event -> toggleSixteenth((Rectangle) event.getSource(), false));
@@ -208,7 +207,8 @@ public class SequencerController {
       List<Boolean> pattern = composer.getTrackPattern(instrument);
 
       for (int col = 0; col < pattern.size(); col++) {
-        Rectangle sixteenth = sixteenths.get(row * Composer.getTrackLength() + col);
+        Rectangle sixteenth =
+            (Rectangle) instrumentsPattern.getChildren().get(row * Composer.getTrackLength() + col);
         // Checking whether the sixteenth has an effect is a quick way of checking if it
         // is "active"
         if (pattern.get(col) != (sixteenth.getEffect() != null)) {
@@ -256,7 +256,8 @@ public class SequencerController {
   public void resetPattern(int row) {
     String toggledColor = COLORS.get(row)[1];
     for (int col = 0; col < Composer.getTrackLength(); col++) {
-      Rectangle sixteenth = sixteenths.get(row * Composer.getTrackLength() + col);
+      Rectangle sixteenth =
+          (Rectangle) instrumentsPattern.getChildren().get(row * Composer.getTrackLength() + col);
       sixteenth.setEffect(null);
       sixteenth.setFill(Color.web(toggledColor));
     }
@@ -427,20 +428,23 @@ public class SequencerController {
   @FXML
   private ImageView startStopBtn;
 
+  private static final Image PLAY_IMAGE =
+      new Image(SequencerController.class.getResource("images/play.png").toExternalForm());
+  private static final Image STOP_IMAGE =
+      new Image(SequencerController.class.getResource("images/stop.png").toExternalForm());
+
   /**
    * Fires when the "play" or "stop" button is pressed, toggling whether the track is played.
    */
   @FXML
   public void togglePlayingTrack() {
-    String toggledImageUrl;
     if (composer.isPlaying()) {
       composer.stop();
-      toggledImageUrl = "images/play.png";
+      startStopBtn.setImage(PLAY_IMAGE);
     } else {
       composer.start();
-      toggledImageUrl = "images/stop.png";
+      startStopBtn.setImage(STOP_IMAGE);
     }
-    startStopBtn.setImage(new Image(getClass().getResource(toggledImageUrl).toExternalForm()));
   }
 
   @FXML
@@ -458,9 +462,14 @@ public class SequencerController {
   @FXML
   private Text statusMsgText;
 
+  private static final Image SUCCESS_IMAGE =
+      new Image(SequencerController.class.getResource("images/checked.png").toExternalForm());
+  private static final Image FAILURE_IMAGE =
+      new Image(SequencerController.class.getResource("images/x-mark.png").toExternalForm());
+
   /**
    * Displaying a status message to the user, regarding either success (e.g. track being saved) or
-   * fail (e.g.: failure to load track).
+   * fail (e.g. failure to load track).
    *
    * @param msg the message to be displayed
    * @param success indicates whether the message is a success or not (fail). This is utilized to
@@ -475,8 +484,11 @@ public class SequencerController {
     statusMsgBackground.setWidth(WIDTH_OF_SIXTEENTH * 4);
     statusMsgBackground.setHeight(WIDTH_OF_SIXTEENTH * 1.3);
 
-    String statusMsgIconUrl = success ? "images/checked.png" : "images/x-mark.png";
-    statusMsgIcon.setImage(new Image(getClass().getResource(statusMsgIconUrl).toExternalForm()));
+    if (success) {
+      statusMsgIcon.setImage(SUCCESS_IMAGE);
+    } else {
+      statusMsgIcon.setImage(FAILURE_IMAGE);
+    }
 
     String textColor = success ? "#419e6d" : "#c92213";
     statusMsgText.setFill(Color.web(textColor));
@@ -537,7 +549,8 @@ public class SequencerController {
     instrumentsPattern.getChildren().forEach(sixteenth -> ((Rectangle) sixteenth).setStroke(null));
     // Set the borders of all squares in the correct column
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
-      Rectangle sixteenth = sixteenths.get(row * Composer.getTrackLength() + column);
+      Rectangle sixteenth = (Rectangle) instrumentsPattern.getChildren()
+          .get(row * Composer.getTrackLength() + column);
       sixteenth.setStroke(Color.web(PROGRESS_BORDER_COLOR));
     }
 

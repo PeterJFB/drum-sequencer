@@ -115,7 +115,7 @@ public class Track {
    * @param instrument name of the new instrument
    */
   public void addInstrument(String instrument) {
-    if (getInstrumentNames().size() == 5) {
+    if (instruments.size() == 5) {
       throw new IllegalStateException(
           "Cannot add instrument as it has already reached its maximum capazity of 5");
     }

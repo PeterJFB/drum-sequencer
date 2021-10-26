@@ -95,7 +95,7 @@ public class TrackTest {
     @DisplayName("Check getInstruments")
     public void testInstrumentsGetter() {
       List<String> instruments = List.of("inst1", "inst2", "inst3");
-      instruments.stream().forEach(instrument -> track.addInstrument(instrument));
+      instruments.stream().forEach(track::addInstrument);
       List<String> actualInstruments = track.getInstrumentNames();
       Collections.sort(actualInstruments);
       assertEquals(instruments, actualInstruments);

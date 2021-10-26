@@ -30,4 +30,9 @@ public interface TrackSerializationInterface {
    * @throws IOException if the writer fails
    */
   public void writeTrack(Track track, Writer writer) throws IOException;
+
+  /**
+   * Returns a copy of this object.
+   */
+  public TrackSerializationInterface copy();
 }

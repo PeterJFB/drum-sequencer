@@ -83,4 +83,11 @@ public class TrackMapper implements TrackSerializationInterface {
 
     return jsonString;
   }
+
+  /**
+   * Returns a copy of this object.
+   */
+  public TrackMapper copy() {
+    return new TrackMapper();
+  }
 }

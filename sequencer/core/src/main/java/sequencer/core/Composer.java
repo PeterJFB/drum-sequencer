@@ -99,7 +99,7 @@ public class Composer {
    * Set Track Mapper for writing an reading tracks.
    */
   public void setTrackMapper(TrackSerializationInterface newTrackSerializer) {
-    trackSerializer = newTrackSerializer;
+    trackSerializer = newTrackSerializer.copy();
   }
 
   /**

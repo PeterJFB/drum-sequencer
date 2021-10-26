@@ -71,9 +71,8 @@ public class Composer {
     listeners = new ArrayList<>();
     currentTrack = new Track();
     instrumentAudioClips = new HashMap<>();
-    try (BufferedReader instrumentReader = new BufferedReader(
-        new InputStreamReader(Composer.class.getResource("instrumentNames.csv").openStream(),
-            StandardCharsets.UTF_8))) {
+    try (BufferedReader instrumentReader = new BufferedReader(new InputStreamReader(
+        Composer.class.getResource("instrumentNames.csv").openStream(), StandardCharsets.UTF_8))) {
 
       String line;
       while ((line = instrumentReader.readLine()) != null) {
@@ -83,8 +82,8 @@ public class Composer {
           // during CI
           instrumentAudioClips.put(instrument[0], null);
         } else {
-          instrumentAudioClips.put(instrument[0], new AudioClip(Composer.class
-              .getResource(instrument[1]).toExternalForm()));
+          instrumentAudioClips.put(instrument[0],
+              new AudioClip(Composer.class.getResource(instrument[1]).toExternalForm()));
         }
 
       }
@@ -317,7 +316,7 @@ public class Composer {
    * @throws IOException if the writing fails
    */
   public void saveTrack(Writer writer) throws IOException {
-    trackSerializer.writeTrack(currentTrack, writer);
+    trackSerializer.writeTrack(currentTrack.copy(), writer);
   }
 
   /**

@@ -15,7 +15,7 @@ import sequencer.core.TrackSerializationInterface;
  */
 
 public class TrackMapper implements TrackSerializationInterface {
-  private ObjectMapper mapper;
+  private final ObjectMapper mapper;
   public static final String FORMAT = "json";
 
   public TrackMapper() {

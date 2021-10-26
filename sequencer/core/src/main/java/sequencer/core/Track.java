@@ -162,6 +162,19 @@ public class Track {
   }
 
   /**
+   * Returns a copy of this track.
+   */
+  public Track copy() {
+    Track newTrack = new Track();
+    newTrack.setArtistName(artistName);
+    newTrack.setTrackName(trackName);
+    for (String instrument : getInstruments()) {
+      newTrack.addInstrument(instrument, getPattern(instrument));
+    }
+    return newTrack;
+  }
+
+  /**
    * Generate hash to match our equals-method.
    */
   @Override

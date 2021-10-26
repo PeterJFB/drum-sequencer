@@ -1,6 +1,5 @@
 package sequencer.core;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -83,10 +82,8 @@ public class TrackTest {
           new ArrayList<>(Arrays.asList(new Boolean[Track.TRACK_LENGTH - 1]));
       Collections.fill(illegalPattern, false);
 
-      assertDoesNotThrow(() -> track.addInstrument(instrument), 
-          "Did not expect adding instrument without pattern to throw an exception");
-      assertDoesNotThrow(() -> track.addInstrument(instrument, legalPattern), 
-          "Did not expect adding instrument with legal pattern to throw an exception");
+      track.addInstrument(instrument);
+      track.addInstrument(instrument, legalPattern);
       assertThrows(IllegalArgumentException.class, () -> track.addInstrument(instrument, null), 
           "Did not throw exception for adding instrument with patter=null");
       assertThrows(IllegalArgumentException.class, 
@@ -154,8 +151,7 @@ public class TrackTest {
       assertThrows(IllegalArgumentException.class, () -> track.removeInstrument("finnes ikke"), 
           "Did not throw exception when removing instrument that was not part of track");
       assertTrue(track.getInstrumentNames().contains(instruments.get(0)));
-      assertDoesNotThrow(() -> track.removeInstrument(instruments.get(0)), 
-          "Did not expect removing instrument to throw an exception");
+      track.removeInstrument(instruments.get(0));
       assertFalse(track.getInstrumentNames().contains(instruments.get(0)));
     }
 

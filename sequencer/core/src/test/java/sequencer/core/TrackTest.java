@@ -94,7 +94,7 @@ public class TrackTest {
     @Test
     @DisplayName("Check getInstruments")
     public void testInstrumentsGetter() {
-      List<String> instruments = new ArrayList<>(Arrays.asList("inst1", "inst2", "inst3"));
+      List<String> instruments = List.of("inst1", "inst2", "inst3");
       instruments.stream().forEach(instrument -> track.addInstrument(instrument));
       List<String> actualInstruments = track.getInstrumentNames();
       Collections.sort(actualInstruments);

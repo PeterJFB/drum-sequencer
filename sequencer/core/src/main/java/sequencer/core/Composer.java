@@ -40,12 +40,12 @@ public class Composer {
   private Track currentTrack;
 
   /**
-   * Factory function that creates a composer that does not load audio files, nor stops the when the
-   * user thread is stopped. Use this only for testing.
+   * Factory function that creates a composer that does not load audio files, nor stops the timer
+   * when the user thread is stopped. Useful for testing.
    *
-   * @return a new composer for testing
+   * @return a new composer without audio files
    */
-  public static Composer createTestComposer() {
+  public static Composer createSilentComposer() {
     return new Composer(false, true);
   }
 

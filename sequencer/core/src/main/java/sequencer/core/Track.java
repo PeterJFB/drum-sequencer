@@ -45,7 +45,10 @@ public class Track {
   /**
    * Get all added instruments by their name (key).
    *
-   * @return a List of instrument names as a String.
+   * @return a List of instrument names as Strings. The reason this is a List and not a 
+   *     Collection is so that when saving tracks, the order in which you added the 
+   *     instruments is kept in place, which makes for a better user experience when 
+   *     saving and loading tracks.
    */
   public List<String> getInstrumentNames() {
     return new ArrayList<>(instruments.keySet());
@@ -96,7 +99,10 @@ public class Track {
    * Adds another instrument to instruments with given values.
    *
    * @param instrument name of the new instrument
-   * @param pattern the pattern to apply with the instrument
+   * @param pattern the pattern to apply with the instrument. The reason this is a List and 
+   *     not a Collection, though chaning it would not cause any errors in the code, is so 
+   *     that when using the method one is forced to pass in an ordrered list, as this 
+   *     mathces the intended meaning of a pattern: it is supposed to have an order.
    * @throws IllegalArgumentException if the given pattern is null or has an illegal length
    * 
    */

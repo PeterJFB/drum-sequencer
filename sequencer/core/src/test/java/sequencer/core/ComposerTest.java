@@ -25,7 +25,7 @@ public class ComposerTest {
 
   @BeforeEach
   public void createComposer() {
-    composer = Composer.createTestComposer();
+    composer = Composer.createSilentComposer();
   }
 
   @Test
@@ -122,7 +122,7 @@ public class ComposerTest {
 
     StringReader stringReader = new StringReader(stringWriter.toString());
 
-    Composer composer2 = Composer.createTestComposer();
+    Composer composer2 = Composer.createSilentComposer();
     assertDoesNotThrow(() -> composer2.loadTrack(stringReader),
         "Did not expect saving to throw an exception");
     assertEquals("trackName", composer2.getTrackName(),

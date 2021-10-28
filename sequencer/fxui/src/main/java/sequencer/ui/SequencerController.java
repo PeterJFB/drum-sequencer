@@ -2,6 +2,7 @@ package sequencer.ui;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -346,14 +347,24 @@ public class SequencerController {
         displayStatusMsg("Track name " + composer.getTrackName() + " is already taken", false);
         return;
       }
-      Writer writer = persistenceHandler.getWriterToFile(composer.getTrackName());
-      composer.saveTrack(writer);
-      writer.close();
+
+      persistenceHandler.writeToFile(composer.getTrackName(), (writer) -> {
+        try {
+          composer.saveTrack(writer);
+        } catch (IOException e) {
+          throw new UncheckedIOException(e);
+        }
+      });
+
+      // Track is successfully saved
       savedTracksChoiceBox.getItems().add(composer.getTrackName());
       displayStatusMsg("Track saved.", true);
+      
     } catch (IllegalArgumentException e) {
       displayStatusMsg("Track name has an invalid format.", false);
     } catch (IOException e) {
+      displayStatusMsg("Failed to save track.", false);
+    } catch (UncheckedIOException e) {
       displayStatusMsg("Failed to save track.", false);
     }
   }
@@ -373,9 +384,15 @@ public class SequencerController {
   public void loadTrack() {
     try {
       String trackName = savedTracksChoiceBox.getValue();
-      Reader reader = persistenceHandler.getReaderFromFile(trackName);
-      composer.loadTrack(reader);
-      reader.close();
+      persistenceHandler.readFromFile(trackName, (reader) -> {
+        try {
+          composer.loadTrack(reader);
+        } catch (IOException e) {
+          throw new UncheckedIOException(e);
+        }
+      });
+    
+      // Track is successfully loaded
       Platform.runLater(this::updateElements);
       displayStatusMsg(composer.getTrackName() + " loaded.", true);
     } catch (Exception e) {

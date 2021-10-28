@@ -1,11 +1,14 @@
 package sequencer.core;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,21 +28,6 @@ public class Composer {
   private TimerTask progressBeatTask;
   private boolean playing;
   private Collection<ComposerListener> listeners;
-  private static Map<String, String> instrumentAudioClipFileNames;
-
-  static {
-    Map<String, String> fileNameMap = new HashMap<>();
-    fileNameMap.put("kick", "707 Kick.wav");
-    fileNameMap.put("hihat", "808 CH.wav");
-    fileNameMap.put("snare", "808 Snare.wav");
-    fileNameMap.put("maraccas", "Maraccas.WAV");
-    fileNameMap.put("rim shot", "RimShot.WAV");
-    fileNameMap.put("cow bell", "CowBell.WAV");
-    fileNameMap.put("claves", "Claves.WAV");
-    fileNameMap.put("clap", "Clap.WAV");
-    instrumentAudioClipFileNames = Collections.unmodifiableMap(fileNameMap);
-
-  }
 
   private Map<String, AudioClip> instrumentAudioClips;
 
@@ -47,9 +35,19 @@ public class Composer {
   // reflect this
   private int lastCheckedBpm;
 
-  private TrackMapper trackMapper;
+  private TrackSerializationInterface trackSerializer;
 
   private Track currentTrack;
+
+  /**
+   * Factory function that creates a composer that does not load audio files, nor stops the timer
+   * when the user thread is stopped. Useful for testing.
+   *
+   * @return a new composer without audio files
+   */
+  public static Composer createSilentComposer() {
+    return new Composer(false, true);
+  }
 
   /**
    * Composer constructor. Equal to Composer(true, false). Use this in production.
@@ -66,19 +64,42 @@ public class Composer {
    *        If set to false, the composer will not stop when the window is closed
    * @param testMode If testMode is set to true, the AudioClips will not be loaded
    */
-  public Composer(boolean createDaemonTimer, boolean testMode) {
+  private Composer(boolean createDaemonTimer, boolean testMode) {
     progress = 0;
     timer = new Timer(createDaemonTimer);
     playing = false;
     listeners = new ArrayList<>();
     currentTrack = new Track();
-    trackMapper = new TrackMapper();
     instrumentAudioClips = new HashMap<>();
+    try (BufferedReader instrumentReader = new BufferedReader(new InputStreamReader(
+        Composer.class.getResource("instrumentNames.csv").openStream(), StandardCharsets.UTF_8))) {
 
-    instrumentAudioClipFileNames.keySet().stream().filter(instrument -> !testMode)
-        .forEach(instrument -> instrumentAudioClips.put(instrument, new AudioClip(Composer.class
-            .getResource(instrumentAudioClipFileNames.get(instrument)).toExternalForm())));
+      String line;
+      while ((line = instrumentReader.readLine()) != null) {
+        String[] instrument = line.split(",");
+        if (testMode) {
+          // Don't load audio during testing. This is because audio is never played, and can't load
+          // during CI
+          instrumentAudioClips.put(instrument[0], null);
+        } else {
+          instrumentAudioClips.put(instrument[0],
+              new AudioClip(Composer.class.getResource(instrument[1]).toExternalForm()));
+        }
 
+      }
+    } catch (FileNotFoundException e) {
+      System.err.println("Could not find instrumentNames.csv");
+    } catch (IOException e) {
+      System.err.println("Could not close instrumentReader");
+    }
+
+  }
+
+  /**
+   * Set Track Mapper for writing an reading tracks.
+   */
+  public void setTrackMapper(TrackSerializationInterface newTrackSerializer) {
+    trackSerializer = newTrackSerializer.copy();
   }
 
   /**
@@ -88,7 +109,7 @@ public class Composer {
    *         instrumentAudioClips
    */
   public Collection<String> getAvailableInstruments() {
-    return new ArrayList<>(instrumentAudioClipFileNames.keySet());
+    return new ArrayList<>(instrumentAudioClips.keySet());
   }
 
   private void setTrack(Track track) {
@@ -155,12 +176,10 @@ public class Composer {
         .forEach(instrument -> {
           instrumentAudioClips.get(instrument).play();
         });
-
-    // Fire events
-    listeners.forEach(listener -> listener.run(progress));
-
     progress++;
     progress = progress % Track.TRACK_LENGTH;
+    // Fire events
+    listeners.forEach(listener -> listener.run(progress));
   }
 
   /**
@@ -294,19 +313,21 @@ public class Composer {
    * Saves the current track.
    *
    * @param writer the writer that writes the track
+   * @throws IOException if the writing fails
    */
   public void saveTrack(Writer writer) throws IOException {
-    trackMapper.writeTrack(currentTrack, writer);
+    trackSerializer.writeTrack(currentTrack.copy(), writer);
   }
 
   /**
    * Loads a track.
    *
    * @param reader the reader of the track to load
+   * @throws IOException if the reading fails
    */
   public void loadTrack(Reader reader) throws IOException {
     Track newTrack = null;
-    newTrack = trackMapper.readTrack(reader);
+    newTrack = trackSerializer.readTrack(reader);
 
     if (newTrack == null) {
       return;

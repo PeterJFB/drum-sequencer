@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import sequencer.core.Track;
+import sequencer.core.TrackSerializationInterface;
 
 /**
  * The {@code TrackMapper} class will handle all serialization of {@link Track} class and its
@@ -13,13 +14,21 @@ import sequencer.core.Track;
  * streams, though the {@link IOException} must be handled separately.
  */
 
-public class TrackMapper {
-  private ObjectMapper mapper;
+public class TrackMapper implements TrackSerializationInterface {
+  private final ObjectMapper mapper;
   public static final String FORMAT = "json";
 
   public TrackMapper() {
     mapper = new ObjectMapper();
     mapper.registerModule(new TrackModule());
+  }
+
+  /**
+   * Return the format of TrackMapper. This will give the same as TrackMapper.FORMAT, but also
+   * follows the TrackMapperInterface specifications.
+   */
+  public String getFormat() {
+    return FORMAT;
   }
 
   /**
@@ -73,5 +82,12 @@ public class TrackMapper {
     }
 
     return jsonString;
+  }
+
+  /**
+   * Returns a copy of this object.
+   */
+  public TrackMapper copy() {
+    return new TrackMapper();
   }
 }

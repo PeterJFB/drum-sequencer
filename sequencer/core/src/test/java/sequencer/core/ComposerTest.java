@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +25,7 @@ public class ComposerTest {
 
   @BeforeEach
   public void createComposer() {
-    composer = new Composer(false, true);
+    composer = Composer.createSilentComposer();
   }
 
   @Test
@@ -56,7 +57,7 @@ public class ComposerTest {
     composer.addInstrumentToTrack("snare", snarePattern);
 
     // Check that the only instruments in track are snare and kick
-    assertFalse(composer.getInstrumentsInTrack().isEmpty(), "Did not expect empty track");
+    assertEquals(2, composer.getInstrumentsInTrack().size(), "Expected two instruments in track");
     assertTrue(
         composer.getInstrumentsInTrack().stream()
             .allMatch(instrument -> instrument.equals("snare") || instrument.equals("kick")),
@@ -76,12 +77,12 @@ public class ComposerTest {
   @Test
   @DisplayName("Removing instruments")
   public void checkRemovingInstruments() {
-    assertTrue(composer.getInstrumentsInTrack().isEmpty(), "Expected empty");
+    assertTrue(composer.getInstrumentsInTrack().isEmpty(), "Expected empty track");
     composer.addInstrumentToTrack("kick");
     composer.addInstrumentToTrack("snare");
     composer.removeInstrumentFromTrack("kick");
 
-    assertFalse(composer.getInstrumentsInTrack().isEmpty(), "Did not expect track to be empty");
+    assertEquals(1, composer.getInstrumentsInTrack().size(), "Expected one instruments in track");
     assertTrue(composer.getInstrumentsInTrack().stream()
         .allMatch(instrument -> instrument.equals("snare")), "Expected snare in track");
   }
@@ -102,6 +103,8 @@ public class ComposerTest {
 
   @Test
   @DisplayName("Test writing and reading a track")
+  @Disabled("By default we do not test writing and reading as part of the composer test."
+      + " We keep the test here in case it becomes useful.")
   public void writeAndRead() {
     composer.setTrackName("trackName");
     composer.setArtistName("artistName");
@@ -119,7 +122,7 @@ public class ComposerTest {
 
     StringReader stringReader = new StringReader(stringWriter.toString());
 
-    Composer composer2 = new Composer(false, true);
+    Composer composer2 = Composer.createSilentComposer();
     assertDoesNotThrow(() -> composer2.loadTrack(stringReader),
         "Did not expect saving to throw an exception");
     assertEquals("trackName", composer2.getTrackName(),
@@ -127,21 +130,21 @@ public class ComposerTest {
     assertEquals("artistName", composer2.getArtistName(),
         "Expected artistName 'artistName', got: " + composer.getArtistName());
     // Check that the only instruments in track are snare and kick
-    assertFalse(composer2.getInstrumentsInTrack().isEmpty(), "Did not expect track to be empty");
+    assertEquals(2, composer2.getInstrumentsInTrack().size(), "Expected two instruments in track");
     assertTrue(
         composer2.getInstrumentsInTrack().stream()
             .allMatch(instrument -> instrument.equals("snare") || instrument.equals("kick")),
         "Did not expect other instruments than snare and kick");
-    // Check that the kick only plays on the 0th sixteenth
-    assertTrue(
-        IntStream.range(0, Track.TRACK_LENGTH)
-            .allMatch(index -> composer2.getTrackPattern("kick").get(index) == (index == 0)),
-        "Expected kick only to be active during index 0");
-    // Check that the snare only plays on the 8th sixteenth
-    assertTrue(
-        IntStream.range(0, Track.TRACK_LENGTH)
-            .allMatch(index -> composer2.getTrackPattern("snare").get(index) == (index == 8)),
-        "Expected snaRe only to be active during index 8");
+
+    for (int i = 0; i < Track.TRACK_LENGTH; i++) {
+      // Check that the kick only plays on the 0th sixteenth
+      assertEquals(i == 0, composer2.getTrackPattern("kick").get(i),
+          "Expected kick only to be active during index 0");
+
+      // Check that the snare only plays on the 8th sixteenth
+      assertEquals(i == 8, composer2.getTrackPattern("snare").get(i),
+          "Expected snare only to be active during index 8");
+    }
 
   }
 }

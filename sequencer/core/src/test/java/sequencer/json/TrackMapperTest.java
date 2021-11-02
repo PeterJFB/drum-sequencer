@@ -129,8 +129,64 @@ public class TrackMapperTest {
     } catch (IOException e) {
       fail("Test failed with an unexpected IOException");
     }
-    Assertions.assertTrue(track.equals(newTrack), "Serialized track did not match the original");
+    Assertions.assertTrue(tracksAreEqual(track, newTrack), 
+        "Serialized track did not match the original");
 
+  }
+
+  /**
+   * Check if two tracks are equal: It compares trackname, artistname, and all
+   * instruments with their patterns.
+   *
+   * @param track1 track to be compared
+   * @param track2 track to compare with
+   * @return true if tracks are equal, false otherwise
+   */
+  private boolean tracksAreEqual(Track track1, Track track2) {
+    if (track1 == track2) {
+      return true;
+    }
+    if ((track1 == null) || (track2 == null) || (track1.getClass() != track2.getClass())) {
+      return false;
+    }
+
+    // Check if both texts are empty (is considered a valid match)
+    if (!((track1.getTrackName() == null || track1.getTrackName().isBlank())
+        && (track2.getTrackName() == null || track2.getTrackName().isBlank()))) {
+
+      // If not check if both texts are equal
+      if (!track1.getTrackName().equals(track2.getTrackName())) {
+        return false;
+      }
+    }
+
+    // Check if both texts are empty (is considered a valid match)
+    if (!((track1.getArtistName() == null || track1.getArtistName().isBlank())
+        && (track2.getArtistName() == null || track2.getArtistName().isBlank()))) {
+
+      // If not check if both texts are equal
+      if (!track1.getArtistName().equals(track2.getArtistName())) {
+        return false;
+      }
+    }
+
+    // Check if the instrument names are equal
+    List<String> instruments1 = track1.getInstrumentNames();
+    List<String> instruments2 = track2.getInstrumentNames();
+    if (!instruments1.equals(instruments2)) {
+      return false;
+    }
+
+    // Check if all the patterns for the instruments are equal
+    for (String instrument : instruments1) {
+      List<Boolean> pattern1 = track1.getPattern(instrument);
+      List<Boolean> pattern2 = track2.getPattern(instrument);
+      if (!pattern1.equals(pattern2)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
 }

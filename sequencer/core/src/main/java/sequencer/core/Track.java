@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * The {@link Track} class represents a collection of instruments programmed to a specific beat, and
@@ -46,9 +45,12 @@ public class Track {
   /**
    * Get all added instruments by their name (key).
    *
-   * @return a List of instrument names as a String.
+   * @return a List of instrument names as Strings. The reason this is a List and not a 
+   *     Collection is so that when saving tracks, the order in which you added the 
+   *     instruments is kept in place, which makes for a better user experience when 
+   *     saving and loading tracks.
    */
-  public List<String> getInstruments() {
+  public List<String> getInstrumentNames() {
     return new ArrayList<>(instruments.keySet());
   }
 
@@ -60,7 +62,7 @@ public class Track {
    *         instruments
    */
   public List<Boolean> getPattern(String instrument) {
-    if (instrument == null || !instruments.keySet().contains(instrument)) {
+    if (instrument == null || !instruments.containsKey(instrument)) {
       throw new IllegalArgumentException(
           "Could not find pattern for instrument since it was not part of the track");
     }
@@ -97,7 +99,10 @@ public class Track {
    * Adds another instrument to instruments with given values.
    *
    * @param instrument name of the new instrument
-   * @param pattern the pattern to apply with the instrument
+   * @param pattern the pattern to apply with the instrument. The reason this is a List and 
+   *     not a Collection, though chaning it would not cause any errors in the code, is so 
+   *     that when using the method one is forced to pass in an ordrered list, as this 
+   *     mathces the intended meaning of a pattern: it is supposed to have an order.
    * @throws IllegalArgumentException if the given pattern is null or has an illegal length
    * 
    */
@@ -115,7 +120,7 @@ public class Track {
    * @param instrument name of the new instrument
    */
   public void addInstrument(String instrument) {
-    if (getInstruments().size() == 5) {
+    if (instruments.size() == 5) {
       throw new IllegalStateException(
           "Cannot add instrument as it has already reached its maximum capazity of 5");
     }
@@ -133,7 +138,7 @@ public class Track {
    * @throws IllegalArgumentException if the instrument to be removed is not part of the track
    */
   public void removeInstrument(String instrument) {
-    if (instrument == null || !instruments.keySet().contains(instrument)) {
+    if (instrument == null || !instruments.containsKey(instrument)) {
       throw new IllegalArgumentException(
           "Instrument could not be removed since it was not part of the track");
     }
@@ -149,7 +154,7 @@ public class Track {
    * @throws IllegalArgumentException if instrument is not a key in instruments, or sixteenth (the
    *         index) is out of bounds
    */
-  public void toggleSixteenth(String instrument, Integer sixteenth)
+  public void toggleSixteenth(String instrument, int sixteenth)
       throws IllegalArgumentException {
     List<Boolean> pattern = instruments.get(instrument);
     if (pattern == null) {
@@ -168,75 +173,9 @@ public class Track {
     Track newTrack = new Track();
     newTrack.setArtistName(artistName);
     newTrack.setTrackName(trackName);
-    for (String instrument : getInstruments()) {
+    for (String instrument : getInstrumentNames()) {
       newTrack.addInstrument(instrument, getPattern(instrument));
     }
     return newTrack;
-  }
-
-  /**
-   * Generate hash to match our equals-method.
-   */
-  @Override
-  public int hashCode() {
-    return Objects.hash(trackName, artistName, instruments);
-  }
-
-
-  /**
-   * Check if this track is equal to some Track: It compares trackname, artistname, and all
-   * instruments with their patterns.
-   *
-   * @param object track to compare to
-   * @return true if tracks are equal, false otherwise
-   */
-  @Override
-  public boolean equals(Object object) {
-    if (this == object) {
-      return true;
-    }
-    if ((object == null) || (object.getClass() != this.getClass())) {
-      return false;
-    }
-
-    Track otherTrack = (Track) object;
-
-    // Check if both texts are empty (is considered a valid match)
-    if (!((getTrackName() == null || getTrackName().isBlank())
-        && (otherTrack.getTrackName() == null || otherTrack.getTrackName().isBlank()))) {
-
-      // If not check if both texts are equal
-      if (!getTrackName().equals(otherTrack.getTrackName())) {
-        return false;
-      }
-    }
-
-    // Check if both texts are empty (is considered a valid match)
-    if (!((getArtistName() == null || getArtistName().isBlank())
-        && (otherTrack.getArtistName() == null || otherTrack.getArtistName().isBlank()))) {
-
-      // If not check if both texts are equal
-      if (!getArtistName().equals(otherTrack.getArtistName())) {
-        return false;
-      }
-    }
-
-    // Check if the instrument names are equal
-    List<String> instruments = getInstruments();
-    List<String> otherInstruments = otherTrack.getInstruments();
-    if (!instruments.equals(otherInstruments)) {
-      return false;
-    }
-
-    // Check if all the patterns for the instruments are equal
-    for (String instrument : instruments) {
-      List<Boolean> pattern = getPattern(instrument);
-      List<Boolean> otherPattern = otherTrack.getPattern(instrument);
-      if (!pattern.equals(otherPattern)) {
-        return false;
-      }
-    }
-
-    return true;
   }
 }

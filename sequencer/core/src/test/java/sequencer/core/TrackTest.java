@@ -1,9 +1,9 @@
 package sequencer.core;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -32,9 +32,9 @@ public class TrackTest {
   @DisplayName("Check that all fields in track are as expected after initialization")
   public static void testConstructor() {
     Track track = new Track();
-    assertEquals(0, track.getInstruments().size());
-    assertEquals(null, track.getTrackName());
-    assertEquals(null, track.getArtistName());
+    assertEquals(0, track.getInstrumentNames().size());
+    assertNull(track.getTrackName());
+    assertNull(track.getArtistName());
   }
 
   /**
@@ -82,10 +82,8 @@ public class TrackTest {
           new ArrayList<>(Arrays.asList(new Boolean[Track.TRACK_LENGTH - 1]));
       Collections.fill(illegalPattern, false);
 
-      assertDoesNotThrow(() -> track.addInstrument(instrument), 
-          "Did not expect adding instrument without pattern to throw an exception");
-      assertDoesNotThrow(() -> track.addInstrument(instrument, legalPattern), 
-          "Did not expect adding instrument with legal pattern to throw an exception");
+      track.addInstrument(instrument);
+      track.addInstrument(instrument, legalPattern);
       assertThrows(IllegalArgumentException.class, () -> track.addInstrument(instrument, null), 
           "Did not throw exception for adding instrument with patter=null");
       assertThrows(IllegalArgumentException.class, 
@@ -96,9 +94,9 @@ public class TrackTest {
     @Test
     @DisplayName("Check getInstruments")
     public void testInstrumentsGetter() {
-      List<String> instruments = new ArrayList<>(Arrays.asList("inst1", "inst2", "inst3"));
-      instruments.stream().forEach(instrument -> track.addInstrument(instrument));
-      List<String> actualInstruments = track.getInstruments();
+      List<String> instruments = List.of("inst1", "inst2", "inst3");
+      instruments.stream().forEach(track::addInstrument);
+      List<String> actualInstruments = track.getInstrumentNames();
       Collections.sort(actualInstruments);
       assertEquals(instruments, actualInstruments);
     }
@@ -152,10 +150,9 @@ public class TrackTest {
     public void testRemoveInstrument() {
       assertThrows(IllegalArgumentException.class, () -> track.removeInstrument("finnes ikke"), 
           "Did not throw exception when removing instrument that was not part of track");
-      assertTrue(track.getInstruments().contains(instruments.get(0)));
-      assertDoesNotThrow(() -> track.removeInstrument(instruments.get(0)), 
-          "Did not expect removing instrument to throw an exception");
-      assertFalse(track.getInstruments().contains(instruments.get(0)));
+      assertTrue(track.getInstrumentNames().contains(instruments.get(0)));
+      track.removeInstrument(instruments.get(0));
+      assertFalse(track.getInstrumentNames().contains(instruments.get(0)));
     }
 
     @Test
@@ -171,18 +168,6 @@ public class TrackTest {
 
       assertThrows(IllegalArgumentException.class, () -> track.toggleSixteenth(instrument, 20), 
           "Did not throw exception when toggeling sixteenth with index out of bounds");
-    }
-  
-    @Test
-    @DisplayName("Check equals method")
-    public void testEquals() {
-      Track track2 = new Track();
-      IntStream.range(0, instruments.size()).forEach((index) -> {
-        track2.addInstrument(instruments.get(index), patterns.get(index));
-      });
-      assertTrue(track.equals(track2));
-      track2.removeInstrument(instruments.get(0));
-      assertFalse(track.equals(track2));
     }
   }
 }

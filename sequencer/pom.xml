@@ -138,5 +138,6 @@
         <module>fxui</module>
         <module>localpersistence</module>
         <module>report</module>
+        <module>rest</module>
     </modules>
 </project>

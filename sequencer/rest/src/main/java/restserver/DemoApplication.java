@@ -2,6 +2,7 @@ package restserver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Collection;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
@@ -22,12 +23,12 @@ public class DemoApplication {
   }
 
   /**
-   * Returns a json-string that countains a list of all tracks.
+   * Returns a collection of all tracks.
    */
   @GetMapping(value = "/tracks", produces = MediaType.APPLICATION_JSON_VALUE)
-  public String tracks() {
+  public Collection<String> tracks() {
     persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", "json");
-    return String.join("<br />", persistenceHandler.listFilenames());
+    return persistenceHandler.listFilenames();
   }
 
   /**

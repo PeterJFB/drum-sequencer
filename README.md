@@ -1,4 +1,6 @@
-# Group gr2101 repository
+<img src="docs/release3/Logo.svg" alt="Drum Sequencer">
+
+> An app to quickly create, edit and save different drum patterns 📾
 
 **main:**
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.stud.ntnu.no/#https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101)
@@ -61,7 +63,7 @@ $ mvn javafx:run -pl fxui # Run application
 
 After which the GUI will be visible on the open `6080` port
 
-<img src=https://cdn-images-1.medium.com/max/2000/1*-yHSkPGNR6Vs07MjLKQAUA.gif width=800></img>
+<img src=https://cdn-images-1.medium.com/max/2000/1*-yHSkPGNR6Vs07MjLKQAUA.gif width=800 />
 
 > ## 🛈 gitpod and audio support
 >

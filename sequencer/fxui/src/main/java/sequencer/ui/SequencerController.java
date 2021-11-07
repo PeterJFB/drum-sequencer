@@ -63,8 +63,8 @@ public class SequencerController {
   // Ratio".
   private static final double HEIGHT_OF_SIXTEENTH = WIDTH_OF_SIXTEENTH * (1 + Math.sqrt(5)) / 2;
   // The number of rows in the application, or in other words, the maximum number
-  // of instruments that can be played simultaneously. This can be safely changed according to one's
-  // needs.
+  // of instruments that can be played simultaneously. This can be safely changed
+  // according to one's needs.
   private static final int NUMBER_OF_ROWS = 5;
 
   private static final String NO_INSTRUMENT_TEXT = "ingen instrument";
@@ -101,8 +101,9 @@ public class SequencerController {
       new String[] {"1093C9", "00425E"}, // blue
       new String[] {"C9104C", "660020"} // red
   );
-  private static final String PROGRESS_BORDER_COLOR = "FCBA03"; // Yellow
 
+  // A List of all the ChoiceBoxes containing available instruments. Their respective index in the
+  // List represents their row.
   private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
   /**
@@ -336,12 +337,7 @@ public class SequencerController {
    */
   @FXML
   private void saveTrack() {
-    try (Writer writer = persistenceHandler.getWriterToFile(composer.getTrackName())) {
-      if (persistenceHandler.isFileInDirectory(composer.getTrackName())) {
-        displayStatusMsg("Track name " + composer.getTrackName() + " is already taken", false);
-        return;
-      }
-
+    try {
       persistenceHandler.writeToFile(composer.getTrackName(), (writer) -> {
         try {
           composer.saveTrack(writer);
@@ -353,7 +349,7 @@ public class SequencerController {
       // Track is successfully saved
       savedTracksChoiceBox.getItems().add(composer.getTrackName());
       displayStatusMsg(composer.getTrackName() + " saved.", true);
-      
+
     } catch (IllegalArgumentException e) {
       displayStatusMsg("Track name has an invalid format.", false);
     } catch (IOException e) {
@@ -385,7 +381,7 @@ public class SequencerController {
           throw new UncheckedIOException(e);
         }
       });
-    
+
       // Track is successfully loaded
       Platform.runLater(this::updateElements);
       displayStatusMsg(composer.getTrackName() + " loaded.", true);
@@ -415,10 +411,10 @@ public class SequencerController {
   @FXML
   private ImageView startStopBtn;
 
-  private static final Image PLAY_IMAGE =
-      new Image(SequencerController.class.getResource("images/play.png").toExternalForm());
-  private static final Image STOP_IMAGE =
-      new Image(SequencerController.class.getResource("images/stop.png").toExternalForm());
+  private static final Image PLAY_ICON = new Image(
+      SequencerController.class.getResource("images/play.png").toExternalForm());
+  private static final Image STOP_ICON = new Image(
+      SequencerController.class.getResource("images/stop.png").toExternalForm());
 
   /**
    * Fires when the "play" or "stop" button is pressed, toggling whether the track is played.
@@ -427,10 +423,10 @@ public class SequencerController {
   private void togglePlayingTrack() {
     if (composer.isPlaying()) {
       composer.stop();
-      startStopBtn.setImage(PLAY_IMAGE);
+      startStopBtn.setImage(PLAY_ICON);
     } else {
       composer.start();
-      startStopBtn.setImage(STOP_IMAGE);
+      startStopBtn.setImage(STOP_ICON);
     }
   }
 
@@ -441,18 +437,15 @@ public class SequencerController {
   private Rectangle statusMsgBackground;
 
   @FXML
-  private GridPane statusMsgContent;
-
-  @FXML
   private ImageView statusMsgIcon;
 
   @FXML
   private Text statusMsgText;
 
-  private static final Image SUCCESS_IMAGE =
-      new Image(SequencerController.class.getResource("images/checked.png").toExternalForm());
-  private static final Image FAILURE_IMAGE =
-      new Image(SequencerController.class.getResource("images/x-mark.png").toExternalForm());
+  private static final Image SUCCESS_ICON = new Image(
+      SequencerController.class.getResource("images/checked.png").toExternalForm());
+  private static final Image FAILURE_ICON = new Image(
+      SequencerController.class.getResource("images/x-mark.png").toExternalForm());
 
   /**
    * Displaying a status message to the user, regarding either success (e.g. track being saved) or
@@ -465,23 +458,14 @@ public class SequencerController {
   private void displayStatusMsg(String msg, boolean success) {
     statusMsg.setLayoutX(WIDTH_OF_SIXTEENTH);
     statusMsg.setLayoutY(HEIGHT_OF_SIXTEENTH * 5);
+    statusMsg.getStyleClass().setAll(success ? "successMsg" : "failureMsg");
 
-    Color backgroundColor = success ? Color.web("#c3e6cd") : Color.web("#fdd4cd");
-    statusMsgBackground.setFill(backgroundColor);
     statusMsgBackground.setWidth(WIDTH_OF_SIXTEENTH * 4);
     statusMsgBackground.setHeight(WIDTH_OF_SIXTEENTH * 1.3);
 
-    if (success) {
-      statusMsgIcon.setImage(SUCCESS_IMAGE);
-    } else {
-      statusMsgIcon.setImage(FAILURE_IMAGE);
-    }
+    statusMsgIcon.setImage(success ? SUCCESS_ICON : FAILURE_ICON);
 
-    String textColor = success ? "#419e6d" : "#c92213";
-    statusMsgText.setFill(Color.web(textColor));
     statusMsgText.setText(msg);
-
-    statusMsgBackground.setStyle("-fx-stroke:" + textColor + ";");
     statusMsgText.setWrappingWidth(statusMsgBackground.getWidth() * 0.7);
 
     playStatusMsgTransition(true);
@@ -507,9 +491,8 @@ public class SequencerController {
    */
   private void playStatusMsgTransition(boolean enter) {
     FadeTransition fadeTransition = new FadeTransition(Duration.millis(1400), statusMsg);
-    int duration = enter ? 1400 : 4000;
     TranslateTransition translateTransition =
-        new TranslateTransition(Duration.millis(duration), statusMsg);
+        new TranslateTransition(Duration.millis(enter ? 1400 : 4000), statusMsg);
     if (enter) {
       fadeTransition.setFromValue(0.0f);
       fadeTransition.setToValue(1.0f);
@@ -529,18 +512,19 @@ public class SequencerController {
   /**
    * Sets a border around all sixteenths in a column.
    *
-   * @param column the column of the sixteenths to set a border around
+   * @param column the column of the sixteenths to give the "playedSixteenth" class, which gives
+   *        them a stroke
    */
   private void addBorderToSixteenths(int column) {
     // Remove all borders
-    instrumentsPattern.getChildren().forEach(sixteenth -> ((Rectangle) sixteenth).setStroke(null));
+    instrumentsPattern.getChildren()
+        .forEach(sixteenth -> ((Rectangle) sixteenth).getStyleClass().remove("playedSixteenth"));
     // Set the borders of all squares in the correct column
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
       Rectangle sixteenth = (Rectangle) instrumentsPattern.getChildren()
           .get(row * Composer.getTrackLength() + column);
-      sixteenth.setStroke(Color.web(PROGRESS_BORDER_COLOR));
+      sixteenth.getStyleClass().add("playedSixteenth");
     }
-
   }
 
 }

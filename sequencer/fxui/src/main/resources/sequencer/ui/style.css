@@ -1,5 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&display=swap');
 
+/* Defining color variables in the root element */
+* {
+    -fx-success-dark-green: #419E6D;
+    -fx-success-light-green: #C3E6CD;
+    -fx-failure-dark-red: #C92213;
+    -fx-failure-light-red: #FDD4CD;
+}
+
 #header {
     -fx-background-color: #545454;
         background-color: #545454;
@@ -27,8 +35,8 @@
 }
 
 #loadTrackBtn:hover {
-    -fx-background-color: #602caf;
-        background-color: #602caf;
+    -fx-background-color: #602CAF;
+        background-color: #602CAF;
 }
 
 #loadTrackBtn:pressed {
@@ -138,6 +146,35 @@
         cursor: hand;
     -fx-arc-width: 30.0;
     -fx-arc-height: 30.0;
+}
+
+.playedSixteenth {
+    -fx-stroke: #FCBA03;
+        stroke: #FCBA03;
+}
+
+.successMsg #statusMsgBackground {
+    -fx-fill: -fx-success-light-green;
+        fill: -fx-success-light-green;
+    -fx-stroke: -fx-success-dark-green;
+        stroke: -fx-success-dark-green;
+}
+
+.successMsg #statusMsgText {
+    -fx-fill: -fx-success-dark-green;
+        fill: -fx-success-dark-green;
+}
+
+.failureMsg #statusMsgBackground {
+    -fx-fill: -fx-failure-light-red;
+        fill: -fx-failure-light-red;
+    -fx-stroke: -fx-failure-dark-red;
+        stroke: -fx-failure-dark-red;
+}
+
+.failureMsg #statusMsgText {
+    -fx-fill: -fx-failure-dark-red;
+        fill: -fx-failure-dark-red;
 }
 
 #statusMsgBackground {

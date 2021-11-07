@@ -1,9 +1,7 @@
 package sequencer.ui;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.UncheckedIOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,7 +65,7 @@ public class SequencerController {
   // of instruments that can be played simultaneously.
   private static final int NUMBER_OF_ROWS = 5;
 
-  private static final String NO_INSTRUMENT_TEXT = "ingen instrument";
+  private static final String NO_INSTRUMENT_TEXT = "no instrument";
 
   @FXML
   private GridPane header;

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,8 +40,8 @@ public class DemoApplication {
    * @param name the name of the track to load
    * @return the track, or the text "Track not found" with an error code of 404
    */
-  @GetMapping(value = "/track", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> getTrack(@RequestParam(value = "name") String name) {
+  @GetMapping(value = "/track/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> getTrack(@PathVariable String name) {
     persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", "json");
     StringBuilder stringBuilder = new StringBuilder();
     try {
@@ -68,14 +69,14 @@ public class DemoApplication {
    * @param name the name of the track to save
    * @return "fail" or "success" with error codes
    */
-  @PostMapping("/track")
+  @PostMapping("/track/{name}")
   public ResponseEntity<String> postTrack(@RequestBody String trackAsJson,
-      @RequestParam(value = "name") String name) {
+      @PathVariable String name) {
     persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", "json");
     try {
       persistenceHandler.writeToFile(name, writer -> {
         try {
-          writer.write(trackAsJSON);
+          writer.write(trackAsJson);
         } catch (IOException e) {
           System.err.println(e.getMessage());
         }

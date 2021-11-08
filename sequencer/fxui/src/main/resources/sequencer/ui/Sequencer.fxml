@@ -41,7 +41,7 @@
             
             <GridPane fx:id="trackNamePane" GridPane.columnIndex="2">
                 <Text fx:id="trackNameLabel" text="TRACK NAME" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
-                <TextField fx:id="trackName" onKeyTyped="#editTrackName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                <TextField fx:id="trackName" text="untitled" onTextChange="#editTrackName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                 <columnConstraints>
                     <ColumnConstraints hgrow="ALWAYS" />
                 </columnConstraints>
@@ -53,7 +53,7 @@
 
             <GridPane fx:id="artistNamePane" GridPane.columnIndex="3">
                 <Text fx:id="artistNameLabel" text="ARTIST NAME" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
-                <TextField fx:id="artistName" onKeyTyped="#editArtistName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                <TextField fx:id="artistName" text="unknown" onTextChange="#editArtistName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                 <columnConstraints>
                     <ColumnConstraints hgrow="ALWAYS" />
                 </columnConstraints>

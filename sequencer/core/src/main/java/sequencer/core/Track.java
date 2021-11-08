@@ -120,10 +120,6 @@ public class Track {
    * @param instrument name of the new instrument
    */
   public void addInstrument(String instrument) {
-    if (instruments.size() == 5) {
-      throw new IllegalStateException(
-          "Cannot add instrument as it has already reached its maximum capazity of 5");
-    }
     List<Boolean> pattern = new ArrayList<>();
     for (int i = 0; i < TRACK_LENGTH; i++) {
       pattern.add(false);

@@ -51,7 +51,6 @@ public class SequencerController {
         new PersistenceHandler("drum-sequencer-persistence", Composer.getSerializationFormat());
 
     createElements();
-    addBorderToSixteenths(0);
   }
 
   // By utilizing a constant throughout the code, the sizes and layout locations
@@ -62,7 +61,8 @@ public class SequencerController {
   // Ratio".
   private static final double HEIGHT_OF_SIXTEENTH = WIDTH_OF_SIXTEENTH * (1 + Math.sqrt(5)) / 2;
   // The number of rows in the application, or in other words, the maximum number
-  // of instruments that can be played simultaneously.
+  // of instruments that can be played simultaneously. This can be safely changed
+  // according to one's needs.
   private static final int NUMBER_OF_ROWS = 5;
 
   private static final String NO_INSTRUMENT_TEXT = "no instrument";
@@ -99,15 +99,16 @@ public class SequencerController {
       new String[] {"1093C9", "00425E"}, // blue
       new String[] {"C9104C", "660020"} // red
   );
-  private static final String PROGRESS_BORDER_COLOR = "FCBA03"; // Yellow
 
+  // A List of all the ChoiceBoxes containing available instruments. Their respective index in the
+  // List represents their row.
   private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
   /**
-   * Rendering all major elements, including pattern and its current configuration. Is also called
-   * when loading a saved track.
+   * Rendering all major elements, including all the sixteenth rectangles. WIDTH_OF_SIXTEENTH is
+   * heavily utilized, and makes the application responsive according to one's needs (e.g. scaling).
    */
-  public void createElements() {
+  private void createElements() {
     // Giving all of the sections of the application their respective sizes and
     // layout locations:
     instrumentsPattern.setPrefSize(
@@ -166,28 +167,24 @@ public class SequencerController {
         sixteenth.setLayoutY(layoutY);
         sixteenth.setId(col + "," + row);
         sixteenth.getStyleClass().add("sixteenth");
-        sixteenth.setFill(Color.web(COLORS.get(row)[1]));
+        sixteenth.setFill(Color.web(COLORS.get(row % COLORS.size())[1]));
         sixteenth.setOnMouseClicked(event -> toggleSixteenth((Rectangle) event.getSource(), false));
-        sixteenth.setEffect(null);
         instrumentsPattern.getChildren().add(sixteenth);
       }
 
     }
 
+    addBorderToSixteenths(0);
+
     savedTracksChoiceBox.getItems().addAll(persistenceHandler.listFilenames());
-
-    // Displaying the name of the track and the artist:
-    trackName.setText(composer.getTrackName() != null ? composer.getTrackName() : "untitled");
-    artistName.setText(composer.getArtistName() != null ? composer.getArtistName() : "unknown");
-
   }
 
   /**
    * Updating elements when loading a new track, in stead of re-using createElements(), as it
    * contains unnecessery code.
    */
-  public void updateElements() {
-    updateInstrumentChoiceBoxAlternatives();
+  private void updateElements() {
+    updateInstrumentAlternatives();
 
     List<String> instruments = composer.getInstrumentsInTrack();
 
@@ -195,7 +192,7 @@ public class SequencerController {
       ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
 
       if (row >= instruments.size()) {
-        resetPattern(String.valueOf(row));
+        resetPattern(row);
         instrumentChoiceBox.setValue("");
         continue;
       }
@@ -205,9 +202,8 @@ public class SequencerController {
       List<Boolean> pattern = composer.getTrackPattern(instrument);
 
       for (int col = 0; col < pattern.size(); col++) {
-        Rectangle sixteenth = (Rectangle) instrumentsPattern
-            .lookup("#" + String.valueOf(col) + "," + String.valueOf(row));
-
+        Rectangle sixteenth =
+            (Rectangle) instrumentsPattern.getChildren().get(row * Composer.getTrackLength() + col);
         // Checking whether the sixteenth has an effect is a quick way of checking if it
         // is "active"
         if (pattern.get(col) != (sixteenth.getEffect() != null)) {
@@ -221,12 +217,11 @@ public class SequencerController {
   }
 
   /**
-   * Updating all the choiceboxes for instruments when a new instrument has been added to the track.
-   * This is to make sure that the instrument won't be possible to chose in another instrument row
-   * anymore, and so that if a new instrument has become avalible it will be possible to choose in
-   * all instrument rows again.
+   * Updating all the ChoiceBoxes containing instruments whenever a new instrument has been added to
+   * the track. This is to make sure that the specified instrument will not be accesible elsewhere.
+   * In addition, if an instrument becomes avalible, it will be accesible in all of the rows again.
    */
-  private void updateInstrumentChoiceBoxAlternatives() {
+  private void updateInstrumentAlternatives() {
     List<String> instrumentsInTrack = composer.getInstrumentsInTrack();
     List<String> instrumentsNotUsed = composer.getAvailableInstruments().stream()
         .filter(instrument -> !instrumentsInTrack.contains(instrument))
@@ -237,7 +232,7 @@ public class SequencerController {
       if (instrumentChosen != null && instrumentChosen.equals(NO_INSTRUMENT_TEXT)) {
         instrumentChosen = null;
         instrumentChoiceBox.setValue("");
-        resetPattern(Integer.toString(row));
+        resetPattern(row);
       }
       List<String> instrumentsToRemove = instrumentChoiceBox.getItems();
       instrumentsToRemove.remove(instrumentChosen);
@@ -252,23 +247,23 @@ public class SequencerController {
    *
    * @param row the index as a String of the row that is to be reset
    */
-  public void resetPattern(String row) {
-    String toggledColor = COLORS.get(Integer.parseInt(row))[1];
-    for (int i = 0; i < Composer.getTrackLength(); i++) {
+  private void resetPattern(int row) {
+    String toggledColor = COLORS.get(row % COLORS.size())[1];
+    for (int col = 0; col < Composer.getTrackLength(); col++) {
       Rectangle sixteenth =
-          (Rectangle) instrumentsPattern.lookup("#" + String.valueOf(i) + "," + row);
+          (Rectangle) instrumentsPattern.getChildren().get(row * Composer.getTrackLength() + col);
       sixteenth.setEffect(null);
       sixteenth.setFill(Color.web(toggledColor));
     }
   }
 
   /**
-   * Updates a instrument, i.e. removes the old instrument and adds the new
+   * Updates an instrument, i.e. removes the old instrument and adds the new.
    *
    * @param oldInstrument the old instrument that is to be removed
    * @param newInstrument the new instrument that is to be added
    */
-  public void addInstrument(String oldInstrument, String newInstrument) {
+  private void addInstrument(String oldInstrument, String newInstrument) {
     // Only runs the if when the new instrument isn't already in track and is not empty
     // If so, the method is called because a new track is loaded, not because the user added an
     // instrument, and nothing is to be done.
@@ -291,18 +286,18 @@ public class SequencerController {
         composer.addInstrumentToTrack(newInstrument, oldPattern);
         composer.removeInstrumentFromTrack(oldInstrument);
       }
-      updateInstrumentChoiceBoxAlternatives();
+      updateInstrumentAlternatives();
     }
   }
 
   /**
-   * Turns on or off a specific sixteenth.
+   * Toggles a specific sixteenth.
    *
    * @param sixteenth the sixteenth which is to be toggled
    * @param updatingElements indicates if we're updating a track in the GUI, and if so, the
    *        sixteenth should not be toggled in the Track class
    */
-  public void toggleSixteenth(Rectangle sixteenth, boolean updatingElements) {
+  private void toggleSixteenth(Rectangle sixteenth, boolean updatingElements) {
     int[] sixteenthId =
         Arrays.stream(sixteenth.getId().split(",")).mapToInt(Integer::parseInt).toArray();
 
@@ -317,7 +312,7 @@ public class SequencerController {
     // the color.
     int toggledIndex =
         composer.getTrackPattern(instrument).get(sixteenthId[0]) ^ updatingElements ? 1 : 0;
-    String toggledColor = COLORS.get(sixteenthId[1])[toggledIndex];
+    String toggledColor = COLORS.get(sixteenthId[1] % COLORS.size())[toggledIndex];
     if (toggledIndex == 0) {
       DropShadow dropShadow = new DropShadow();
       dropShadow.setRadius(WIDTH_OF_SIXTEENTH / 2.5);
@@ -335,17 +330,12 @@ public class SequencerController {
   }
 
   /**
-   * Fires when user presses the "enter" key in the track name text field. Updates the track name
-   * for the track.
+   * Fires when user presses the save button, and saves the pattern and metadata of the track made
+   * in the UI.
    */
   @FXML
-  public void saveTrack() {
+  private void saveTrack() {
     try {
-      if (persistenceHandler.isFileInDirectory(composer.getTrackName())) {
-        displayStatusMsg("Track name " + composer.getTrackName() + " is already taken", false);
-        return;
-      }
-
       persistenceHandler.writeToFile(composer.getTrackName(), (writer) -> {
         try {
           composer.saveTrack(writer);
@@ -356,8 +346,8 @@ public class SequencerController {
 
       // Track is successfully saved
       savedTracksChoiceBox.getItems().add(composer.getTrackName());
-      displayStatusMsg("Track saved.", true);
-      
+      displayStatusMsg(composer.getTrackName() + " saved.", true);
+
     } catch (IllegalArgumentException e) {
       displayStatusMsg("Track name has an invalid format.", false);
     } catch (IOException e) {
@@ -368,10 +358,10 @@ public class SequencerController {
   }
 
   /**
-   * Fires when the user selects a value from the ChoiceBox containing saved instruments.
+   * Fires when the user selects an option from the ChoiceBox containing available instruments.
    */
   @FXML
-  public void toggleLoadBtn() {
+  private void toggleLoadBtn() {
     loadTrackBtn.setDisable(false);
   }
 
@@ -379,7 +369,7 @@ public class SequencerController {
    * Fires when user presses the "Load" button. Loads the pattern and metadata of the track.
    */
   @FXML
-  public void loadTrack() {
+  private void loadTrack() {
     try {
       String trackName = savedTracksChoiceBox.getValue();
       persistenceHandler.readFromFile(trackName, (reader) -> {
@@ -389,7 +379,7 @@ public class SequencerController {
           throw new UncheckedIOException(e);
         }
       });
-    
+
       // Track is successfully loaded
       Platform.runLater(this::updateElements);
       displayStatusMsg(composer.getTrackName() + " loaded.", true);
@@ -399,48 +389,43 @@ public class SequencerController {
   }
 
   /**
-   * Fires when user presses a key in the track name text field. Updates the track name for the
+   * Fires when the text in the trackName TextField changes, and updates the track name for the
    * track.
    */
   @FXML
-  public void editTrackName(KeyEvent e) {
-    String newTrackName = trackName.getText();
-    composer.setTrackName(newTrackName);
-    // if (e.getCode() == KeyCode.ENTER) {
-    // header.requestFocus();
-    // }
+  private void editTrackName() {
+    composer.setTrackName(trackName.getText());
   }
 
   /**
-   * Fires when user presses a key in the artist name text field. Updates the artist name for the
+   * Fires when the text in the artistName TextField changes, and updates the artist name for the
    * track.
    */
   @FXML
-  public void editArtistName(KeyEvent e) {
-    String newArtistName = artistName.getText();
-    composer.setArtistName(newArtistName);
-    if (e.getCode() == KeyCode.ENTER) {
-      header.requestFocus();
-    }
+  private void editArtistName() {
+    composer.setArtistName(artistName.getText());
   }
 
   @FXML
   private ImageView startStopBtn;
 
+  private static final Image PLAY_ICON = new Image(
+      SequencerController.class.getResource("images/play.png").toExternalForm());
+  private static final Image STOP_ICON = new Image(
+      SequencerController.class.getResource("images/stop.png").toExternalForm());
+
   /**
    * Fires when the "play" or "stop" button is pressed, toggling whether the track is played.
    */
   @FXML
-  public void togglePlayingTrack() {
-    String toggledImageUrl;
+  private void togglePlayingTrack() {
     if (composer.isPlaying()) {
       composer.stop();
-      toggledImageUrl = "images/play.png";
+      startStopBtn.setImage(PLAY_ICON);
     } else {
       composer.start();
-      toggledImageUrl = "images/stop.png";
+      startStopBtn.setImage(STOP_ICON);
     }
-    startStopBtn.setImage(new Image(getClass().getResource(toggledImageUrl).toExternalForm()));
   }
 
   @FXML
@@ -450,39 +435,35 @@ public class SequencerController {
   private Rectangle statusMsgBackground;
 
   @FXML
-  private GridPane statusMsgContent;
-
-  @FXML
   private ImageView statusMsgIcon;
 
   @FXML
   private Text statusMsgText;
 
+  private static final Image SUCCESS_ICON = new Image(
+      SequencerController.class.getResource("images/checked.png").toExternalForm());
+  private static final Image FAILURE_ICON = new Image(
+      SequencerController.class.getResource("images/x-mark.png").toExternalForm());
+
   /**
    * Displaying a status message to the user, regarding either success (e.g. track being saved) or
-   * fail (e.g.: failure to load track).
+   * fail (e.g. failure to load track).
    *
    * @param msg the message to be displayed
    * @param success indicates whether the message is a success or not (fail). This is utilized to
    *        decide which color to use (green => success, red => fail)
    */
-  public void displayStatusMsg(String msg, boolean success) {
+  private void displayStatusMsg(String msg, boolean success) {
     statusMsg.setLayoutX(WIDTH_OF_SIXTEENTH);
     statusMsg.setLayoutY(HEIGHT_OF_SIXTEENTH * 5);
+    statusMsg.getStyleClass().setAll(success ? "successMsg" : "failureMsg");
 
-    Color backgroundColor = success ? Color.web("#c3e6cd") : Color.web("#fdd4cd");
-    statusMsgBackground.setFill(backgroundColor);
     statusMsgBackground.setWidth(WIDTH_OF_SIXTEENTH * 4);
     statusMsgBackground.setHeight(WIDTH_OF_SIXTEENTH * 1.3);
 
-    String statusMsgIconUrl = success ? "images/checked.png" : "images/x-mark.png";
-    statusMsgIcon.setImage(new Image(getClass().getResource(statusMsgIconUrl).toExternalForm()));
+    statusMsgIcon.setImage(success ? SUCCESS_ICON : FAILURE_ICON);
 
-    String textColor = success ? "#419e6d" : "#c92213";
-    statusMsgText.setFill(Color.web(textColor));
     statusMsgText.setText(msg);
-
-    statusMsgBackground.setStyle("-fx-stroke:" + textColor + ";");
     statusMsgText.setWrappingWidth(statusMsgBackground.getWidth() * 0.7);
 
     playStatusMsgTransition(true);
@@ -508,9 +489,8 @@ public class SequencerController {
    */
   private void playStatusMsgTransition(boolean enter) {
     FadeTransition fadeTransition = new FadeTransition(Duration.millis(1400), statusMsg);
-    int duration = enter ? 1400 : 4000;
     TranslateTransition translateTransition =
-        new TranslateTransition(Duration.millis(duration), statusMsg);
+        new TranslateTransition(Duration.millis(enter ? 1400 : 4000), statusMsg);
     if (enter) {
       fadeTransition.setFromValue(0.0f);
       fadeTransition.setToValue(1.0f);
@@ -530,17 +510,19 @@ public class SequencerController {
   /**
    * Sets a border around all sixteenths in a column.
    *
-   * @param column the column to set a border around
+   * @param column the column of the sixteenths to give the "playedSixteenth" class, which gives
+   *        them a stroke
    */
-  public void addBorderToSixteenths(int column) {
+  private void addBorderToSixteenths(int column) {
     // Remove all borders
-    instrumentsPattern.getChildren().forEach(sixteenth -> ((Rectangle) sixteenth).setStroke(null));
+    instrumentsPattern.getChildren()
+        .forEach(sixteenth -> ((Rectangle) sixteenth).getStyleClass().remove("playedSixteenth"));
     // Set the borders of all squares in the correct column
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
-      Rectangle sixteenth = (Rectangle) instrumentsPattern.lookup("#" + column + "," + row);
-      sixteenth.setStroke(Color.web(PROGRESS_BORDER_COLOR));
+      Rectangle sixteenth = (Rectangle) instrumentsPattern.getChildren()
+          .get(row * Composer.getTrackLength() + column);
+      sixteenth.getStyleClass().add("playedSixteenth");
     }
-
   }
 
 }

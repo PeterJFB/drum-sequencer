@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import sequencer.persistence.PersistenceHandler;
 
+/**
+ * Controller for the track endpoints in the REST-api.
+ */
 @RestController
 public class TrackController {
   private PersistenceHandler persistenceHandler;

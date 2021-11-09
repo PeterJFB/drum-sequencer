@@ -78,7 +78,7 @@ public class TrackController {
 
       });
     } catch (IOException e) {
-      return new ResponseEntity<>("fail", HttpStatus.I_AM_A_TEAPOT);
+      return new ResponseEntity<>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     return new ResponseEntity<>("success", HttpStatus.OK);

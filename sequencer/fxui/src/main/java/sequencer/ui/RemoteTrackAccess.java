@@ -14,7 +14,7 @@ import java.net.URL;
 
 import sequencer.core.Composer;
 
-public class RemoteTrackAccess {
+public class RemoteTrackAccess implements ITrackAcces {
   Composer composer;
   String baseUrl;
   URL url;

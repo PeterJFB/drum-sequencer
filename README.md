@@ -58,6 +58,14 @@ After which the GUI will be visible on the open `6080` port
 >
 > As of now, the `gitlab/workspace-full-vnc` dockerimage is [resticted when it comes to audio support](https://www.gitpod.io/blog/native-ui-with-vnc). This makes it difficult to test the audio-specific features within the network-based IDE. While the project runs fine within gitpod, it is recommended to experience the audio-based features of the project locally.
 
+### Server with REST-API
+
+The server uses [Spring Boot](https://spring.io/projects/spring-boot) with [Apache Tomcat](http://tomcat.apache.org/). By default it is hosted on port 8080. To run, type the following from the `sequencer-folder`:
+
+```bash
+$ mvn -pl rest spring-boot:run #Start server
+```
+
 ## Code quality and CI
 
 This project uses CI to ensure good code quality throughout the project. Code will not be merged if it doesn't pass all checks described below.

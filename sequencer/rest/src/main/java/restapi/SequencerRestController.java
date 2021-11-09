@@ -1,4 +1,4 @@
-package restserver;
+package restapi;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,8 @@ import sequencer.persistence.PersistenceHandler;
  * Controller for the track endpoints in the REST-api.
  */
 @RestController
-public class TrackController {
+@Component
+public class SequencerRestController {
   private PersistenceHandler persistenceHandler;
 
   /**

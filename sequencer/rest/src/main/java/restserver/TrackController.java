@@ -23,7 +23,7 @@ public class TrackController {
   /**
    * Returns a collection of all tracks.
    */
-  @GetMapping(value = "/tracks", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/api/tracks", produces = MediaType.APPLICATION_JSON_VALUE)
   public Collection<String> getTracks() {
     persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", "json");
     return persistenceHandler.listFilenames();
@@ -35,7 +35,7 @@ public class TrackController {
    * @param name the name of the track to load
    * @return the track, or the text "Track not found" with an error code of 404
    */
-  @GetMapping(value = "/track/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/api/track/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getTrack(@PathVariable String name) {
     persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", "json");
     StringBuilder stringBuilder = new StringBuilder();
@@ -64,7 +64,7 @@ public class TrackController {
    * @param name the name of the track to save
    * @return "fail" or "success" with error codes
    */
-  @PostMapping("/track/{name}")
+  @PostMapping("/api/track/{name}")
   public ResponseEntity<String> postTrack(@RequestBody String trackAsJson,
       @PathVariable String name) {
     persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", "json");

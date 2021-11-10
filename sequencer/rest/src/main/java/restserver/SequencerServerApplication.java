@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Rest server application.
  */
-@SpringBootApplication(scanBasePackages = {"restapi"})
+@SpringBootApplication(scanBasePackages = { "restapi", "restserver" })
 public class SequencerServerApplication {
   public static void main(String[] args) {
     SpringApplication.run(SequencerServerApplication.class, args);

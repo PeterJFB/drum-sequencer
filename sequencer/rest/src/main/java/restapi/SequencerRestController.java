@@ -3,6 +3,7 @@ package restapi;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Collection;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ import sequencer.persistence.PersistenceHandler;
 @RestController
 @Component
 public class SequencerRestController {
+
+  @Autowired
   private PersistenceHandler persistenceHandler;
 
   /**
@@ -27,7 +30,6 @@ public class SequencerRestController {
    */
   @GetMapping(value = "/api/tracks", produces = MediaType.APPLICATION_JSON_VALUE)
   public Collection<String> getTracks() {
-    persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", "json");
     return persistenceHandler.listFilenames();
   }
 
@@ -39,7 +41,6 @@ public class SequencerRestController {
    */
   @GetMapping(value = "/api/track/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getTrack(@PathVariable String name) {
-    persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", "json");
     StringBuilder stringBuilder = new StringBuilder();
     try {
       persistenceHandler.readFromFile(name, reader -> {
@@ -62,14 +63,13 @@ public class SequencerRestController {
   /**
    * Save a track to a file.
    *
-   * @param trackAsJson The track as a JSON-object
-   * @param name the name of the track to save
+   * @param trackAsJson the track as a JSON-object
+   * @param name        the name of the track to save
    * @return "fail" or "success" with error codes
    */
   @PostMapping("/api/track/{name}")
-  public ResponseEntity<String> postTrack(@RequestBody String trackAsJson,
+  public ResponseEntity<String> postTrack(@RequestBody String trackAsJson, 
       @PathVariable String name) {
-    persistenceHandler = new PersistenceHandler("drum-sequencer-persistence", "json");
     try {
       persistenceHandler.writeToFile(name, writer -> {
         try {

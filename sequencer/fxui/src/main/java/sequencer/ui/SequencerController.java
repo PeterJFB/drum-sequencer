@@ -25,6 +25,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -65,13 +66,11 @@ public class SequencerController {
   // according to one's needs.
   private static final int NUMBER_OF_ROWS = 5;
 
-  private static final String NO_INSTRUMENT_TEXT = "no instrument";
-
   @FXML
   private GridPane header;
 
   @FXML
-  private ChoiceBox<String> savedTracksChoiceBox;
+  private ChoiceBox<String> savedTracks;
 
   @FXML
   private Button loadTrackBtn;
@@ -100,8 +99,8 @@ public class SequencerController {
       new String[] {"C9104C", "660020"} // red
   );
 
-  // A List of all the ChoiceBoxes containing available instruments. Their respective index in the
-  // List represents their row.
+  // A List of all the ChoiceBoxes containing available instruments. Their index in the
+  // List is their respective row.
   private List<ChoiceBox<String>> instrumentChoiceBoxes = new ArrayList<>();
 
   /**
@@ -137,7 +136,9 @@ public class SequencerController {
 
       // Creating the sub panels inside of instrumentsPanel, which all contains
       // their own ChoiceBox with a list of available instruments:
-      StackPane instrumentSubPanel = new StackPane();
+      GridPane instrumentSubPanel = new GridPane();
+      instrumentSubPanel.setHgap(10);
+
       instrumentSubPanel.setPrefSize(instrumentsPanel.getPrefWidth(), HEIGHT_OF_SIXTEENTH);
       instrumentSubPanel.setLayoutY(layoutY + timeline.getPrefHeight());
       instrumentSubPanel.getStyleClass().add("instrumentSubPanel");
@@ -145,24 +146,29 @@ public class SequencerController {
       // Creating the instrument ChoiceBox, and adding it to the sub panel:
       ChoiceBox<String> availableInstruments = new ChoiceBox<>();
       availableInstruments.setId(String.valueOf(row));
-      availableInstruments.getStyleClass().add("availableInstrumentsChoiceBox");
+      availableInstruments.getStyleClass().add("availableInstruments");
       List<String> instrumentsNotUsed = composer.getAvailableInstruments().stream()
           .filter(instrument -> !composer.getInstrumentsInTrack().contains(instrument))
           .collect(Collectors.toList());
       availableInstruments.getItems().addAll(instrumentsNotUsed);
-      availableInstruments.getItems().add(NO_INSTRUMENT_TEXT);
       availableInstruments.valueProperty()
           .addListener((observable, oldValue, newValue) -> addInstrument(oldValue, newValue));
-      instrumentSubPanel.getChildren().add(availableInstruments);
+      instrumentSubPanel.add(availableInstruments, 1, 0);
       instrumentChoiceBoxes.add(availableInstruments);
+
+      Rectangle resetRowBtn = new Rectangle(40, 40);
+      final int rowArg = row;
+      resetRowBtn.setOnMouseClicked((event) -> resetRow(rowArg));
+      resetRowBtn.getStyleClass().add("resetRowBtn");
+      resetRowBtn.setFill(new ImagePattern(
+          new Image(SequencerController.class.getResource("images/reset.png").toExternalForm())));
+      instrumentSubPanel.add(resetRowBtn, 2, 0);
 
       instrumentsPanel.getChildren().add(instrumentSubPanel);
 
       for (int col = 0; col < Composer.getTrackLength(); col++) {
         // Creating all the clickable sixteenth-rectangles:
-        Rectangle sixteenth = new Rectangle();
-        sixteenth.setWidth(WIDTH_OF_SIXTEENTH);
-        sixteenth.setHeight(HEIGHT_OF_SIXTEENTH);
+        Rectangle sixteenth = new Rectangle(WIDTH_OF_SIXTEENTH, HEIGHT_OF_SIXTEENTH);
         sixteenth.setLayoutX(WIDTH_OF_SIXTEENTH * col + (WIDTH_OF_SIXTEENTH / 10) * (col + 1));
         sixteenth.setLayoutY(layoutY);
         sixteenth.setId(col + "," + row);
@@ -176,7 +182,7 @@ public class SequencerController {
 
     addBorderToSixteenths(0);
 
-    savedTracksChoiceBox.getItems().addAll(persistenceHandler.listFilenames());
+    savedTracks.getItems().addAll(persistenceHandler.listFilenames());
   }
 
   /**
@@ -192,8 +198,7 @@ public class SequencerController {
       ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
 
       if (row >= instruments.size()) {
-        resetPattern(row);
-        instrumentChoiceBox.setValue("");
+        resetRow(row);
         continue;
       }
 
@@ -229,26 +234,29 @@ public class SequencerController {
     for (int row = 0; row < NUMBER_OF_ROWS; row++) {
       ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
       String instrumentChosen = instrumentChoiceBox.getValue();
-      if (instrumentChosen != null && instrumentChosen.equals(NO_INSTRUMENT_TEXT)) {
-        instrumentChosen = null;
-        instrumentChoiceBox.setValue("");
-        resetPattern(row);
-      }
       List<String> instrumentsToRemove = instrumentChoiceBox.getItems();
       instrumentsToRemove.remove(instrumentChosen);
       instrumentChoiceBox.getItems().removeAll(instrumentsToRemove);
       instrumentChoiceBox.getItems().addAll(instrumentsNotUsed);
-      instrumentChoiceBox.getItems().add(NO_INSTRUMENT_TEXT);
     }
   }
 
   /**
    * Resets a given row by turning off every sixteenth.
    *
-   * @param row the index as a String of the row that is to be reset
+   * @param row the index of the row that is to be reset
    */
-  private void resetPattern(int row) {
-    String toggledColor = COLORS.get(row % COLORS.size())[1];
+  private void resetRow(int row) {
+    ChoiceBox<String> instruments = instrumentChoiceBoxes.get(row);
+    String instrument = instruments.getValue();
+    if (instrument == null) {
+      return;
+    }
+    instruments.setValue("");
+    composer.removeInstrumentFromTrack(instrument);
+    instrumentChoiceBoxes.forEach(i -> i.getItems().add(instrument));
+
+    final String toggledColor = COLORS.get(row % COLORS.size())[1];
     for (int col = 0; col < Composer.getTrackLength(); col++) {
       Rectangle sixteenth =
           (Rectangle) instrumentsPattern.getChildren().get(row * Composer.getTrackLength() + col);
@@ -264,30 +272,18 @@ public class SequencerController {
    * @param newInstrument the new instrument that is to be added
    */
   private void addInstrument(String oldInstrument, String newInstrument) {
-    // Only runs the if when the new instrument isn't already in track and is not empty
-    // If so, the method is called because a new track is loaded, not because the user added an
-    // instrument, and nothing is to be done.
-    if (!composer.getInstrumentsInTrack().contains(newInstrument) && !newInstrument.isBlank()) {
-      if (newInstrument.equals(NO_INSTRUMENT_TEXT)
-          && (oldInstrument == null || oldInstrument.isBlank())) {
-        // If the new instrument is NO_INSTRUMENT_TEXT and the old is empty, nothing is done
-      } else if (newInstrument.equals(NO_INSTRUMENT_TEXT)) {
-        // If the new instrument is NO_INSTRUMENT_TEXT
-        // and the old isn't empty the old instrument is removed
-        composer.removeInstrumentFromTrack(oldInstrument);
-      } else if (oldInstrument == null || oldInstrument.isBlank()) {
-        // If the new instrument isn't NO_INSTRUMENT_TEXT
-        // and the old is empty the new instrument is added
-        composer.addInstrumentToTrack(newInstrument);
-      } else {
-        // If the new instrument isn't NO_INSTRUMENT_TEXT
-        // and the old isn't empty the old is removed and the new is added
-        List<Boolean> oldPattern = composer.getTrackPattern(oldInstrument);
-        composer.addInstrumentToTrack(newInstrument, oldPattern);
-        composer.removeInstrumentFromTrack(oldInstrument);
-      }
-      updateInstrumentAlternatives();
+    if (composer.getInstrumentsInTrack().contains(newInstrument) || newInstrument == null
+        || newInstrument.isBlank()) {
+      return;
     }
+    if (oldInstrument == null || oldInstrument.isBlank()) {
+      composer.addInstrumentToTrack(newInstrument);
+    } else {
+      List<Boolean> oldPattern = composer.getTrackPattern(oldInstrument);
+      composer.addInstrumentToTrack(newInstrument, oldPattern);
+      composer.removeInstrumentFromTrack(oldInstrument);
+    }
+    instrumentChoiceBoxes.forEach(i -> i.getItems().remove(newInstrument));
   }
 
   /**
@@ -345,7 +341,7 @@ public class SequencerController {
       });
 
       // Track is successfully saved
-      savedTracksChoiceBox.getItems().add(composer.getTrackName());
+      savedTracks.getItems().add(composer.getTrackName());
       displayStatusMsg(composer.getTrackName() + " saved.", true);
 
     } catch (IllegalArgumentException e) {
@@ -371,7 +367,7 @@ public class SequencerController {
   @FXML
   private void loadTrack() {
     try {
-      String trackName = savedTracksChoiceBox.getValue();
+      String trackName = savedTracks.getValue();
       persistenceHandler.readFromFile(trackName, (reader) -> {
         try {
           composer.loadTrack(reader);

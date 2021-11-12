@@ -18,8 +18,8 @@
         cursor: hand;
 }
 
-#loadTrackBtn,
-#savedTracksChoiceBox {
+#savedTracks,
+#loadTrackBtn {
     -fx-font-size: 25px;
         font-size: 25px;
     -fx-cursor: hand;
@@ -85,6 +85,7 @@
 }
 
 .instrumentSubPanel {
+    -fx-alignment: center;
     -fx-background-color: #404040;
         background-color: #404040;
     -fx-border-width: 2;
@@ -93,36 +94,51 @@
         border-color: #373737;
 }
 
-.availableInstrumentsChoiceBox {
+.availableInstruments {
+    -fx-pref-width: 145px;
+    -fx-pref-height: 40px;
+    -fx-font-size: 20px;
+        font-size: 20px;
     -fx-cursor: hand;
         cursor: hand;
 } 
 
-#savedTracksChoiceBox .label,
-.availableInstrumentsChoiceBox .label {
+.resetRowBtn {
+    -fx-cursor: hand;
+        cursor: hand;
+    -fx-arc-width: 10px;
+    -fx-arc-height: 10px;
+    -fx-stroke: #2B2B2B;
+        stroke: #2B2B2B;
+    -fx-stroke-width: 3px;
+        stroke-width: 3px;
+}
+
+#savedTracks .label,
+.availableInstruments .label {
     -fx-text-fill: white;
     -fx-font-family: 'Roboto', sans-serif;
         font-family: 'Roboto', sans-serif;
 }
 
-#savedTracksChoiceBox,
-.availableInstrumentsChoiceBox {
+#savedTracks,
+.availableInstruments {
     -fx-background-color: #2B2B2B;
         background-color: #2B2B2B;
-    -fx-focus-color: #7739D4;
     -fx-faint-focus-color: #2B2B2B;
     -fx-control-inner-background: #2B2B2B;
+    -fx-focus-color: #7739D4;
     -fx-selection-bar: #7739D4;
     -fx-mark-color: white;
 }
 
-#savedTracksChoiceBox > .label,
-.availableInstrumentsChoiceBox > .label { 
+#savedTracks > .label,
+.availableInstruments > .label { 
     -fx-text-fill: white;
 }
 
-#savedTracksChoiceBox .menu-item:focused .label,
-.availableInstrumentsChoiceBox .menu-item:focused .label {
+#savedTracks .menu-item:focused .label,
+.availableInstruments .menu-item:focused .label {
     -fx-text-fill: white;
 }
 

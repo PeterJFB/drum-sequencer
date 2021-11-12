@@ -28,7 +28,7 @@
             </StackPane>
 
             <GridPane fx:id="loadTracks" GridPane.columnIndex="1">
-                <ChoiceBox fx:id="savedTracksChoiceBox" onAction="#toggleLoadBtn" value="-- Choose a track --" GridPane.columnIndex="0" />
+                <ChoiceBox fx:id="savedTracks" onAction="#toggleLoadBtn" value="-- Choose a track --" GridPane.columnIndex="0" />
                 <Button fx:id="loadTrackBtn" disable="true" onMouseClicked="#loadTrack" text="Load" GridPane.columnIndex="1" />
                 <columnConstraints>
                     <ColumnConstraints />

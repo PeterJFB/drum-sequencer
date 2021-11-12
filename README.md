@@ -58,7 +58,7 @@ After which the GUI will be visible on the open `6080` port
 >
 > As of now, the `gitlab/workspace-full-vnc` dockerimage is [resticted when it comes to audio support](https://www.gitpod.io/blog/native-ui-with-vnc). This makes it difficult to test the audio-specific features within the network-based IDE. While the project runs fine within gitpod, it is recommended to experience the audio-based features of the project locally.
 
-### Server with REST-API
+## Server with REST-API
 
 The server uses [Spring Boot](https://spring.io/projects/spring-boot) with [Apache Tomcat](http://tomcat.apache.org/). By default it is hosted on port 8080. To run, type the following from the `sequencer-folder`:
 
@@ -113,25 +113,8 @@ Code-implementation is currently inspired by [gitflow workflow](https://www.atla
 - [develop branch](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/tree/develop) contains the non-released features. All changes will be branched from and merged with this branch.
 
 Below is a graph from [bitbucket](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) showing an example of our workflow:
+
 <img src="https://wac-cdn.atlassian.com/dam/jcr:34c86360-8dea-4be4-92f7-6597d4d5bfae/02%20Feature%20branches.svg?cdnVersion=1826" width=800></img>
-
-## Server with REST-API
-
-### Startup
-
-Run `mvn -pl rest spring-boot:run` to startup the server on port 8080. The server is a [Spring Boot](https://spring.io/projects/spring-boot) application.
-
-### Endpoints
-
-Use the API by making HTTP requests to `localhost:8080/api/{endpoint}`.
-
-#### Tracks
-
-GET `localhost:8080/api/tracks`
-
-Get a list of all tracks
-
-Example output:
 
 ### Naming policy
 

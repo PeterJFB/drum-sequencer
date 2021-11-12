@@ -64,7 +64,7 @@ Example
 ]
 ```
 
-### Get specific track data
+### Get a specific track
 
 GET `api/track/{name}`
 

@@ -208,7 +208,7 @@ public class PersistenceHandler {
    * 
    * @param name The string to filter names with
    * @param artist The string to filter artist with
-   * @return a list with {@link TrackMetaData}-objects representing saved tracks
+   * @return a collection with {@link TrackMetaData}-objects representing saved tracks
    */
   public Collection<TrackMetaData> listSavedTracks(String name, String artist) {
     return listSavedTracks().stream()

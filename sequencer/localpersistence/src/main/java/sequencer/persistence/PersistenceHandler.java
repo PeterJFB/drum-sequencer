@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -194,6 +195,30 @@ public class PersistenceHandler {
   }
 
   /**
+   * List all saved tracks.
+   * 
+   * @return a list with {@link TrackMetaData}-objects representing saved tracks
+   */
+  public Collection<TrackMetaData> listSavedTracks() {
+    return listFilenames().stream().map(FilenameHandler::readMetaData).toList();
+  }
+
+  /**
+   * List all saved tracks that match the given filter.
+   * 
+   * @param name The string to filter names with
+   * @param artist The string to filter artist with
+   * @return a list with {@link TrackMetaData}-objects representing saved tracks
+   */
+  public Collection<TrackMetaData> listSavedTracks(String name, String artist) {
+    return listSavedTracks().stream()
+        .filter(trackMetadata -> trackMetadata.name().toLowerCase().contains(name.toLowerCase()))
+        .filter(
+            trackMetadata -> trackMetadata.artist().toLowerCase().contains(artist.toLowerCase()))
+        .toList();
+  }
+
+  /**
    * Returns if filename is in the directory.
    *
    * @param filename the {@code filename}, not including the {@code filetype}, which is set with
@@ -223,6 +248,11 @@ public class PersistenceHandler {
     if (Path.of(filename).getNameCount() > 1) {
       throw new IllegalArgumentException("filename should not be a path: " + filename);
     }
+  }
+
+  public static void main(String[] args) {
+    PersistenceHandler ph = new PersistenceHandler("drum-sequencer-persistence", "json");
+    System.err.println(ph.listSavedTracks("a", "b"));
   }
 
 }

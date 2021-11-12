@@ -405,10 +405,10 @@ public class SequencerController {
   @FXML
   private ImageView startStopBtn;
 
-  private static final Image PLAY_ICON = new Image(
-      SequencerController.class.getResource("images/play.png").toExternalForm());
-  private static final Image STOP_ICON = new Image(
-      SequencerController.class.getResource("images/stop.png").toExternalForm());
+  private static final Image PLAY_ICON =
+      new Image(SequencerController.class.getResource("images/play.png").toExternalForm());
+  private static final Image STOP_ICON =
+      new Image(SequencerController.class.getResource("images/stop.png").toExternalForm());
 
   /**
    * Fires when the "play" or "stop" button is pressed, toggling whether the track is played.
@@ -436,10 +436,10 @@ public class SequencerController {
   @FXML
   private Text statusMsgText;
 
-  private static final Image SUCCESS_ICON = new Image(
-      SequencerController.class.getResource("images/checked.png").toExternalForm());
-  private static final Image FAILURE_ICON = new Image(
-      SequencerController.class.getResource("images/x-mark.png").toExternalForm());
+  private static final Image SUCCESS_ICON =
+      new Image(SequencerController.class.getResource("images/checked.png").toExternalForm());
+  private static final Image FAILURE_ICON =
+      new Image(SequencerController.class.getResource("images/x-mark.png").toExternalForm());
 
   /**
    * Displaying a status message to the user, regarding either success (e.g. track being saved) or

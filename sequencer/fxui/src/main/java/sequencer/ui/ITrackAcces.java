@@ -1,6 +1,7 @@
 package sequencer.ui;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface ITrackAcces {
 
@@ -8,6 +9,6 @@ public interface ITrackAcces {
 
   public void loadTrack(String trackName) throws IOException;
 
-  public String loadTracks() throws IOException;
+  public List<String> loadTracks() throws IOException;
   
 }

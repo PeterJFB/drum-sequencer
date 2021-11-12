@@ -29,7 +29,6 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sequencer.core.Composer;
 import sequencer.json.TrackMapper;
-import sequencer.persistence.PersistenceHandler;
 
 /**
  * Main controller of the sequencer.
@@ -37,7 +36,7 @@ import sequencer.persistence.PersistenceHandler;
 public class SequencerController {
 
   private Composer composer;
-  private PersistenceHandler persistenceHandler;
+  private ITrackAcces trackAccess;
 
   @FXML
   void initialize() {
@@ -46,8 +45,7 @@ public class SequencerController {
     composer.addListener(progress -> {
       Platform.runLater(() -> addBorderToSixteenths(progress));
     });
-    persistenceHandler =
-        new PersistenceHandler("drum-sequencer-persistence", Composer.getSerializationFormat());
+    trackAccess = new LocalTrackAccess(composer);
 
     createElements();
   }
@@ -180,11 +178,15 @@ public class SequencerController {
 
     addBorderToSixteenths(0);
 
-    savedTracks.getItems().addAll(persistenceHandler.listFilenames());
+    try {
+      savedTracks.getItems().addAll(trackAccess.loadTracks());
+    } catch (IOException e) {
+      displayStatusMsg("Failed to load saved tracks.", false);
+    }
   }
 
   /**
-   * Updating elements when loading a new track, in stead of re-using createElements(), as it
+   * Updating elements when loading a new track, instead of re-using createElements(), as it
    * contains unnecessery code.
    */
   private void updateElements() {
@@ -329,13 +331,7 @@ public class SequencerController {
   @FXML
   private void saveTrack() {
     try {
-      persistenceHandler.writeToFile(composer.getTrackName(), (writer) -> {
-        try {
-          composer.saveTrack(writer);
-        } catch (IOException e) {
-          throw new UncheckedIOException(e);
-        }
-      });
+      trackAccess.saveTrack();
 
       // Track is successfully saved
       savedTracks.getItems().add(composer.getTrackName());
@@ -365,13 +361,7 @@ public class SequencerController {
   private void loadTrack() {
     try {
       String trackName = savedTracks.getValue();
-      persistenceHandler.readFromFile(trackName, (reader) -> {
-        try {
-          composer.loadTrack(reader);
-        } catch (IOException e) {
-          throw new UncheckedIOException(e);
-        }
-      });
+      trackAccess.loadTrack(trackName);
 
       // Track is successfully loaded
       Platform.runLater(this::updateElements);

@@ -11,6 +11,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import sequencer.core.Composer;
 
@@ -91,13 +93,16 @@ public class RemoteTrackAccess implements ITrackAcces {
     connection.disconnect();
   }
 
-  public String loadTracks() throws IOException {
+  public List<String> loadTracks() throws IOException {
     setConnection("/tracks", "GET");
     int status = connection.getResponseCode();
     String responseString = readResponse(status);
     connection.disconnect();
 
-    return responseString;
+    List<String> tracksList = new ArrayList<>();
+    tracksList.add(responseString);
+    
+    return tracksList;
 
   }
 }

@@ -5,7 +5,7 @@
 
 **develop:**
 [![pipeline status](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/develop/pipeline.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/develop)
-[![coverage report](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/develop/coverage.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/develop)
+[![coverage report](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/develop/coverage.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/develop) (headless)
 
 ## Project: Drum sequencer
 
@@ -82,7 +82,10 @@ $ mvn verify # Perform all tests and store test coverage.
 # Results are now visible in sequencer/report/target/site/jacoco-aggregate/index.html
 ```
 
-> Test coverage is reported as very low (~40%) in gitlab. This is because we skip testing the UI during CI. To get accurate coverage, run Jacoco locally.
+> ## CI and frontend
+>
+> Currently there are few docker-images available which supports testing of GUI, which means test coverage deviates greatly from test coverage shown locally. The fxui-module has therefore been removed from coverage testing in CI, as this percentage is more accurate and useful. To get the most accurate coverage possible, run Jacoco locally.
+
 ### Spotbugs
 
 [Spotbugs](https://spotbugs.github.io/) will look for java-related bugs in the projects code, and also enforce good OOP practices. These are checked by running `mvn spotbugs:check`.
@@ -90,7 +93,7 @@ $ mvn verify # Perform all tests and store test coverage.
 ### Checkstyle
 
 [Checkstyle](https://checkstyle.sourceforge.io/) ensures equal readability throughout the java-project.
-`mvn checkstyle:checkstyle` will run all checkstyle-checks, all described in the [google style guide](https://checkstyle.sourceforge.io/styleguides/google-java-style-20180523/javaguide.html).
+`mvn checkstyle:check` will run all checkstyle-checks, all described in the [google style guide](https://checkstyle.sourceforge.io/styleguides/google-java-style-20180523/javaguide.html).
 
 ## Workflow
 

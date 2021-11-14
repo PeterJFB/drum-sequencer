@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sequencer.persistence.PersistenceHandler;
+import sequencer.persistence.TrackMetaData;
 
 /**
  * Controller for the track endpoints in the REST-api.
@@ -29,8 +31,12 @@ public class SequencerRestController {
    * Returns a collection of all tracks.
    */
   @GetMapping(value = "/api/tracks", produces = MediaType.APPLICATION_JSON_VALUE)
-  public Collection<String> getTracks() {
-    return persistenceHandler.listFilenames();
+  public Collection<TrackMetaData> getTracks(@RequestParam(required = false) String name,
+      @RequestParam(required = false) String artist) {
+    // If no search query is sent, search for "" (matches everything)
+    name = name != null ? name : "";
+    artist = artist != null ? artist : "";
+    return persistenceHandler.listSavedTracks(name, artist);
   }
 
   /**
@@ -64,11 +70,11 @@ public class SequencerRestController {
    * Save a track to a file.
    *
    * @param trackAsJson the track as a JSON-object
-   * @param name        the name of the track to save
+   * @param name the name of the track to save
    * @return "fail" or "success" with error codes
    */
   @PostMapping("/api/track/{name}")
-  public ResponseEntity<String> postTrack(@RequestBody String trackAsJson, 
+  public ResponseEntity<String> postTrack(@RequestBody String trackAsJson,
       @PathVariable String name) {
     try {
       persistenceHandler.writeToFile(name, writer -> {

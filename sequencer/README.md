@@ -49,18 +49,38 @@ The REST API is hosted on port 8080 with endpoints starting with `/api/`. The cu
 
 ### Get all track names
 
-GET `/api/tracks`
+GET `/api/tracks?name={name}&artist={artist}`
 
-Returns: A list of all track names
+Returns: A list of all tracks, with id, name, artist and timestamp. Use the search queries "name" and "artist" to filter the results to songs that match the queries.
 
 Example
 
 ```json
 [
-  "Example song",
-  "Here comes JSON",
-  "The Lazy JSONg",
-  "Tougher than the REST"
+  {
+    "id": "1",
+    "name": "Im in love with Jacoco",
+    "artist": "Michael Jackson",
+    "timestamp": 0
+  },
+  {
+    "id": "2",
+    "name": "Here comes JSON",
+    "artist": "the megabitles",
+    "timestamp": 0
+  },
+  {
+    "id": "3",
+    "name": "The Lazy JSONg",
+    "artist": "Brown Marsh",
+    "timestamp": 0
+  },
+  {
+    "id": "4",
+    "name": "Tougher than the REST",
+    "artist": "John Doe and The Placeholders",
+    "timestamp": 0
+  }
 ]
 ```
 

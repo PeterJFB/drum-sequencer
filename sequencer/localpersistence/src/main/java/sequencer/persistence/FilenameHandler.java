@@ -21,4 +21,9 @@ public class FilenameHandler {
     return new TrackMetaData(regexMatcher.group("id"), regexMatcher.group("name"),
         regexMatcher.group("artist"), 0);
   }
+
+  public static boolean validFilename(String filename) {
+    Matcher regexMatcher = Pattern.compile(FILENAME_REGEX).matcher(filename);
+    return regexMatcher.find();
+  }
 }

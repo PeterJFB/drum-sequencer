@@ -200,7 +200,9 @@ public class PersistenceHandler {
    * @return a list with {@link TrackMetaData}-objects representing saved tracks
    */
   public Collection<TrackMetaData> listSavedTracks() {
-    return listFilenames().stream().map(FilenameHandler::readMetaData).toList();
+
+    return listFilenames().stream().filter(FilenameHandler::validFilename)
+        .map(FilenameHandler::readMetaData).toList();
   }
 
   /**

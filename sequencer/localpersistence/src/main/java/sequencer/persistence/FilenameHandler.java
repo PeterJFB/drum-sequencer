@@ -22,8 +22,25 @@ public class FilenameHandler {
         regexMatcher.group("artist"), 0);
   }
 
+  /**
+   * Checks if filename correponds to the specifications.
+   * 
+   * @param filename the filename to check
+   * @return true iff the filename correspongs to the specifications
+   */
   public static boolean validFilename(String filename) {
     Matcher regexMatcher = Pattern.compile(FILENAME_REGEX).matcher(filename);
     return regexMatcher.find();
+  }
+
+  /**
+   * Check if a filename corresponds to a given id.
+   * 
+   * @param filename The filename to check
+   * @param id The id to check for
+   * @return true iff the filename corresponds to the id
+   */
+  public static boolean hasId(String filename, String id) {
+    return readMetaData(filename).id().equals(id);
   }
 }

@@ -42,14 +42,14 @@ public class SequencerRestController {
   /**
    * Returns a track as a json-object.
    *
-   * @param name the name of the track to load
+   * @param id the id of the track to load
    * @return the track, or the text "Track not found" with an error code of 404
    */
-  @GetMapping(value = "/api/track/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> getTrack(@PathVariable String name) {
+  @GetMapping(value = "/api/track/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> getTrack(@PathVariable String id) {
     StringBuilder stringBuilder = new StringBuilder();
     try {
-      persistenceHandler.readFromFile(name, reader -> {
+      persistenceHandler.readFromFileWithId(id, reader -> {
         BufferedReader bufferedReader = new BufferedReader(reader);
         String line;
         try {

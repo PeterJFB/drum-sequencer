@@ -86,13 +86,13 @@ Example
 
 ### Get a specific track
 
-GET `api/track/{name}`
+GET `api/track/{id}`
 
-Returns: The data of that song (see "File format for Tracks")
+Returns: The data of the track with the given ID
 
 Example:
 
-GET `api/track/Example%20song`
+GET `api/track/5`
 
 ```json
 {

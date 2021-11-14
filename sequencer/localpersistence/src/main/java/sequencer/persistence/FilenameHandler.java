@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 public class FilenameHandler {
   // Only matches strings on in the format "id-name-artist"
   private static final String FILENAME_REGEX =
-      "^(?<id>\\d+)\\-(?<name>[a-zA-Z0-9_ ]+)\\-(?<artist>[a-zA-Z0-9_ ]+)$";
+      "^(?<id>\\d+)\\-(?<name>[a-zA-Z0-9_ ]+)\\-(?<artist>[a-zA-Z0-9_ ]+)\\-(?<timestamp>\\d+)$";
 
   /**
    * Read the metadata of a file name.
@@ -19,7 +19,7 @@ public class FilenameHandler {
       throw new IllegalArgumentException("Illegal filename: '" + filename + "'");
     }
     return new TrackMetaData(regexMatcher.group("id"), regexMatcher.group("name"),
-        regexMatcher.group("artist"), 0);
+        regexMatcher.group("artist"), Long.parseLong(regexMatcher.group("timestamp")));
   }
 
   /**
@@ -41,6 +41,11 @@ public class FilenameHandler {
    * @return true iff the filename corresponds to the id
    */
   public static boolean hasId(String filename, String id) {
-    return readMetaData(filename).id().equals(id);
+    return validFilename(filename) && readMetaData(filename).id().equals(id);
+  }
+
+  public static String generateFilenameFromMetaData(TrackMetaData metaData) {
+    return metaData.id() + "-" + metaData.name() + "-" + metaData.artist() + "-"
+        + metaData.timestamp();
   }
 }

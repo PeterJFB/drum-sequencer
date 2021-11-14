@@ -34,6 +34,13 @@
             <artifactId>localpersistence</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>it1901.sequencer</groupId>
+            <artifactId>
+                rest
+            </artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>

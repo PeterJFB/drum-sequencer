@@ -137,6 +137,7 @@
         <module>core</module>
         <module>fxui</module>
         <module>localpersistence</module>
+        <module>rest</module>
         <module>report</module>
     </modules>
 </project>

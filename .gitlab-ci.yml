@@ -1,3 +1,4 @@
+# gitlab-runner exec docker jacoco
 variables:
   SKIP_ALL_TESTS: -DskipTests=true
   IGNORE_UI_COVERAGE: -DfxuiScope=test
@@ -6,8 +7,12 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode"
 
 image: maven:3-openjdk-16
+#image: maven:3.3.9-jdk-16
 before_script:
+  - echo ${CI_PROJECT_DIR}
   - cd sequencer
+  - mvn install $SKIP_UI_TESTS -DskipTests=true
+  - mvn install -f report $SKIP_UI_TESTS -DskipTests=true
 
 cache:
   paths:

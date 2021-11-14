@@ -43,6 +43,79 @@ The Track-files follow JSON-formatting. The following is an example of a file:
 
 The root contains three nodes, "`name`", "`artist`" and "`instruments`". The "`name`" and "`artist`" nodes are text nodes containing the name of the song and the artist. The "`instruments`" node is an object node, where the key of each node is an instrument and the value is a boolean list describing which sixteenths they are playing on.
 
+## REST API
+
+The REST API is hosted on port 8080 with endpoints starting with `/api/`. The current endpoints are:
+
+### Get all track names
+
+GET `/api/tracks`
+
+Returns: A list of all track names
+
+Example
+
+```json
+[
+  "Example song",
+  "Here comes JSON",
+  "The Lazy JSONg",
+  "Tougher than the REST"
+]
+```
+
+### Get a specific track
+
+GET `api/track/{name}`
+
+Returns: The data of that song (see "File format for Tracks")
+
+Example:
+
+GET `api/track/Example%20song`
+
+```json
+{
+    "name": "Example song",
+    "artist": "JSON Mraz",
+    "instruments" : {
+        "hihat": [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
+        "kick": [True, False, False, False, True, False, False, False, True, False, False, False, True, False, False, False]
+    }
+}
+```
+
+### Post a new track
+
+POST `api/track/{name}`
+
+Returns "success" or "fail". The body of the request must be of type `application/json` with the format described at "File format for tracks". 
+
+Example
+
+POST `api/track/postedTrack`
+
+Body:
+```json
+Content-Type: application/json
+{
+    "name": "postedTrack",
+    "artist": "POST Malone",
+    "instruments" : {
+        "hihat": [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
+        "kick": [True, False, False, False, True, False, False, False, True, False, False, False, True, False, False, False]
+    }
+}
+```
+
+Response:
+
+```
+success
+```
+
+
+
 ## Test-classes
 
 - TrackMapper: [`core/src/test/java/sequencer/json/TrackMapperTest.java`](./core/src/test/java/sequencer/json/TrackMapperTest.java)

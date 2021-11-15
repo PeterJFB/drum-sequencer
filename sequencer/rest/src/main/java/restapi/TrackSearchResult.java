@@ -3,7 +3,7 @@ package restapi;
 import sequencer.persistence.FileMetaData;
 
 /**
- * TrackMetaData is a translation of the {@link FileMetaData} from localpersitence.
+ * TrackSearchResult is a translation of the {@link FileMetaData} from localpersitence.
  */
 public record TrackSearchResult(int id, String name, String artist, long timestamp) {
   public static TrackSearchResult createFromFileMetaData(FileMetaData fileMetaData) {

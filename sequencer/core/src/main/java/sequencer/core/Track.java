@@ -99,9 +99,9 @@ public class Track {
    *
    * @param instrument name of the new instrument
    * @param pattern the pattern to apply with the instrument. The reason this is a List and not a
-   *        Collection, though chaning it would not cause any errors in the code, is so that when
-   *        using the method one is forced to pass in an ordrered list, as this mathces the intended
-   *        meaning of a pattern: it is supposed to have an order.
+   *        Collection, is so that when using the method one is forced to pass in an ordered list,
+   *        as this matches the intended meaning of a pattern: it is supposed to have an order.
+   * 
    * @throws IllegalArgumentException if the given pattern is null or has an illegal length
    * 
    */

@@ -16,10 +16,25 @@
   }
 /* Defining color variables in the root element */
 * {
+    /* Defining color variables in the root element */
     -fx-success-dark-green: #419E6D;
     -fx-success-light-green: #C3E6CD;
     -fx-failure-dark-red: #C92213;
     -fx-failure-light-red: #FDD4CD;
+    
+}
+
+#content {
+    -fx-border-style: none;
+        border-style: none;
+    -fx-border-width: 0;
+        border-width: 0;
+    -fx-border-insets: 0;
+}
+
+.unfocusContent {
+    -fx-opacity: 0.9;
+        opacity: 0.9;
 }
 
 #header {
@@ -27,33 +42,38 @@
         background-color: #545454;
 }
 
-#saveTrackBtn {
+#saveTrackBtn,
+#startStopBtn {
     -fx-cursor: hand;
         cursor: hand;
 }
 
-#savedTracks,
-#loadTrackBtn {
+#modalOpener {
+    -fx-cursor: hand;
+        cursor: hand;
+    -fx-pref-width: 200px;
+    -fx-pref-height: 45px;
     -fx-font-size: 25px;
         font-size: 25px;
-    -fx-cursor: hand;
-        cursor: hand;
-}
-
-#loadTrackBtn {
-    -fx-text-fill: white;
     -fx-background-color: #7739D4;
         background-color: #7739D4;
-    -fx-transition-duration: 2s;
-        transition-duration: 2s;
+    -fx-background-radius: 10px;
+    -fx-border-color: #602CAF;
+        border-color: #602CAF; 
+    -fx-border-radius: 10px;
+        border-radius: 10px;
+    -fx-border-width: 3px;
+        border-width: 3px;
+    -fx-text-fill: white;
 }
 
-#loadTrackBtn:hover {
+#modalOpener:hover {
     -fx-background-color: #602CAF;
         background-color: #602CAF;
+    -fx-effect: dropshadow(three-pass-box, rgba(119, 57, 212, 0.5), 9, 0, 0, 0);
 }
 
-#loadTrackBtn:pressed {
+#modalOpener:pressed {
     -fx-scale-y: 0.9;
     -fx-scale-x: 0.9;
 }
@@ -61,6 +81,7 @@
 #trackNamePane, #artistNamePane {
     -fx-max-width: 200px;
         max-width: 200px;
+    -fx-text-fill: white;
 }
 
 #trackNameLabel, #artistNameLabel {
@@ -73,7 +94,6 @@
 }
 
 #trackName, #artistName {
-    -fx-text-fill: white;
     -fx-font-size: 30px;
         font-size: 30px;
     -fx-background-color: transparent;
@@ -86,11 +106,7 @@
         border-width: 0 0 2 0;
     -fx-border-color: white;
         border-color: white;
-}
-
-#startStopBtn {
-    -fx-cursor: hand;
-        cursor: hand;
+    -fx-text-fill: white;
 }
 
 #instrumentsPanel {
@@ -108,6 +124,12 @@
         border-color: #373737;
 }
 
+.availableInstruments .label {
+    -fx-font-family: 'Roboto', sans-serif;
+        font-family: 'Roboto', sans-serif;
+    -fx-text-fill: white;
+}
+
 .availableInstruments {
     -fx-pref-width: 145px;
     -fx-pref-height: 40px;
@@ -115,28 +137,6 @@
         font-size: 20px;
     -fx-cursor: hand;
         cursor: hand;
-} 
-
-.resetRowBtn {
-    -fx-cursor: hand;
-        cursor: hand;
-    -fx-arc-width: 10px;
-    -fx-arc-height: 10px;
-    -fx-stroke: #2B2B2B;
-        stroke: #2B2B2B;
-    -fx-stroke-width: 3px;
-        stroke-width: 3px;
-}
-
-#savedTracks .label,
-.availableInstruments .label {
-    -fx-text-fill: white;
-    -fx-font-family: 'Roboto', sans-serif;
-        font-family: 'Roboto', sans-serif;
-}
-
-#savedTracks,
-.availableInstruments {
     -fx-background-color: #2B2B2B;
         background-color: #2B2B2B;
     -fx-faint-focus-color: #2B2B2B;
@@ -146,24 +146,35 @@
     -fx-mark-color: white;
 }
 
-#savedTracks > .label,
-.availableInstruments > .label { 
-    -fx-text-fill: white;
+.resetRowBtn {
+    -fx-cursor: hand;
+        cursor: hand;
+    -fx-background-image: url('images/reset.png');
+        background-image: url('images/reset.png');
+    -fx-background-color: transparent;
+        background-color: transparent;
+    /* The shape gives the button and its content "border radius" of 10px */
+    -fx-shape:"M0 13 C0 5 5 0 13 0 L86 0 C94 0 99 5 99 13 L99 86 C99 94 94 99 86 99 L13 99 C5 99 0 94 0 86Z";
+    -fx-border-color: #2B2B2B;
+        border-color: #2B2B2B;
+    -fx-border-width: 3px;
+        border-width: 3px;
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
 }
 
-#savedTracks .menu-item:focused .label,
-.availableInstruments .menu-item:focused .label {
-    -fx-text-fill: white;
+.resetRowBtn:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(31, 30, 30, 0.5), 6, 0, 0, 0);
+}
+
+.resetRowBtn:pressed {
+    -fx-scale-y: 0.9;
+    -fx-scale-x: 0.9;
 }
 
 #timeline {
     -fx-background-color: #D9CFFE;
         background-color: #D9CFFE;
-}
-
-#progressBar {
-    -fx-fill: white;
-        fill: white;
 }
 
 #instrumentsPattern {
@@ -183,7 +194,7 @@
         stroke: #FCBA03;
 }
 
-.successMsg #statusMsgBackground {
+.successMsg #statusMsgBg {
     -fx-fill: -fx-success-light-green;
         fill: -fx-success-light-green;
     -fx-stroke: -fx-success-dark-green;
@@ -195,7 +206,7 @@
         fill: -fx-success-dark-green;
 }
 
-.failureMsg #statusMsgBackground {
+.failureMsg #statusMsgBg {
     -fx-fill: -fx-failure-light-red;
         fill: -fx-failure-light-red;
     -fx-stroke: -fx-failure-dark-red;
@@ -207,7 +218,7 @@
         fill: -fx-failure-dark-red;
 }
 
-#statusMsgBackground {
+#statusMsgBg {
     -fx-stroke-width: 3.2;
         stroke-width: 3.2;
     -fx-arc-width: 25.0; 

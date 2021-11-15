@@ -1,0 +1,57 @@
+
+#content {
+    -fx-pref-width: 1100px;
+    -fx-pref-height: 650px;
+    -fx-background-color: #313131;
+        background-color: #313131;
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+        border-radius: 15px;
+    -fx-border-width: 5px;
+        border-width: 5px;
+    -fx-border-color: #222;
+        border-color: #222;
+    -fx-font-size: 30px;
+        font-size: 30px;
+    -fx-effect: dropshadow(three-pass-box, rgba(25, 25, 25, 0.7), 32, 0, 0, 0);
+}
+
+#header {
+    -fx-background-color: inherit;
+        background-color: inherit;
+}
+
+#title {
+    -fx-fill: white;
+        fill: white;
+    -fx-font-size: 40px;
+        font-size: 40px;
+}
+
+#modalCloser {
+    -fx-background-color: #1f1f1f;
+        background-color: #1D1F1F;
+    -fx-pref-width: 70px;
+    -fx-pref-height: 70px; 
+    -fx-background-radius: 50%;
+    -fx-cursor: hand;
+        cursor: hand;
+}
+
+#modalCloser:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(75, 75, 75, 0.7), 10, 0, 5, 4);
+}
+
+#modalCloser:pressed {
+    -fx-scale-y: 0.9;
+    -fx-scale-x: 0.9;
+}
+
+#searchBtn {
+    -fx-cursor: hand;
+        cursor: hand;
+    -fx-text-fill: white;
+    -fx-background-radius: 10px;
+    -fx-background-color: #7739D4;
+        background-color: #7739D4;
+}

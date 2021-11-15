@@ -87,6 +87,9 @@ public class SequencerRestController {
 
     try {
       Track track = trackSerializer.readTrack(new StringReader(trackAsJson));
+      if (track.getTrackName() == null || track.getArtistName() == null) {
+        return new ResponseEntity<>("Track name and artist name required", HttpStatus.BAD_REQUEST);
+      }
       String id = "99"; // TODO: Figure out a way to get a unused id
       String filename = FilenameHandler.generateFilenameFromMetaData(
           new TrackMetaData(id, track.getTrackName(), track.getArtistName(), new Date().getTime()));

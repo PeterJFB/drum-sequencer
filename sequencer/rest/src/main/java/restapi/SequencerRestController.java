@@ -90,9 +90,15 @@ public class SequencerRestController {
       if (track.getTrackName() == null || track.getArtistName() == null) {
         return new ResponseEntity<>("Track name and artist name required", HttpStatus.BAD_REQUEST);
       }
-      String id = "99"; // TODO: Figure out a way to get a unused id
+      String maxId =
+          persistenceHandler.listSavedTracks().stream().map(trackMeta -> trackMeta.id()).reduce("0",
+              (currMax, next) -> {
+                return Integer.parseInt(currMax) > Integer.parseInt(next) ? currMax : next;
+              });
+      String newId = String.valueOf(Integer.parseInt(maxId) + 1);
       String filename = FilenameHandler.generateFilenameFromMetaData(
-          new TrackMetaData(id, track.getTrackName(), track.getArtistName(), new Date().getTime()));
+          new TrackMetaData(newId, track.getTrackName(), track.getArtistName(),
+              new Date().getTime()));
       persistenceHandler.writeToFile(filename, writer -> {
         try {
           writer.write(trackAsJson);

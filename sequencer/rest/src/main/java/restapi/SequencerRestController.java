@@ -1,12 +1,10 @@
 package restapi;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
 import java.util.Date;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sequencer.core.Track;
 import sequencer.core.TrackSerializationInterface;
-import sequencer.json.TrackMapper;
 import sequencer.persistence.FilenameHandler;
 import sequencer.persistence.PersistenceHandler;
 import sequencer.persistence.TrackMetaData;

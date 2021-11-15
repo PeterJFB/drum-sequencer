@@ -1,10 +1,12 @@
 package restapi;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import restserver.SequencerServerApplication;
 import sequencer.persistence.PersistenceHandler;
+import sequencer.persistence.TrackMetaData;
 
 /**
  * Unit test of {@link SequencerRestController}.
@@ -39,12 +42,14 @@ public class SequencerRestControllerTest {
 
   @Test
   public void trackControllerExpectList() throws Exception {
-    Mockito.when(persistenceHandler.listFilenames()).thenReturn(List.of("1-Jas-Pedro-31231231"));
+    Mockito.when(persistenceHandler.listSavedTracks(anyString(), anyString()))
+        .thenReturn(List.of(new TrackMetaData("0", "Jas", "Pedro", 133742069)));
 
     MvcResult result = mvc.perform(get("/api/tracks").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk()).andDo(print()).andReturn();
-    assertTrue(mapper.readValue(result.getResponse().getContentAsString(), List.class)
-        .equals(List.of("Jas")));
+    String response = result.getResponse().getContentAsString();
+    assertTrue(mapper.readValue(response, new TypeReference<List<TrackMetaData>>() {})
+        .equals(List.of(new TrackMetaData("0", "Jas", "Pedro", 133742069))));
   }
 
 }

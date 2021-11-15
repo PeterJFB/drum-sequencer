@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sequencer.core.Track;
 import sequencer.persistence.FilenameHandler;
 import sequencer.persistence.PersistenceHandler;
-import sequencer.persistence.TrackMetaData;
+import sequencer.persistence.FileMetaData;
 
 /**
  * Controller for the track endpoints in the REST-api.
@@ -42,7 +42,8 @@ public class SequencerRestController {
     // If no search query is sent, search for "" (matches everything)
     name = name != null ? name : "";
     artist = artist != null ? artist : "";
-    return persistenceHandler.listSavedTracks(name, artist);
+    return persistenceHandler.listSavedTracks(name, artist).stream()
+        .map(TrackMetaData::createFromFileMetaData).toList();
   }
 
   /**
@@ -91,7 +92,7 @@ public class SequencerRestController {
             return Integer.parseInt(currMax) > Integer.parseInt(next) ? currMax : next;
           });
       String newId = String.valueOf(Integer.parseInt(maxId) + 1);
-      String filename = FilenameHandler.generateFilenameFromMetaData(new TrackMetaData(newId,
+      String filename = FilenameHandler.generateFilenameFromMetaData(new FileMetaData(newId,
           track.getTrackName(), track.getArtistName(), new Date().getTime()));
       persistenceHandler.writeToFile(filename, writer -> {
         try {

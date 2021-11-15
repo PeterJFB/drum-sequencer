@@ -20,8 +20,8 @@ import sequencer.core.TrackSerializationInterface;
 /**
  * Integration test of {@link SequencerServerApplication}.
  */
-@SpringBootTest(classes = {SequencerServerApplication.class,
-    SequencerRestController.class}, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = {SequencerServerApplication.class, SequencerRestController.class},
+    webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SequencerServerApplicationTest extends AbstractIntegrationTest {
 
   @LocalServerPort

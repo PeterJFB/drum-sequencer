@@ -210,9 +210,9 @@ public class PersistenceHandler {
   /**
    * List all saved tracks.
    *
-   * @return a list with {@link TrackMetaData}-objects representing saved tracks
+   * @return a list with {@link FileMetaData}-objects representing saved tracks
    */
-  public Collection<TrackMetaData> listSavedTracks() {
+  public Collection<FileMetaData> listSavedTracks() {
 
     return listFilenames().stream().filter(FilenameHandler::validFilename)
         .map(FilenameHandler::readMetaData).toList();
@@ -223,13 +223,13 @@ public class PersistenceHandler {
    *
    * @param name The string to filter names with
    * @param artist The string to filter artist with
-   * @return a collection with {@link TrackMetaData}-objects representing saved tracks
+   * @return a collection with {@link FileMetaData}-objects representing saved tracks
    */
-  public Collection<TrackMetaData> listSavedTracks(String name, String artist) {
+  public Collection<FileMetaData> listSavedTracks(String name, String artist) {
     return listSavedTracks().stream()
-        .filter(trackMetadata -> trackMetadata.name().toLowerCase().contains(name.toLowerCase()))
+        .filter(trackMetadata -> trackMetadata.title().toLowerCase().contains(name.toLowerCase()))
         .filter(
-            trackMetadata -> trackMetadata.artist().toLowerCase().contains(artist.toLowerCase()))
+            trackMetadata -> trackMetadata.author().toLowerCase().contains(artist.toLowerCase()))
         .toList();
   }
 

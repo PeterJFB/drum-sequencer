@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 /**
  * the {@code FilenameHandler} class takes care of converting back and forth between file names and
- * {@link TrackMetaData}-objects.
+ * {@link FileMetaData}-objects.
  */
 public class FilenameHandler {
   // Only matches strings on in the format "id-name-artist-timestamp"
@@ -15,14 +15,14 @@ public class FilenameHandler {
   /**
    * Read the metadata of a file name.
    *
-   * @return {@link TrackMetaData}-object containing the track metadata
+   * @return {@link FileMetaData}-object containing the track metadata
    */
-  public static TrackMetaData readMetaData(String filename) {
+  public static FileMetaData readMetaData(String filename) {
     Matcher regexMatcher = Pattern.compile(FILENAME_REGEX).matcher(filename);
     if (!regexMatcher.find()) {
       throw new IllegalArgumentException("Illegal filename: '" + filename + "'");
     }
-    return new TrackMetaData(regexMatcher.group("id"), regexMatcher.group("name"),
+    return new FileMetaData(regexMatcher.group("id"), regexMatcher.group("name"),
         regexMatcher.group("artist"), Long.parseLong(regexMatcher.group("timestamp")));
   }
 
@@ -54,8 +54,8 @@ public class FilenameHandler {
    * @param metaData the metadata to base the generation on
    * @return the generated filename
    */
-  public static String generateFilenameFromMetaData(TrackMetaData metaData) {
-    return metaData.id() + "-" + metaData.name() + "-" + metaData.artist() + "-"
+  public static String generateFilenameFromMetaData(FileMetaData metaData) {
+    return metaData.id() + "-" + metaData.title() + "-" + metaData.author() + "-"
         + metaData.timestamp();
   }
 }

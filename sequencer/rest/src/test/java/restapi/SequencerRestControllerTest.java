@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import restserver.SequencerServerApplication;
 import sequencer.persistence.PersistenceHandler;
-import sequencer.persistence.TrackMetaData;
+import sequencer.persistence.FileMetaData;
 
 /**
  * Unit test of {@link SequencerRestController}.
@@ -43,13 +43,13 @@ public class SequencerRestControllerTest {
   @Test
   public void trackControllerExpectList() throws Exception {
     Mockito.when(persistenceHandler.listSavedTracks(anyString(), anyString()))
-        .thenReturn(List.of(new TrackMetaData("0", "Jas", "Pedro", 133742069)));
+        .thenReturn(List.of(new FileMetaData("0", "Jas", "Pedro", 133742069)));
 
     MvcResult result = mvc.perform(get("/api/tracks").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk()).andDo(print()).andReturn();
     String response = result.getResponse().getContentAsString();
-    assertTrue(mapper.readValue(response, new TypeReference<List<TrackMetaData>>() {})
-        .equals(List.of(new TrackMetaData("0", "Jas", "Pedro", 133742069))));
+    assertTrue(mapper.readValue(response, new TypeReference<List<FileMetaData>>() {})
+        .equals(List.of(new FileMetaData("0", "Jas", "Pedro", 133742069))));
   }
 
 }

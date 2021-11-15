@@ -3,6 +3,10 @@ package sequencer.persistence;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * the {@code FilenameHandler} class takes care of converting back and forth between file names and
+ * {@link TrackMetaData}-objects.
+ */
 public class FilenameHandler {
   // Only matches strings on in the format "id-name-artist"
   private static final String FILENAME_REGEX =
@@ -10,7 +14,7 @@ public class FilenameHandler {
 
   /**
    * Read the metadata of a file name.
-   * 
+   *
    * @return {@link TrackMetaData}-object containing the track metadata
    */
   public static TrackMetaData readMetaData(String filename) {
@@ -24,7 +28,7 @@ public class FilenameHandler {
 
   /**
    * Checks if filename correponds to the specifications.
-   * 
+   *
    * @param filename the filename to check
    * @return true iff the filename correspongs to the specifications
    */
@@ -35,7 +39,7 @@ public class FilenameHandler {
 
   /**
    * Check if a filename corresponds to a given id.
-   * 
+   *
    * @param filename The filename to check
    * @param id The id to check for
    * @return true iff the filename corresponds to the id
@@ -44,6 +48,12 @@ public class FilenameHandler {
     return validFilename(filename) && readMetaData(filename).id().equals(id);
   }
 
+  /**
+   * Generate filename based on metadata.
+   *
+   * @param metaData the metadata to base the generation on
+   * @return the generated filename
+   */
   public static String generateFilenameFromMetaData(TrackMetaData metaData) {
     return metaData.id() + "-" + metaData.name() + "-" + metaData.artist() + "-"
         + metaData.timestamp();

@@ -22,6 +22,9 @@ public class IntegrationTestConfiguration {
     return new PersistenceHandler("test-drum-sequencer-persistence-test", "json");
   }
 
+  /**
+   * Generate a test track.
+   */
   @Bean
   public Track testTrack() {
     Track testTrack = new Track();

@@ -154,7 +154,7 @@ public class PersistenceHandler {
 
   /**
    * Read contents of file corresponding to a track with the given ID.
-   * 
+   *
    * @param id the ID of the track to read
    * @param consumer the {@code consumer} which can read contents the given file
    * @throws FileNotFoundException if no file is found with the given id
@@ -209,7 +209,7 @@ public class PersistenceHandler {
 
   /**
    * List all saved tracks.
-   * 
+   *
    * @return a list with {@link TrackMetaData}-objects representing saved tracks
    */
   public Collection<TrackMetaData> listSavedTracks() {
@@ -220,7 +220,7 @@ public class PersistenceHandler {
 
   /**
    * List all saved tracks that match the given filter.
-   * 
+   *
    * @param name The string to filter names with
    * @param artist The string to filter artist with
    * @return a collection with {@link TrackMetaData}-objects representing saved tracks

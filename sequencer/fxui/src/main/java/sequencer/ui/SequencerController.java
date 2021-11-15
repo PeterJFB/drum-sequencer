@@ -229,16 +229,15 @@ public class SequencerController {
   private void updateInstrumentAlternatives() {
     List<String> instrumentsInTrack = composer.getInstrumentsInTrack();
     List<String> instrumentsNotUsed = composer.getAvailableInstruments().stream()
-        .filter(instrument -> !instrumentsInTrack.contains(instrument))
-        .collect(Collectors.toList());
-    for (int row = 0; row < NUMBER_OF_ROWS; row++) {
-      ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
+          .filter(instrument -> !instrumentsInTrack.contains(instrument))
+          .collect(Collectors.toList());
+    instrumentChoiceBoxes.forEach(instrumentChoiceBox -> {
       String instrumentChosen = instrumentChoiceBox.getValue();
       List<String> instrumentsToRemove = instrumentChoiceBox.getItems();
       instrumentsToRemove.remove(instrumentChosen);
       instrumentChoiceBox.getItems().removeAll(instrumentsToRemove);
       instrumentChoiceBox.getItems().addAll(instrumentsNotUsed);
-    }
+    });
   }
 
   /**
@@ -283,7 +282,7 @@ public class SequencerController {
       composer.addInstrumentToTrack(newInstrument, oldPattern);
       composer.removeInstrumentFromTrack(oldInstrument);
     }
-    instrumentChoiceBoxes.forEach(i -> i.getItems().remove(newInstrument));
+    updateInstrumentAlternatives();
   }
 
   /**

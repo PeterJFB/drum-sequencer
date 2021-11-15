@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * {@link TrackMetaData}-objects.
  */
 public class FilenameHandler {
-  // Only matches strings on in the format "id-name-artist"
+  // Only matches strings on in the format "id-name-artist-timestamp"
   private static final String FILENAME_REGEX =
       "^(?<id>\\d+)\\-(?<name>[a-zA-Z0-9_ ]+)\\-(?<artist>[a-zA-Z0-9_ ]+)\\-(?<timestamp>\\d+)$";
 

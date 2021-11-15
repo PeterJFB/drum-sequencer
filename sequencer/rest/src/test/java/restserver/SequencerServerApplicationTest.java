@@ -1,8 +1,10 @@
 package restserver;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.StringWriter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,12 +14,14 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import restapi.SequencerRestController;
+import sequencer.core.Track;
+import sequencer.core.TrackSerializationInterface;
 
 /**
  * Integration test of {@link SequencerServerApplication}.
  */
-@SpringBootTest(classes = { SequencerServerApplication.class,
-    SequencerRestController.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = {SequencerServerApplication.class, SequencerRestController.class},
+    webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SequencerServerApplicationTest extends AbstractIntegrationTest {
 
   @LocalServerPort
@@ -25,6 +29,12 @@ public class SequencerServerApplicationTest extends AbstractIntegrationTest {
 
   @Autowired
   private TestRestTemplate controller;
+
+  @Autowired
+  private TrackSerializationInterface trackSerializer;
+
+  @Autowired
+  private Track testTrack;
 
   @Test
   public void contextLoads() throws Exception {
@@ -42,8 +52,11 @@ public class SequencerServerApplicationTest extends AbstractIntegrationTest {
 
   @Test
   public void postTrack() {
-    String uri = "/api/track/name";
-    ResponseEntity<String> response = controller.postForEntity(uri, "Test", String.class);
+    String uri = "/api/track";
+    StringWriter trackJsonStringWriter = new StringWriter();
+    assertDoesNotThrow(() -> trackSerializer.writeTrack(testTrack, trackJsonStringWriter));
+    ResponseEntity<String> response =
+        controller.postForEntity(uri, trackJsonStringWriter.toString(), String.class);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     System.out.println(response.getBody());
   }

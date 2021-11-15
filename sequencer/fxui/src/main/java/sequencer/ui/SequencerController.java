@@ -19,8 +19,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -404,10 +402,10 @@ public class SequencerController {
   @FXML
   private ImageView startStopBtn;
 
-  private static final Image PLAY_ICON = new Image(
-      SequencerController.class.getResource("images/play.png").toExternalForm());
-  private static final Image STOP_ICON = new Image(
-      SequencerController.class.getResource("images/stop.png").toExternalForm());
+  private static final Image PLAY_ICON =
+      new Image(SequencerController.class.getResource("images/play.png").toExternalForm());
+  private static final Image STOP_ICON =
+      new Image(SequencerController.class.getResource("images/stop.png").toExternalForm());
 
   /**
    * Fires when the "play" or "stop" button is pressed, toggling whether the track is played.
@@ -435,10 +433,10 @@ public class SequencerController {
   @FXML
   private Text statusMsgText;
 
-  private static final Image SUCCESS_ICON = new Image(
-      SequencerController.class.getResource("images/checked.png").toExternalForm());
-  private static final Image FAILURE_ICON = new Image(
-      SequencerController.class.getResource("images/x-mark.png").toExternalForm());
+  private static final Image SUCCESS_ICON =
+      new Image(SequencerController.class.getResource("images/checked.png").toExternalForm());
+  private static final Image FAILURE_ICON =
+      new Image(SequencerController.class.getResource("images/x-mark.png").toExternalForm());
 
   /**
    * Displaying a status message to the user, regarding either success (e.g. track being saved) or

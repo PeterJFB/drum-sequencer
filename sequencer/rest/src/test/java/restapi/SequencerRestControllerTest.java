@@ -1,10 +1,12 @@
 package restapi;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -19,14 +21,16 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import restserver.SequencerServerApplication;
+import sequencer.persistence.FileMetaData;
 import sequencer.persistence.PersistenceHandler;
+
 
 /**
  * Unit test of {@link SequencerRestController}.
  */
-@WebMvcTest(controllers = { SequencerRestController.class })
-@ContextConfiguration(classes = { SequencerServerApplication.class })
-@TestPropertySource(locations = { "classpath:test.properties" })
+@WebMvcTest(controllers = {SequencerRestController.class})
+@ContextConfiguration(classes = {SequencerServerApplication.class})
+@TestPropertySource(locations = {"classpath:test.properties"})
 @ComponentScan()
 public class SequencerRestControllerTest {
   @Autowired
@@ -39,12 +43,14 @@ public class SequencerRestControllerTest {
 
   @Test
   public void trackControllerExpectList() throws Exception {
-    Mockito.when(persistenceHandler.listFilenames()).thenReturn(List.of("Jas"));
+    Mockito.when(persistenceHandler.listSavedTracks(anyString(), anyString()))
+        .thenReturn(List.of(new FileMetaData(0, "Jas", "Pedro", 133742069)));
 
     MvcResult result = mvc.perform(get("/api/tracks").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk()).andDo(print()).andReturn();
-    assertTrue(mapper.readValue(result.getResponse().getContentAsString(), List.class)
-        .equals(List.of("Jas")));
+    String response = result.getResponse().getContentAsString();
+    assertTrue(mapper.readValue(response, new TypeReference<List<TrackSearchResult>>() {})
+        .equals(List.of(new TrackSearchResult(0, "Jas", "Pedro", 133742069))));
   }
 
 }

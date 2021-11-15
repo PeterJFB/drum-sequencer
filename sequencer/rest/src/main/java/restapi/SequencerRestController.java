@@ -1,8 +1,10 @@
 package restapi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,8 +14,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import sequencer.core.Track;
+import sequencer.persistence.FileMetaData;
+import sequencer.persistence.FilenameHandler;
 import sequencer.persistence.PersistenceHandler;
+
 
 /**
  * Controller for the track endpoints in the REST-api.
@@ -24,26 +31,33 @@ public class SequencerRestController {
 
   @Autowired
   private PersistenceHandler persistenceHandler;
+  @Autowired
+  private ObjectMapper objectMapper;
 
   /**
    * Returns a collection of all tracks.
    */
   @GetMapping(value = "/api/tracks", produces = MediaType.APPLICATION_JSON_VALUE)
-  public Collection<String> getTracks() {
-    return persistenceHandler.listFilenames();
+  public Collection<TrackSearchResult> getTracks(@RequestParam(required = false) String name,
+      @RequestParam(required = false) String artist) {
+    // If no search query is sent, search for "" (matches everything)
+    name = name != null ? name : "";
+    artist = artist != null ? artist : "";
+    return persistenceHandler.listSavedTracks(name, artist).stream()
+        .map(TrackSearchResult::createFromFileMetaData).toList();
   }
 
   /**
    * Returns a track as a json-object.
    *
-   * @param name the name of the track to load
+   * @param id the id of the track to load
    * @return the track, or the text "Track not found" with an error code of 404
    */
-  @GetMapping(value = "/api/track/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> getTrack(@PathVariable String name) {
+  @GetMapping(value = "/api/track/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> getTrack(@PathVariable int id) {
     StringBuilder stringBuilder = new StringBuilder();
     try {
-      persistenceHandler.readFromFile(name, reader -> {
+      persistenceHandler.readFromFileWithId(id, reader -> {
         BufferedReader bufferedReader = new BufferedReader(reader);
         String line;
         try {
@@ -64,14 +78,24 @@ public class SequencerRestController {
    * Save a track to a file.
    *
    * @param trackAsJson the track as a JSON-object
-   * @param name        the name of the track to save
    * @return "fail" or "success" with error codes
    */
-  @PostMapping("/api/track/{name}")
-  public ResponseEntity<String> postTrack(@RequestBody String trackAsJson, 
-      @PathVariable String name) {
+  @PostMapping("/api/track")
+  public ResponseEntity<String> postTrack(@RequestBody String trackAsJson) {
+
     try {
-      persistenceHandler.writeToFile(name, writer -> {
+      Track track = objectMapper.readValue(trackAsJson, Track.class);
+      if (track.getTrackName() == null || track.getArtistName() == null) {
+        return new ResponseEntity<>("Track name and artist name required", HttpStatus.BAD_REQUEST);
+      }
+      int maxId = persistenceHandler.listSavedTracks().stream().map(trackMeta -> trackMeta.id())
+          .reduce(0, (currMax, next) -> {
+            return currMax > next ? currMax : next;
+          });
+      int newId = maxId + 1;
+      String filename = FilenameHandler.generateFilenameFromMetaData(new FileMetaData(newId,
+          track.getTrackName(), track.getArtistName(), new Date().getTime()));
+      persistenceHandler.writeToFile(filename, writer -> {
         try {
           writer.write(trackAsJson);
         } catch (IOException e) {

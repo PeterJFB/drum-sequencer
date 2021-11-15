@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -152,6 +153,19 @@ public class PersistenceHandler {
   }
 
   /**
+   * Read contents of file corresponding to a track with the given ID.
+   *
+   * @param id the ID of the track to read
+   * @param consumer the {@code consumer} which can read contents the given file
+   * @throws FileNotFoundException if no file is found with the given id
+   */
+  public void readFromFileWithId(int id, Consumer<Reader> consumer) throws IOException {
+    String filename = listFilenames().stream().filter(fn -> FilenameHandler.hasId(fn, id)).findAny()
+        .orElseThrow(() -> new FileNotFoundException("No file found with the id " + id));
+    readFromFile(filename, consumer);
+  }
+
+  /**
    * Gets the Reader which can be used to read contents of the file.
    *
    * @param filename the {@code filename}, not including the {@code filetype}, which is set with
@@ -194,6 +208,32 @@ public class PersistenceHandler {
   }
 
   /**
+   * List all saved tracks.
+   *
+   * @return a list with {@link FileMetaData}-objects representing saved tracks
+   */
+  public Collection<FileMetaData> listSavedTracks() {
+
+    return listFilenames().stream().filter(FilenameHandler::validFilename)
+        .map(FilenameHandler::readMetaData).toList();
+  }
+
+  /**
+   * List all saved tracks that match the given filter.
+   *
+   * @param name The string to filter names with
+   * @param artist The string to filter artist with
+   * @return a collection with {@link FileMetaData}-objects representing saved tracks
+   */
+  public Collection<FileMetaData> listSavedTracks(String name, String artist) {
+    return listSavedTracks().stream()
+        .filter(trackMetadata -> trackMetadata.title().toLowerCase().contains(name.toLowerCase()))
+        .filter(
+            trackMetadata -> trackMetadata.author().toLowerCase().contains(artist.toLowerCase()))
+        .toList();
+  }
+
+  /**
    * Returns if filename is in the directory.
    *
    * @param filename the {@code filename}, not including the {@code filetype}, which is set with
@@ -224,5 +264,4 @@ public class PersistenceHandler {
       throw new IllegalArgumentException("filename should not be a path: " + filename);
     }
   }
-
 }

@@ -13,6 +13,11 @@
         <java.version>16</java.version>
     </properties>
     <dependencies>
+    <dependency>
+            <groupId>it1901.sequencer</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <dependency>
             <groupId>it1901.sequencer</groupId>
             <artifactId>localpersistence</artifactId>

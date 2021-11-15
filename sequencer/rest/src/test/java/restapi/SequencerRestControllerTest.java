@@ -21,8 +21,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import restserver.SequencerServerApplication;
-import sequencer.persistence.PersistenceHandler;
 import sequencer.persistence.FileMetaData;
+import sequencer.persistence.PersistenceHandler;
+
 
 /**
  * Unit test of {@link SequencerRestController}.

@@ -1,8 +1,5 @@
 package restserver;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.assertj.core.util.Arrays;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import sequencer.core.Track;

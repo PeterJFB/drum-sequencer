@@ -159,7 +159,7 @@ public class PersistenceHandler {
    * @param consumer the {@code consumer} which can read contents the given file
    * @throws FileNotFoundException if no file is found with the given id
    */
-  public void readFromFileWithId(String id, Consumer<Reader> consumer) throws IOException {
+  public void readFromFileWithId(int id, Consumer<Reader> consumer) throws IOException {
     String filename = listFilenames().stream().filter(fn -> FilenameHandler.hasId(fn, id)).findAny()
         .orElseThrow(() -> new FileNotFoundException("No file found with the id " + id));
     readFromFile(filename, consumer);

@@ -264,10 +264,4 @@ public class PersistenceHandler {
       throw new IllegalArgumentException("filename should not be a path: " + filename);
     }
   }
-
-  public static void main(String[] args) {
-    PersistenceHandler ph = new PersistenceHandler("drum-sequencer-persistence", "json");
-    System.err.println(ph.listSavedTracks("a", "b"));
-  }
-
 }

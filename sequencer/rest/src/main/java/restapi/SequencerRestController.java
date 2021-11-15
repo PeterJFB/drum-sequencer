@@ -1,8 +1,8 @@
 package restapi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Collection;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sequencer.core.Track;
-import sequencer.core.TrackSerializationInterface;
 import sequencer.persistence.FilenameHandler;
 import sequencer.persistence.PersistenceHandler;
 import sequencer.persistence.TrackMetaData;
@@ -32,7 +31,7 @@ public class SequencerRestController {
   @Autowired
   private PersistenceHandler persistenceHandler;
   @Autowired
-  private TrackSerializationInterface trackSerializer;
+  private ObjectMapper objectMapper;
 
   /**
    * Returns a collection of all tracks.
@@ -83,19 +82,17 @@ public class SequencerRestController {
   public ResponseEntity<String> postTrack(@RequestBody String trackAsJson) {
 
     try {
-      Track track = trackSerializer.readTrack(new StringReader(trackAsJson));
+      Track track = objectMapper.readValue(trackAsJson, Track.class);
       if (track.getTrackName() == null || track.getArtistName() == null) {
         return new ResponseEntity<>("Track name and artist name required", HttpStatus.BAD_REQUEST);
       }
-      String maxId =
-          persistenceHandler.listSavedTracks().stream().map(trackMeta -> trackMeta.id()).reduce("0",
-              (currMax, next) -> {
-                return Integer.parseInt(currMax) > Integer.parseInt(next) ? currMax : next;
-              });
+      String maxId = persistenceHandler.listSavedTracks().stream().map(trackMeta -> trackMeta.id())
+          .reduce("0", (currMax, next) -> {
+            return Integer.parseInt(currMax) > Integer.parseInt(next) ? currMax : next;
+          });
       String newId = String.valueOf(Integer.parseInt(maxId) + 1);
-      String filename = FilenameHandler.generateFilenameFromMetaData(
-          new TrackMetaData(newId, track.getTrackName(), track.getArtistName(),
-              new Date().getTime()));
+      String filename = FilenameHandler.generateFilenameFromMetaData(new TrackMetaData(newId,
+          track.getTrackName(), track.getArtistName(), new Date().getTime()));
       persistenceHandler.writeToFile(filename, writer -> {
         try {
           writer.write(trackAsJson);

@@ -48,8 +48,8 @@ public class SequencerRestControllerTest {
     MvcResult result = mvc.perform(get("/api/tracks").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk()).andDo(print()).andReturn();
     String response = result.getResponse().getContentAsString();
-    assertTrue(mapper.readValue(response, new TypeReference<List<FileMetaData>>() {})
-        .equals(List.of(new FileMetaData(0, "Jas", "Pedro", 133742069))));
+    assertTrue(mapper.readValue(response, new TypeReference<List<TrackMetaData>>() {})
+        .equals(List.of(new TrackMetaData(0, "Jas", "Pedro", 133742069))));
   }
 
 }

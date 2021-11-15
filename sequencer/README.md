@@ -107,13 +107,13 @@ GET `api/track/5`
 
 ### Post a new track
 
-POST `api/track/{name}`
+POST `api/track`
 
 Returns "success" or "fail". The body of the request must be of type `application/json` with the format described at "File format for tracks". 
 
 Example
 
-POST `api/track/postedTrack`
+POST `api/track`
 
 Body:
 ```json

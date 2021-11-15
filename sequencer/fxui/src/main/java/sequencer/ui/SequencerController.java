@@ -1,7 +1,6 @@
 package sequencer.ui;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -340,8 +339,6 @@ public class SequencerController {
     } catch (IllegalArgumentException e) {
       displayStatusMsg("Track name has an invalid format.", false);
     } catch (IOException e) {
-      displayStatusMsg("Failed to save track.", false);
-    } catch (UncheckedIOException e) {
       displayStatusMsg("Failed to save track.", false);
     }
   }

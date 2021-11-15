@@ -38,13 +38,13 @@ public class SequencerRestController {
    * Returns a collection of all tracks.
    */
   @GetMapping(value = "/api/tracks", produces = MediaType.APPLICATION_JSON_VALUE)
-  public Collection<TrackMetaData> getTracks(@RequestParam(required = false) String name,
+  public Collection<TrackSearchResult> getTracks(@RequestParam(required = false) String name,
       @RequestParam(required = false) String artist) {
     // If no search query is sent, search for "" (matches everything)
     name = name != null ? name : "";
     artist = artist != null ? artist : "";
     return persistenceHandler.listSavedTracks(name, artist).stream()
-        .map(TrackMetaData::createFromFileMetaData).toList();
+        .map(TrackSearchResult::createFromFileMetaData).toList();
   }
 
   /**

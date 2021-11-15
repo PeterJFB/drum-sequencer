@@ -49,8 +49,8 @@ public class SequencerRestControllerTest {
     MvcResult result = mvc.perform(get("/api/tracks").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk()).andDo(print()).andReturn();
     String response = result.getResponse().getContentAsString();
-    assertTrue(mapper.readValue(response, new TypeReference<List<TrackMetaData>>() {})
-        .equals(List.of(new TrackMetaData(0, "Jas", "Pedro", 133742069))));
+    assertTrue(mapper.readValue(response, new TypeReference<List<TrackSearchResult>>() {})
+        .equals(List.of(new TrackSearchResult(0, "Jas", "Pedro", 133742069))));
   }
 
 }

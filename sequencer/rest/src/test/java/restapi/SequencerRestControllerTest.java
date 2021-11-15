@@ -24,9 +24,9 @@ import sequencer.persistence.PersistenceHandler;
 /**
  * Unit test of {@link SequencerRestController}.
  */
-@WebMvcTest(controllers = { SequencerRestController.class })
-@ContextConfiguration(classes = { SequencerServerApplication.class })
-@TestPropertySource(locations = { "classpath:test.properties" })
+@WebMvcTest(controllers = {SequencerRestController.class})
+@ContextConfiguration(classes = {SequencerServerApplication.class})
+@TestPropertySource(locations = {"classpath:test.properties"})
 @ComponentScan()
 public class SequencerRestControllerTest {
   @Autowired
@@ -39,7 +39,7 @@ public class SequencerRestControllerTest {
 
   @Test
   public void trackControllerExpectList() throws Exception {
-    Mockito.when(persistenceHandler.listFilenames()).thenReturn(List.of("Jas"));
+    Mockito.when(persistenceHandler.listFilenames()).thenReturn(List.of("1-Jas-Pedro-31231231"));
 
     MvcResult result = mvc.perform(get("/api/tracks").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk()).andDo(print()).andReturn();

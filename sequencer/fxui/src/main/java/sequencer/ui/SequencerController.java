@@ -35,7 +35,7 @@ import sequencer.json.TrackMapper;
 public class SequencerController {
 
   private Composer composer;
-  private ITrackAcces trackAccess;
+  private ITrackAccess trackAccess;
 
   @FXML
   void initialize() {

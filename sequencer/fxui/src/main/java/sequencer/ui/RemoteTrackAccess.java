@@ -16,7 +16,7 @@ import java.util.List;
 import sequencer.core.Composer;
 
 // Implementation of ITrackAccess that saves/loads tracks from a remote api
-public class RemoteTrackAccess implements ITrackAcces {
+public class RemoteTrackAccess implements ITrackAccess {
   Composer composer;
   String baseUrl;
   URL url;

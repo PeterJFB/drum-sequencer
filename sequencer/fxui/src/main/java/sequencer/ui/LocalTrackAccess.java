@@ -8,7 +8,7 @@ import sequencer.core.Composer;
 import sequencer.persistence.PersistenceHandler;
 
 // Implementation of ITrackAccess that saves/loads tracks locally via PersistenceHandler
-public class LocalTrackAccess implements ITrackAcces {
+public class LocalTrackAccess implements ITrackAccess {
 
   Composer composer;
   private PersistenceHandler persistenceHandler;

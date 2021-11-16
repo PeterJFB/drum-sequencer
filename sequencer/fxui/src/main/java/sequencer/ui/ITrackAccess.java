@@ -3,7 +3,7 @@ package sequencer.ui;
 import java.io.UncheckedIOException;
 import java.util.List;
 
-public interface ITrackAcces {
+public interface ITrackAccess {
 
   public void saveTrack() throws UncheckedIOException;
 

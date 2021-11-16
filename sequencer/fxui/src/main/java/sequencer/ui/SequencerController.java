@@ -1,6 +1,6 @@
 package sequencer.ui;
 
-import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -179,7 +179,7 @@ public class SequencerController {
 
     try {
       savedTracks.getItems().addAll(trackAccess.loadTracks());
-    } catch (IOException e) {
+    } catch (UncheckedIOException e) {
       displayStatusMsg("Failed to load saved tracks.", false);
     }
   }
@@ -338,7 +338,7 @@ public class SequencerController {
 
     } catch (IllegalArgumentException e) {
       displayStatusMsg("Track name has an invalid format.", false);
-    } catch (IOException e) {
+    } catch (UncheckedIOException e) {
       displayStatusMsg("Failed to save track.", false);
     }
   }

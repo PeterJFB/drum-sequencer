@@ -29,14 +29,19 @@ public class LocalTrackAccess implements ITrackAcces {
    * @throws IOException if something went wrong while saving the track
    */
   @Override
-  public void saveTrack() throws IOException {
-    persistenceHandler.writeToFile(composer.getTrackName(), (writer) -> {
-      try {
-        composer.saveTrack(writer);
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
-      }
-    });
+  public void saveTrack() throws UncheckedIOException {
+    try {
+      persistenceHandler.writeToFile(composer.getTrackName(), (writer) -> {
+        try {
+          composer.saveTrack(writer);
+        } catch (IOException e) {
+          throw new UncheckedIOException(e);
+        }
+      });
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+
   }
 
   /**
@@ -45,14 +50,18 @@ public class LocalTrackAccess implements ITrackAcces {
    * @throws IOException if something went wrong while loading the track
    */
   @Override
-  public void loadTrack(String trackName) throws IOException {
-    persistenceHandler.readFromFile(trackName, (reader) -> {
-      try {
-        composer.loadTrack(reader);
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
-      }
-    });
+  public void loadTrack(String trackName) throws UncheckedIOException {
+    try {
+      persistenceHandler.readFromFile(trackName, (reader) -> {
+        try {
+          composer.loadTrack(reader);
+        } catch (IOException e) {
+          throw new UncheckedIOException(e);
+        }
+      });
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 
   /**
@@ -61,7 +70,7 @@ public class LocalTrackAccess implements ITrackAcces {
    * @throws IOException if something went wrong while loading the tracks
    */
   @Override
-  public List<String> loadTracks() throws IOException {
+  public List<String> loadTracks() throws UncheckedIOException {
     List<String> tracksList = persistenceHandler.listFilenames();
     return tracksList;
   }

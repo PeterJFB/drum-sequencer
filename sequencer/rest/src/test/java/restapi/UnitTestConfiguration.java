@@ -2,7 +2,7 @@ package restapi;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import sequencer.core.TrackSerializationInterface;
+import sequencer.core.ITrackSerialization;
 import sequencer.json.TrackMapper;
 import sequencer.persistence.PersistenceHandler;
 
@@ -19,7 +19,7 @@ public class UnitTestConfiguration {
   }
 
   @Bean
-  public TrackSerializationInterface trackSerializer() {
+  public ITrackSerialization trackSerializer() {
     return new TrackMapper();
   }
 

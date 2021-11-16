@@ -31,3 +31,18 @@ I avanserte rytmemønstre trenger brukeren en måte i å _se_ hvilken takt som n
 
 - Lagre og laste inn filer ved kun bruk av muspekeren
 - Vise _tooltip_ ved å holde muspekeren over et ikon (largre, spill av, stopp osv.)
+
+## Deling (us-3)
+
+Når jeg har laget en rytme, ønsker jeg å dele den med vennene mine. De bor lagt unna, så jeg ønsker at de kan høre på rytmen uten at vi må møtes fysisk. I tillegg ønsker jeg at det skal være en enkel måte for dem å finne rytmen min. Jeg vil at de skal kunne se hvordan jeg har laget den, og remixe den, for å så vise meg tankene sine.
+
+Brukeren trenger en måte å dele rytme sin på internett. Andre brukere må ha mulighet til å søke etter sangen basert på for eksempel artistnavn eller navn på sang. De må ha mulighet til å se rytmen på samme måte som når de lager en, altså kan det ikke bare være lyd, og de må kunne gjøre endringer. De andre brukerene må kunne dele den forandrede rytmen, så den originale brukeren kan høre på den og se hva de har gjort.
+
+### Viktig å kunne se
+
+- Liste over sanger som er lagret på nettet.
+
+### Viktig å kunne gjøre
+
+- Laste opp og ned tracks til og fra nettet
+- Søke etter tracks brukeren og andre brukere har lagret

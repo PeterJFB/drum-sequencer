@@ -1,6 +1,6 @@
 <img src="docs/release3/Logo.svg" alt="Drum Sequencer">
 
-> An app to quickly create, edit and save different drum patterns 📾
+> An app to quickly create, edit and share different drum patterns 📾
 
 **main:**
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.stud.ntnu.no/#https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101)
@@ -10,8 +10,6 @@
 [![coverage report](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/develop/coverage.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/develop) ([headless](#tests-jacoco))
 
 ## Project: Drum sequencer
-
-> An app to quickly create, edit and share different drum patterns 📾
 
 The app requires `Java 16` or later, other dependecies are compiled and built using `Maven`.
 

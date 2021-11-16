@@ -1,7 +1,7 @@
 <img src="Logo.svg" alt="Drum Sequencer">
 
 > Everything related to the third release of _Drum Sequencer_
->>>>>>> Related to #73. Update docs
+
 ## Stricter naming policy
 
 It was decided to enforce a stricter naming policy to improve the overall reading experience of the Git history. Gitlab let's you [interact with the Git history](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/network/main) in a trouble-free way, but we imagine adding a issue number to each commit message will make it easier to keep track of it all.
@@ -52,66 +52,6 @@ Notice how **localpersistence** is now used by restapi instead of sequencer.json
 <div align="center">
 <img src="./client-and-server.svg" width=700></img>
 </div>
-
-<!--
-```plantuml
-skinparam BackgroundColor transparent
-skinparam ComponentFontStyle bold
-skinparam PackageFontStyle plain
-
-component fxui {
- package sequencer.ui {
- }
-}
-component core {
-    package sequencer.core {}
-    package sequencer.json {}
-}
-component localpersistence {
-    package sequencer.persistence {}
-}
-
-component rest {
-
-    package restapi {}
-    package restserver {}
-}
-
-component javafx {
-}
-component fxml {
-}
-component "javafx-media" {
-}
-component jackson {
-}
-
-component "spring-boot" {
-}
-component bucket4j {
-}
-component caffeine {
-}
-
-sequencer.ui ...> sequencer.core
-sequencer.core .right.> sequencer.json
-
-fxui .left.> javafx
-fxui .left.> fxml
-
-rest ...> "spring-boot"
-rest ...> bucket4j
-rest ...> caffeine
-
-restserver .right.> restapi
-restapi .down.> sequencer.persistence
-restapi ...> sequencer.json
-
-core .right.> "javafx-media"
-core .right.> jackson
-```
--->
-
 
 ## Spring Boot as a web service
 

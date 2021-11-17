@@ -11,7 +11,9 @@ import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import sequencer.core.Composer;
 
@@ -52,6 +54,79 @@ public class RemoteTrackAccess implements ITrackAccess {
   }
 
   /**
+   * Saves the track that the composer is currently holding.
+   * @throws IOException if something went wrong while saving the track
+   */
+  @Override
+  public void saveTrack() throws UncheckedIOException {
+    setConnection("/track", "POST");
+    connection.setDoOutput(true);
+
+    try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
+      OutputStreamWriter writer = new OutputStreamWriter(out);
+      composer.saveTrack(writer);
+      connection.getResponseCode();
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+
+    connection.disconnect();
+  }
+
+  /**
+   * Loads the track with the given trackName to the composer.
+   * 
+   * @param id the id of the track you want to load
+   * @throws IOException if something went wrong while loading the track
+   */
+  @Override
+  public void loadTrack(int id) throws UncheckedIOException {
+    String path = String.format("/track/%d", id);
+    setConnection(path, "GET");
+    
+    try {
+      int status = connection.getResponseCode();
+
+      DataInputStream in = null;
+      if (status > 299) {
+        in = new DataInputStream(connection.getErrorStream());
+      } else {
+        in = new DataInputStream(connection.getInputStream());
+      }
+      InputStreamReader reader = new InputStreamReader(in);
+      composer.loadTrack(reader);    
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+
+    connection.disconnect();
+  }
+
+  /**
+   * Loads saved tracks.
+   * @return a list trackNames for all the saved tracks.
+   * @throws IOException if something went wrong while loading the tracks
+   */
+  @Override
+  public List<Map<String, String>> 
+      loadTracks(String trackName, String artistName) throws UncheckedIOException {
+    String path = String.format("/tracks?name=%s&artist=%s", trackName, artistName);
+    setConnection(path, "GET");
+
+    String responseString;
+    try {
+      int status = connection.getResponseCode();
+      responseString = readResponse(status);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+
+    connection.disconnect();
+
+    return deseralizeTracks(responseString);
+  }
+
+  /**
    * Reads the response after a call to one of the endpoints of the api has been made.
    * @param status the statusCode for the call made
    * @return a string with the response from the call
@@ -78,77 +153,26 @@ public class RemoteTrackAccess implements ITrackAccess {
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
-
     return content.toString();
   }
 
-  /**
-   * Saves the track that the composer is currently holding.
-   * @throws IOException if something went wrong while saving the track
-   */
-  public void saveTrack() throws UncheckedIOException {
-    setConnection(String.format("/track/%s", composer.getTrackName()), "POST");
-    connection.setDoOutput(true);
+  private List<Map<String, String>> deseralizeTracks(String tracksString) {
+    tracksString = tracksString.substring(2,tracksString.length() - 2);
+    String[] tracksArray = tracksString.split("\\},\\{");
 
-    try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
-      OutputStreamWriter writer = new OutputStreamWriter(out);
-      composer.saveTrack(writer);
-      connection.getResponseCode();
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-
-    connection.disconnect();
-  }
-
-  /**
-   * Loads the track with the given trackName to the composer.
-   * 
-   * @param trackName the name of the track you want to load
-   * @throws IOException if something went wrong while loading the track
-   */
-  public void loadTrack(String trackName) throws UncheckedIOException {
-    setConnection(String.format("/track/%s", trackName), "GET");
-    
-    try {
-      int status = connection.getResponseCode();
-
-      DataInputStream in = null;
-      if (status > 299) {
-        in = new DataInputStream(connection.getErrorStream());
-      } else {
-        in = new DataInputStream(connection.getInputStream());
+    List<Map<String, String>> tracks = new ArrayList<>();
+    for (int i = 0; i < tracksArray.length; i++) {
+      Map<String, String> trackMap = new HashMap<>();
+      String[] trackParams = tracksArray[i].split(",");
+      for (int j = 0; j < trackParams.length; j++) {
+        String[] trackParamArray = trackParams[j].split(":");
+        String param = trackParamArray[0].replaceAll("\"", "");
+        String value = trackParamArray[1].replaceAll("\"", "");
+        trackMap.put(param, value);
       }
-      InputStreamReader reader = new InputStreamReader(in);
-      composer.loadTrack(reader);    
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
+      tracks.add(trackMap);
     }
 
-    connection.disconnect();
-  }
-
-  /**
-   * Loads saved tracks.
-   * @return a list trackNames for all the saved tracks.
-   * @throws IOException if something went wrong while loading the tracks
-   */
-  public List<String> loadTracks() throws UncheckedIOException {
-    setConnection("/tracks", "GET");
-
-    String responseString;
-    try {
-      int status = connection.getResponseCode();
-      responseString = readResponse(status);
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-
-    connection.disconnect();
-
-    List<String> tracksList = new ArrayList<>();
-    tracksList.add(responseString);
-
-    return tracksList;
+    return tracks;
   }
 }

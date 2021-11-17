@@ -44,7 +44,7 @@ public class SequencerController {
     composer.addListener(progress -> {
       Platform.runLater(() -> addBorderToSixteenths(progress));
     });
-    trackAccess = new LocalTrackAccess(composer);
+    trackAccess = new RemoteTrackAccess(composer);
 
     createElements();
   }
@@ -178,7 +178,7 @@ public class SequencerController {
     addBorderToSixteenths(0);
 
     try {
-      savedTracks.getItems().addAll(trackAccess.loadTracks());
+      savedTracks.getItems().addAll(/*TODO: get tracks fromnew api*/);
     } catch (UncheckedIOException e) {
       displayStatusMsg("Failed to load saved tracks.", false);
     }
@@ -358,7 +358,7 @@ public class SequencerController {
   private void loadTrack() {
     try {
       String trackName = savedTracks.getValue();
-      trackAccess.loadTrack(trackName);
+      trackAccess.loadTrack(/*TODO: load track from new api */);
 
       // Track is successfully loaded
       Platform.runLater(this::updateElements);

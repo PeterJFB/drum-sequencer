@@ -7,8 +7,8 @@ import java.util.List;
 import sequencer.core.Composer;
 import sequencer.persistence.PersistenceHandler;
 
-// Implementation of ITrackAccess that saves/loads tracks locally via PersistenceHandler
-public class LocalTrackAccess implements ITrackAccess {
+// Saves/loads tracks locally via PersistenceHandler
+public class LocalTrackAccess {
 
   Composer composer;
   private PersistenceHandler persistenceHandler;
@@ -28,7 +28,6 @@ public class LocalTrackAccess implements ITrackAccess {
    * Saves the track that the composer is currently holding.
    * @throws IOException if something went wrong while saving the track
    */
-  @Override
   public void saveTrack() throws UncheckedIOException {
     try {
       persistenceHandler.writeToFile(composer.getTrackName(), (writer) -> {
@@ -49,7 +48,6 @@ public class LocalTrackAccess implements ITrackAccess {
    * @param trackName the name of the track you want to load
    * @throws IOException if something went wrong while loading the track
    */
-  @Override
   public void loadTrack(String trackName) throws UncheckedIOException {
     try {
       persistenceHandler.readFromFile(trackName, (reader) -> {
@@ -69,7 +67,6 @@ public class LocalTrackAccess implements ITrackAccess {
    * @return a list trackNames for all the saved tracks.
    * @throws IOException if something went wrong while loading the tracks
    */
-  @Override
   public List<String> loadTracks() throws UncheckedIOException {
     List<String> tracksList = persistenceHandler.listFilenames();
     return tracksList;

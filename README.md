@@ -13,7 +13,7 @@
 
 > An app to quickly create, edit and share different drum patterns 📾
 
-The app requires `Java 16` or later, other dependecies are compiled and built using `maven`.
+The app requires `Java 16` or later, other dependecies are compiled and built using `Maven`.
 
 The project itself and further descriptions is located in the [sequencer folder](./sequencer).
 
@@ -43,7 +43,7 @@ Docs about our api are located in the [sequencer folder](./sequencer#rest-api).
 
 ### 2) Option 1: Local
 
-After installing `Java 16` and `maven` (both of which can be done with [SDKMAN](https://sdkman.io/)), the project will start by running:
+After installing `Java 16` and `Maven` (both of which can be done with [SDKMAN](https://sdkman.io/) on most Unix based systems), the project will start by running:
 
 ```bash
 $ cd sequencer/ # Move into sequencer folder

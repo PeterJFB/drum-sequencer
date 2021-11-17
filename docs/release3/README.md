@@ -1,7 +1,7 @@
 <img src="Logo.svg" alt="Drum Sequencer">
 
-> Everything related to the third release of the application
->>>>>>> Related to #73. Add logo to docs
+> Everything related to the third release of _Drum Sequencer_
+>>>>>>> Related to #73. Update docs
 ## Stricter naming policy
 
 It was decided to enforce a stricter naming policy to improve the overall reading experience of the Git history. Gitlab let's you [interact with the Git history](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/network/main) in a trouble-free way, but we imagine adding a issue number to each commit message will make it easier to keep track of it all.

@@ -59,8 +59,8 @@ public class PersistenceHandlerTest {
     for (String invalidSaveDirecory : Arrays.asList(null, "")) {
       assertThrows(IllegalArgumentException.class, () -> {
         new PersistenceHandler(invalidSaveDirecory, ".json");
-      }, "PersistenceHandler should throw exception when saveDirectory"
-          + "argument is invalid: "
+      }, """
+          PersistenceHandler should throw exception when saveDirectory argument is invalid: """
           + invalidSaveDirecory);
     }
 
@@ -68,9 +68,9 @@ public class PersistenceHandlerTest {
     for (String invalidSaveDirecory : Arrays.asList("\0")) {
       assertThrows(InvalidPathException.class, () -> {
         new PersistenceHandler(invalidSaveDirecory, ".json");
-      }, "PersistenceHandler should throw exception when saveDirectory"
-          + "argument contains invalid characters: "
-          + invalidSaveDirecory);
+      }, """
+          PersistenceHandler should throw exception when saveDirectory argument contains
+          invalid characters: """ + invalidSaveDirecory);
     }
   }
 
@@ -88,8 +88,8 @@ public class PersistenceHandlerTest {
 
 
     // TEST
-    for (String invalidFilename : Arrays.asList(null, "",
-        "..%svirus".formatted(File.separator), "config%ssensitive".formatted(File.separator))) {
+    for (String invalidFilename : Arrays.asList(null, "", "..%svirus".formatted(File.separator),
+        "config%ssensitive".formatted(File.separator))) {
       assertThrows(IllegalArgumentException.class, () -> {
         ph.getReaderFromFile(invalidFilename);
       }, "PersistenceHandler should throw exception the requested filename is invalid: "
@@ -135,10 +135,10 @@ public class PersistenceHandlerTest {
       e.printStackTrace();
     }
 
-    assertEquals(content, loadedContent,
-        "Content in file should be equal to content written to file "
-            + "(expected %s, but loaded content was %s)."
-                .formatted(content, loadedContent));
+    assertEquals(content, loadedContent, """
+              Content in file should be equal to content written
+
+        to file (expected %s, but loaded content was %s).""".formatted(content, loadedContent));
 
     // TEARDOWN
 
@@ -231,7 +231,6 @@ public class PersistenceHandlerTest {
    */
   @AfterAll
   public static void tearDown() {
-    System.out.println("i run");
     PersistenceHandler ph1;
     PersistenceHandler ph2;
     ph1 = new PersistenceHandler(testDirectory, ".json");

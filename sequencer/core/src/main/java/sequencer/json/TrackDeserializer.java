@@ -18,7 +18,7 @@ import sequencer.core.Track;
 /**
  * The {@code TrackDeserializer} is a custom deserializer of the {@link Track} class.
  */
-public class TrackDeserializer extends JsonDeserializer<Track> {
+class TrackDeserializer extends JsonDeserializer<Track> {
 
   @Override
   public Track deserialize(JsonParser parser, DeserializationContext ctxt)
@@ -28,9 +28,6 @@ public class TrackDeserializer extends JsonDeserializer<Track> {
     return deserialize(treeNode);
   }
 
-  /**
-   * Deserializes a Track from a treeNode.
-   */
   Track deserialize(TreeNode treeNode) {
     if (treeNode instanceof ObjectNode) {
       ObjectNode objectNode = (ObjectNode) treeNode;

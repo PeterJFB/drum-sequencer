@@ -2,8 +2,6 @@ package restapi;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import sequencer.core.TrackSerializationInterface;
-import sequencer.json.TrackMapper;
 import sequencer.persistence.PersistenceHandler;
 
 /**
@@ -16,11 +14,6 @@ public class UnitTestConfiguration {
   @Bean
   public PersistenceHandler persistenceHandler() {
     return new PersistenceHandler("test-drum-sequencer-persistence-test", "json");
-  }
-
-  @Bean
-  public TrackSerializationInterface trackSerializer() {
-    return new TrackMapper();
   }
 
 }

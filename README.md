@@ -67,6 +67,20 @@ After which the GUI will be visible on the open `6080` port
 >
 > As of now, the `gitlab/workspace-full-vnc` dockerimage is [resticted when it comes to audio support](https://www.gitpod.io/blog/native-ui-with-vnc). This makes it difficult to test the audio-specific features within the network-based IDE. While the project runs fine within gitpod, it is recommended to experience the audio-based features of the project locally.
 
+### Building the app
+
+This project is set up to use jlink in [open-jfx-jdk](https://github.com/javafxports/openjdk-jfx) and [jpackage](https://github.com/petr-panteleyev/jpackage-maven-plugin) to build an installer. If using Windows, you need to install [WiX tool](https://wixtoolset.org/) before building. If using Mac, you need to install [XCode](https://developer.apple.com/xcode/) before building. Most Linux distros does not require any additional tools.
+
+```bash
+$ cd sequencer/ # Move into sequencer folder
+$ mvn install # Compile and build modules
+$ mvn install -f ./core/ # Compile and build modules used by fxui
+$ mvn install -f ./localpersistence/
+$ mvn compile javafx:jlink jpackage:jpackage -f .\fxui\ #Build and package the project
+```
+
+After this, you will find the installer in `/fxui/target/dist`
+
 ## Additional configuration: Changing storage endpoint
 
 Our application is as of now designed to utilize a local server to store/share tracks made with the application. The url for this is by default `http://localhost:8080/api`. This value can be changed by declaring the environment varaible `SEQUENCER_ACCESS` with a different endpoint. There is additionally an option to run the application without running a sever, declared with `SEQUENCER_ACCESS=LOCAL`. Below are some examples of running the application with these varaibles:

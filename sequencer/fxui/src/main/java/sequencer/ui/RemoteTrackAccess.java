@@ -7,8 +7,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class RemoteTrackAccess implements ITrackAccess {
    * @param path the path (relative to baseUrl) for the endpoint you want to connect to
    * @param requestMethod the requestMethod for the connection (e.g. GET, POST, etc.)
    */
-  private void setConnection(String path, String requestMethod) throws UncheckedIOException {
+  private void setConnection(String path, String requestMethod) throws IOException {
     try {
       url = new URL(baseUrl + path);
       connection = (HttpURLConnection) url.openConnection();
@@ -48,9 +49,14 @@ public class RemoteTrackAccess implements ITrackAccess {
       connection.setRequestProperty("Accept", "application/json");
       connection.setConnectTimeout(5000);
       connection.setReadTimeout(5000);
+    } catch (MalformedURLException e) {
+      throw new IOException("The endpoint " + baseUrl + path + " is not on the correct format", e);
+    } catch (ProtocolException e) {
+      throw new IOException("The requestmethod " + requestMethod + " is not allowed", e);
     } catch (IOException e) {
-      throw new UncheckedIOException(e);
+      throw new IOException("The program was unable to preparing a connection to the server", e);
     }
+    
   }
 
   /**
@@ -58,7 +64,7 @@ public class RemoteTrackAccess implements ITrackAccess {
    * @throws IOException if something went wrong while saving the track
    */
   @Override
-  public void saveTrack() throws UncheckedIOException {
+  public void saveTrack() throws IOException {
     setConnection("/track", "POST");
     connection.setDoOutput(true);
 
@@ -67,7 +73,7 @@ public class RemoteTrackAccess implements ITrackAccess {
       composer.saveTrack(writer);
       connection.getResponseCode();
     } catch (IOException e) {
-      throw new UncheckedIOException(e);
+      throw new IOException("The program was unable to save the current track", e);
     }
 
     connection.disconnect();
@@ -80,7 +86,7 @@ public class RemoteTrackAccess implements ITrackAccess {
    * @throws IOException if something went wrong while loading the track
    */
   @Override
-  public void loadTrack(int id) throws UncheckedIOException {
+  public void loadTrack(int id) throws IOException {
     String path = String.format("/track/%d", id);
     setConnection(path, "GET");
     
@@ -96,7 +102,7 @@ public class RemoteTrackAccess implements ITrackAccess {
       InputStreamReader reader = new InputStreamReader(in);
       composer.loadTrack(reader);    
     } catch (IOException e) {
-      throw new UncheckedIOException(e);
+      throw new IOException("The program was unable to load track with id " + id, e);
     }
 
     connection.disconnect();
@@ -109,7 +115,7 @@ public class RemoteTrackAccess implements ITrackAccess {
    */
   @Override
   public List<Map<String, String>> 
-      loadTracks(String trackName, String artistName) throws UncheckedIOException {
+      loadTracks(String trackName, String artistName) throws IOException {
     String path = String.format("/tracks?name=%s&artist=%s", trackName, artistName);
     setConnection(path, "GET");
 
@@ -118,7 +124,7 @@ public class RemoteTrackAccess implements ITrackAccess {
       int status = connection.getResponseCode();
       responseString = readResponse(status);
     } catch (IOException e) {
-      throw new UncheckedIOException(e);
+      throw new IOException("The program was unable to load list of tracks", e);
     }
 
     connection.disconnect();
@@ -132,7 +138,7 @@ public class RemoteTrackAccess implements ITrackAccess {
    * @return a string with the response from the call
    * @throws IOException if the response can not be read
    */
-  private String readResponse(int status) throws UncheckedIOException {
+  private String readResponse(int status) throws IOException {
     Reader inputStreamReader = null;
     if (status > 299) {
       inputStreamReader = new InputStreamReader(connection.getErrorStream());
@@ -140,7 +146,7 @@ public class RemoteTrackAccess implements ITrackAccess {
       try {
         inputStreamReader = new InputStreamReader(connection.getInputStream());
       } catch (IOException e) {
-        throw new UncheckedIOException(e);
+        throw new IOException("Could not get inputstream from connection to server", e);
       }
     }
     
@@ -151,7 +157,7 @@ public class RemoteTrackAccess implements ITrackAccess {
         content.append(inputLine);
       }
     } catch (IOException e) {
-      throw new UncheckedIOException(e);
+      throw new IOException("Something went wrong while reading response from server", e);
     }
     return content.toString();
   }

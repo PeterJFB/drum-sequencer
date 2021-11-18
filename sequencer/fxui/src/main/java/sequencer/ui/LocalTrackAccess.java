@@ -28,7 +28,7 @@ public class LocalTrackAccess {
    * Saves the track that the composer is currently holding.
    * @throws IOException if something went wrong while saving the track
    */
-  public void saveTrack() throws UncheckedIOException {
+  public void saveTrack() throws IOException {
     try {
       persistenceHandler.writeToFile(composer.getTrackName(), (writer) -> {
         try {
@@ -37,9 +37,9 @@ public class LocalTrackAccess {
           throw new UncheckedIOException(e);
         }
       });
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    } catch (UncheckedIOException | IOException e) {
+      throw new IOException("The program was unable to save the current track", e);
+    } 
 
   }
 
@@ -48,7 +48,7 @@ public class LocalTrackAccess {
    * @param trackName the name of the track you want to load
    * @throws IOException if something went wrong while loading the track
    */
-  public void loadTrack(String trackName) throws UncheckedIOException {
+  public void loadTrack(String trackName) throws IOException {
     try {
       persistenceHandler.readFromFile(trackName, (reader) -> {
         try {
@@ -57,8 +57,8 @@ public class LocalTrackAccess {
           throw new UncheckedIOException(e);
         }
       });
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
+    } catch (UncheckedIOException | IOException e) {
+      throw new IOException("The program was unable to load track with name " + trackName, e);
     }
   }
 
@@ -67,7 +67,7 @@ public class LocalTrackAccess {
    * @return a list trackNames for all the saved tracks.
    * @throws IOException if something went wrong while loading the tracks
    */
-  public List<String> loadTracks() throws UncheckedIOException {
+  public List<String> loadTracks() {
     List<String> tracksList = persistenceHandler.listFilenames();
     return tracksList;
   }

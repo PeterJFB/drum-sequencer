@@ -1,9 +1,10 @@
 package sequencer.ui;
 
-import java.io.UncheckedIOException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -178,8 +179,10 @@ public class SequencerController {
     addBorderToSixteenths(0);
 
     try {
-      savedTracks.getItems().addAll(/*TODO: get tracks fromnew api*/);
-    } catch (UncheckedIOException e) {
+      // TODO: get tracks with search query from api
+      List<Map<String, String>> tracks = trackAccess.loadTracks("", "");
+      savedTracks.getItems().addAll(/*TODO: convert fromat of tracks*/);
+    } catch (IOException e) {
       displayStatusMsg("Failed to load saved tracks.", false);
     }
   }
@@ -338,7 +341,7 @@ public class SequencerController {
 
     } catch (IllegalArgumentException e) {
       displayStatusMsg("Track name has an invalid format.", false);
-    } catch (UncheckedIOException e) {
+    } catch (IOException e) {
       displayStatusMsg("Failed to save track.", false);
     }
   }
@@ -357,13 +360,13 @@ public class SequencerController {
   @FXML
   private void loadTrack() {
     try {
-      String trackName = savedTracks.getValue();
-      trackAccess.loadTrack(/*TODO: load track from new api */);
+      //String trackName = savedTracks.getValue();
+      trackAccess.loadTrack(1 /*TODO: load track from new api based on id*/);
 
       // Track is successfully loaded
       Platform.runLater(this::updateElements);
       displayStatusMsg(composer.getTrackName() + " loaded.", true);
-    } catch (Exception e) {
+    } catch (IOException e) {
       displayStatusMsg("Failed to load track.", false);
     }
   }

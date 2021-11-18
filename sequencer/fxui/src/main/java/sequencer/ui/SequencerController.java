@@ -1,10 +1,10 @@
 package sequencer.ui;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -29,7 +29,6 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sequencer.core.Composer;
 import sequencer.json.TrackMapper;
-import sequencer.persistence.PersistenceHandler;
 
 /**
  * Main controller of the sequencer.
@@ -37,7 +36,7 @@ import sequencer.persistence.PersistenceHandler;
 public class SequencerController {
 
   private Composer composer;
-  private PersistenceHandler persistenceHandler;
+  private TrackAccessInterface trackAccess;
 
   @FXML
   void initialize() {
@@ -46,8 +45,7 @@ public class SequencerController {
     composer.addListener(progress -> {
       Platform.runLater(() -> addBorderToSixteenths(progress));
     });
-    persistenceHandler =
-        new PersistenceHandler("drum-sequencer-persistence", Composer.getSerializationFormat());
+    trackAccess = new RemoteTrackAccess();
 
     createElements();
   }
@@ -180,11 +178,17 @@ public class SequencerController {
 
     addBorderToSixteenths(0);
 
-    savedTracks.getItems().addAll(persistenceHandler.listFilenames());
+    try {
+      // TODO: get tracks with search query from api
+      List<Map<String, String>> tracks = trackAccess.loadTracks("", "");
+      savedTracks.getItems().addAll(tracks.get(0).get("name") /*TODO: convert fromat of tracks*/);
+    } catch (IOException e) {
+      displayStatusMsg("Failed to load saved tracks.", false);
+    }
   }
 
   /**
-   * Updating elements when loading a new track, in stead of re-using createElements(), as it
+   * Updating elements when loading a new track, instead of re-using createElements(), as it
    * contains unnecessery code.
    */
   private void updateElements() {
@@ -329,13 +333,7 @@ public class SequencerController {
   @FXML
   private void saveTrack() {
     try {
-      persistenceHandler.writeToFile(composer.getTrackName(), (writer) -> {
-        try {
-          composer.saveTrack(writer);
-        } catch (IOException e) {
-          throw new UncheckedIOException(e);
-        }
-      });
+      trackAccess.saveTrack(composer);
 
       // Track is successfully saved
       savedTracks.getItems().add(composer.getTrackName());
@@ -344,8 +342,6 @@ public class SequencerController {
     } catch (IllegalArgumentException e) {
       displayStatusMsg("Track name has an invalid format.", false);
     } catch (IOException e) {
-      displayStatusMsg("Failed to save track.", false);
-    } catch (UncheckedIOException e) {
       displayStatusMsg("Failed to save track.", false);
     }
   }
@@ -364,19 +360,13 @@ public class SequencerController {
   @FXML
   private void loadTrack() {
     try {
-      String trackName = savedTracks.getValue();
-      persistenceHandler.readFromFile(trackName, (reader) -> {
-        try {
-          composer.loadTrack(reader);
-        } catch (IOException e) {
-          throw new UncheckedIOException(e);
-        }
-      });
+      //String trackName = savedTracks.getValue();
+      trackAccess.loadTrack(composer, 1 /*TODO: load track from new api based on id*/);
 
       // Track is successfully loaded
       Platform.runLater(this::updateElements);
       displayStatusMsg(composer.getTrackName() + " loaded.", true);
-    } catch (Exception e) {
+    } catch (IOException e) {
       displayStatusMsg("Failed to load track.", false);
     }
   }

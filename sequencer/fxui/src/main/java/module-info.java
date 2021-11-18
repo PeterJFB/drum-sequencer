@@ -4,7 +4,7 @@ module sequencer.ui {
   requires javafx.controls;
   requires transitive javafx.graphics;
 
-  requires sequencer.core;
+  requires transitive sequencer.core;
   requires sequencer.persistence;
 
   exports sequencer.ui;

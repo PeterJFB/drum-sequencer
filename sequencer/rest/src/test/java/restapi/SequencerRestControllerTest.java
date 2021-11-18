@@ -1,7 +1,7 @@
 package restapi;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -9,11 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,8 +20,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import restserver.SequencerServerApplication;
-import sequencer.persistence.FileMetaData;
-import sequencer.persistence.PersistenceHandler;
 
 
 /**
@@ -32,25 +29,54 @@ import sequencer.persistence.PersistenceHandler;
 @ContextConfiguration(classes = {SequencerServerApplication.class})
 @TestPropertySource(locations = {"classpath:test.properties"})
 @ComponentScan()
-public class SequencerRestControllerTest {
-  @Autowired
-  private MockMvc mvc;
+public class SequencerRestControllerTest extends AbstractUnitTest {
 
-  @MockBean
-  private PersistenceHandler persistenceHandler;
+  // Mocked server
+  @Autowired
+  MockMvc mvc;
 
   ObjectMapper mapper = new ObjectMapper();
 
   @Test
-  public void trackControllerExpectList() throws Exception {
-    Mockito.when(persistenceHandler.listSavedTracks(anyString(), anyString()))
-        .thenReturn(List.of(new FileMetaData(0, "Jas", "Pedro", 133742069)));
+  @DisplayName("/api/tracks should respond with all available tracks")
+  public void testGetTracks() throws Exception {
 
+    // SETUP
+
+    // Perform request with mocked mvc
     MvcResult result = mvc.perform(get("/api/tracks").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk()).andDo(print()).andReturn();
+
+    // Convert response
     String response = result.getResponse().getContentAsString();
-    assertTrue(mapper.readValue(response, new TypeReference<List<TrackSearchResult>>() {})
-        .equals(List.of(new TrackSearchResult(0, "Jas", "Pedro", 133742069))));
+
+    // TEST
+    assertTrue(isEqualSearchResults(testTrackSearchResult,
+        mapper.readValue(response, new TypeReference<List<TrackSearchResult>>() {}).get(0)));
+
+
   }
 
+  @Test
+  @DisplayName("/api/track/{id} should respond with the given track")
+  public void testGetTrackById() throws Exception {
+
+    // SETUP
+    MvcResult result =
+        mvc.perform(get("/api/track/" + testId).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andDo(print()).andReturn();
+
+    // TEST
+    assertEquals(testContent, result.getResponse().getContentAsString());
+
+    // Non-existing track should respond with NOT_FOUND
+    mvc.perform(get("/api/track/" + fileNotFoundId).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
+
+    // Critical errors should be respond with INTERNAL_SERVER_ERROR.
+    mvc.perform(get("/api/track/" + errorId).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isInternalServerError());
+
+
+  }
 }

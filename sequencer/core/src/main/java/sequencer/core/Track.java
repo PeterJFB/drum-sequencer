@@ -75,7 +75,7 @@ public class Track {
    * @throws IllegalArgumentException if trackName is more than 30 characters long
    */
   public void setTrackName(String trackName) throws IllegalArgumentException {
-    if (trackName.length() >= 30) {
+    if (trackName != null && trackName.length() >= 30) {
       throw new IllegalArgumentException("Track name can not be more than 30 characters long.");
     }
     this.trackName = trackName;
@@ -88,7 +88,7 @@ public class Track {
    * @throws IllegalArgumentException if artistName is more than 30 characters long
    */
   public void setArtistName(String artistName) throws IllegalArgumentException {
-    if (artistName.length() >= 30) {
+    if (artistName != null && artistName.length() >= 30) {
       throw new IllegalArgumentException("Artist name can not be more than 30 characters long.");
     }
     this.artistName = artistName;

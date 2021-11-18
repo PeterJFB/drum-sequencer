@@ -2,7 +2,7 @@ package restapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.jackson.JsonComponent;
-import sequencer.json.TrackDeserializer;
+import sequencer.json.TrackModule;
 
 
 /**
@@ -12,6 +12,6 @@ import sequencer.json.TrackDeserializer;
  * backend.
  */
 @JsonComponent
-public class RestTrackJsonDeserializer extends TrackDeserializer {
+public class RestTrackJsonModule extends TrackModule {
 }
 

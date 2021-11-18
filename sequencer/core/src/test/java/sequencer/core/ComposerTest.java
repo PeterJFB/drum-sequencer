@@ -103,8 +103,9 @@ public class ComposerTest {
 
   @Test
   @DisplayName("Test writing and reading a track")
-  @Disabled("By default we do not test writing and reading as part of the composer test."
-      + " We keep the test here in case it becomes useful.")
+  @Disabled("""
+      By default we do not test writing and reading as part of the composer test.
+      We keep the test here in case it becomes useful.""")
   public void writeAndRead() {
     composer.setTrackName("trackName");
     composer.setArtistName("artistName");

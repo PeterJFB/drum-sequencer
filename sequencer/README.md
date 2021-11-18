@@ -32,12 +32,16 @@ The Track-files follow JSON-formatting. The following is an example of a file:
 
 ```json
 {
-    "name": "Example song",
-    "artist": "JSON Mraz",
-    "instruments" : {
-        "hihat": [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
-        "kick": [True, False, False, False, True, False, False, False, True, False, False, False, True, False, False, False]
-    }
+  "name": "Example song",
+  "artist": "JSON Mraz",
+  "instruments": {
+    "hihat": [
+      true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true
+    ],
+    "kick": [
+      true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false
+    ]
+  }
 }
 ```
 
@@ -96,12 +100,16 @@ GET `api/track/5`
 
 ```json
 {
-    "name": "Example song",
-    "artist": "JSON Mraz",
-    "instruments" : {
-        "hihat": [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
-        "kick": [True, False, False, False, True, False, False, False, True, False, False, False, True, False, False, False]
-    }
+  "name": "Example song",
+  "artist": "JSON Mraz",
+  "instruments": {
+    "hihat": [
+      true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true
+    ],
+    "kick": [
+      true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false
+    ]
+  }
 }
 ```
 
@@ -109,22 +117,27 @@ GET `api/track/5`
 
 POST `api/track`
 
-Returns "success" or "fail". The body of the request must be of type `application/json` with the format described at "File format for tracks". 
+Returns "success" or "fail". The body of the request must be of type `application/json` with the format described at "File format for tracks".
 
 Example
 
 POST `api/track`
 
 Body:
+
 ```json
 Content-Type: application/json
 {
-    "name": "postedTrack",
-    "artist": "POST Malone",
-    "instruments" : {
-        "hihat": [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
-        "kick": [True, False, False, False, True, False, False, False, True, False, False, False, True, False, False, False]
-    }
+  "name": "postedTrack",
+  "artist": "POST Malone",
+  "instruments" : {
+    "hihat": [
+      true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true
+    ],
+    "kick": [
+      true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false
+    ]
+  }
 }
 ```
 
@@ -134,15 +147,14 @@ Response:
 success
 ```
 
-
-
 ## Test-classes
 
 - TrackMapper: [`core/src/test/java/sequencer/json/TrackMapperTest.java`](./core/src/test/java/sequencer/json/TrackMapperTest.java)
 - PersistenceHandler: [`localpersistence/src/test/java/sequencer/persistence/PersistenceHandlerTest.java`](./localpersistence/src/test/java/sequencer/persistence/PersistenceHandlerTest.java)
 - Composer: [`core/src/test/java/sequencer/core/ComposerTest.java`](./core/src/test/java/sequencer/core/ComposerTest.java)
 - SequencerController: [`fxui/src/test/java/sequencer/ui/SequencerControllerTest.java`](./fxui/src/test/java/sequencer/ui/SequencerControllerTest.java)
-
+- SequencerRestController (Unit): [rest/src/test/java/restapi/SequencerRestControllerTest.java](rest/src/test/java/restapi/SequencerRestControllerTest.java)
+- SequencerServerApplication (integration): [rest/src/test/java/restserver/SequencerServerApplication.java](rest/src/test/java/restserver/SequencerServerApplicationTest.java)
 
 ## User-stories
 

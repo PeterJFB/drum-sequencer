@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -17,13 +18,14 @@ import java.util.List;
 import java.util.Map;
 import sequencer.core.Composer;
 
-/** Implementation of {@link TrackAccessInterface} that saves/loads tracks from a remote api.
-*/
+/**
+ * Implementation of {@link TrackAccessInterface} that saves/loads tracks from a remote api.
+ */
 public class RemoteTrackAccess implements TrackAccessInterface {
   String baseUrl;
   URL url;
   HttpURLConnection connection;
-  
+
   public RemoteTrackAccess() {
     baseUrl = "http://localhost:8080/api";
   }
@@ -33,8 +35,8 @@ public class RemoteTrackAccess implements TrackAccessInterface {
    *
    * @param path the path (relative to baseUrl) for the endpoint you want to connect to
    * @param requestMethod the requestMethod for the connection (e.g. GET, POST, etc.)
-   * @throws IOException if the url is wrongly formatted, the requestmetod is illegal 
-   *         or something went wrong while opening the connection
+   * @throws IOException if the url is wrongly formatted, the requestmetod is illegal or something
+   *         went wrong while opening the connection
    */
   private void setConnection(String path, String requestMethod) throws IOException {
     try {
@@ -52,7 +54,7 @@ public class RemoteTrackAccess implements TrackAccessInterface {
     } catch (IOException e) {
       throw new IOException("The program was unable to preparing a connection to the server", e);
     }
-    
+
   }
 
   /**
@@ -88,18 +90,24 @@ public class RemoteTrackAccess implements TrackAccessInterface {
   public void loadTrack(Composer composer, int id) throws IOException {
     final String path = String.format("/track/%d", id);
     setConnection(path, "GET");
-    
+
     try {
       final int status = connection.getResponseCode();
-
       DataInputStream in;
-      if (status > 299) {
-        in = new DataInputStream(connection.getErrorStream());
-      } else {
+
+      if (status == 200) {
         in = new DataInputStream(connection.getInputStream());
+
+        final InputStreamReader reader = new InputStreamReader(in, "UTF-8");
+        composer.loadTrack(reader);
+
+      } else {
+
+        String errorBody = readResponse(status);
+
+        throw new IOException(
+            "Request to server gave unexpected status: %s body: %s".formatted(status, errorBody));
       }
-      final InputStreamReader reader = new InputStreamReader(in, "UTF-8");
-      composer.loadTrack(reader);    
     } catch (IOException e) {
       throw new IOException("The program was unable to load track with id " + id, e);
     }
@@ -116,8 +124,8 @@ public class RemoteTrackAccess implements TrackAccessInterface {
    * @throws IOException if something went wrong while loading the tracks
    */
   @Override
-  public List<Map<String, String>> 
-      loadTracks(String trackName, String artistName) throws IOException {
+  public List<Map<String, String>> loadTracks(String trackName, String artistName)
+      throws IOException {
     final String path = String.format("/tracks?name=%s&artist=%s", trackName, artistName);
     setConnection(path, "GET");
 
@@ -152,7 +160,7 @@ public class RemoteTrackAccess implements TrackAccessInterface {
         throw new IOException("Could not get inputstream from connection to server", e);
       }
     }
-    
+
     StringBuffer content = new StringBuffer();
     try (BufferedReader in = new BufferedReader(inputStreamReader)) {
       String inputLine;
@@ -166,8 +174,8 @@ public class RemoteTrackAccess implements TrackAccessInterface {
   }
 
   /**
-   * Deseralizes a string holding the tracks 
-   * (what has been returned after calling readResponse after a get call to the endpoint /tracks).
+   * Deseralizes a string holding the tracks (what has been returned after calling readResponse
+   * after a get call to the endpoint /tracks).
    *
    * @param tracksString the string to be deseralized
    * @return a map of lists where each map represents a track

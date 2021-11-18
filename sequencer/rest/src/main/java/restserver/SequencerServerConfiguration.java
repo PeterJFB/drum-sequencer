@@ -2,7 +2,7 @@ package restserver;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import sequencer.core.ITrackSerialization;
+import sequencer.core.TrackSerializationInterface;
 import sequencer.json.TrackMapper;
 import sequencer.persistence.PersistenceHandler;
 
@@ -17,7 +17,7 @@ public class SequencerServerConfiguration {
   }
 
   @Bean
-  public ITrackSerialization trackSerializer() {
+  public TrackSerializationInterface trackSerializer() {
     return new TrackMapper();
   }
 

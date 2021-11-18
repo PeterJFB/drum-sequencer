@@ -2,8 +2,8 @@ package restserver;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import sequencer.core.ITrackSerialization;
 import sequencer.core.Track;
+import sequencer.core.TrackSerializationInterface;
 import sequencer.json.TrackMapper;
 import sequencer.persistence.PersistenceHandler;
 
@@ -34,7 +34,7 @@ public class IntegrationTestConfiguration {
   }
 
   @Bean
-  public ITrackSerialization trackSerializer() {
+  public TrackSerializationInterface trackSerializer() {
     return new TrackMapper();
   }
 

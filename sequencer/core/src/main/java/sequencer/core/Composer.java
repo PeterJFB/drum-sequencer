@@ -35,7 +35,7 @@ public class Composer {
   // reflect this
   private int lastCheckedBpm;
 
-  private ITrackSerialization trackSerializer;
+  private TrackSerializationInterface trackSerializer;
 
   private Track currentTrack;
 
@@ -98,7 +98,7 @@ public class Composer {
   /**
    * Set Track Mapper for writing an reading tracks.
    */
-  public void setTrackMapper(ITrackSerialization newTrackSerializer) {
+  public void setTrackMapper(TrackSerializationInterface newTrackSerializer) {
     trackSerializer = newTrackSerializer.copy();
   }
 

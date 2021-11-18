@@ -14,8 +14,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import restapi.SequencerRestController;
-import sequencer.core.ITrackSerialization;
 import sequencer.core.Track;
+import sequencer.core.TrackSerializationInterface;
 
 /**
  * Integration test of {@link SequencerServerApplication}.
@@ -31,7 +31,7 @@ public class SequencerServerApplicationTest extends AbstractIntegrationTest {
   private TestRestTemplate controller;
 
   @Autowired
-  private ITrackSerialization trackSerializer;
+  private TrackSerializationInterface trackSerializer;
 
   @Autowired
   private Track testTrack;

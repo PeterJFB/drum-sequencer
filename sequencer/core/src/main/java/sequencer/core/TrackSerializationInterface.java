@@ -7,7 +7,7 @@ import java.io.Writer;
 /**
  * Interface for writing andd reading tracks.
  */
-public interface ITrackSerialization {
+public interface TrackSerializationInterface {
   /**
    * Returns the format of the track files.
    */
@@ -34,5 +34,5 @@ public interface ITrackSerialization {
   /**
    * Returns a copy of this object.
    */
-  public ITrackSerialization copy();
+  public TrackSerializationInterface copy();
 }

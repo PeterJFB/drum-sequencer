@@ -36,7 +36,7 @@ import sequencer.json.TrackMapper;
 public class SequencerController {
 
   private Composer composer;
-  private ITrackAccess trackAccess;
+  private TrackAccessInterface trackAccess;
 
   @FXML
   void initialize() {
@@ -45,7 +45,7 @@ public class SequencerController {
     composer.addListener(progress -> {
       Platform.runLater(() -> addBorderToSixteenths(progress));
     });
-    trackAccess = new RemoteTrackAccess(composer);
+    trackAccess = new RemoteTrackAccess();
 
     createElements();
   }
@@ -181,7 +181,7 @@ public class SequencerController {
     try {
       // TODO: get tracks with search query from api
       List<Map<String, String>> tracks = trackAccess.loadTracks("", "");
-      savedTracks.getItems().addAll(/*TODO: convert fromat of tracks*/);
+      savedTracks.getItems().addAll(tracks.get(0).get("name") /*TODO: convert fromat of tracks*/);
     } catch (IOException e) {
       displayStatusMsg("Failed to load saved tracks.", false);
     }
@@ -333,7 +333,7 @@ public class SequencerController {
   @FXML
   private void saveTrack() {
     try {
-      trackAccess.saveTrack();
+      trackAccess.saveTrack(composer);
 
       // Track is successfully saved
       savedTracks.getItems().add(composer.getTrackName());
@@ -361,7 +361,7 @@ public class SequencerController {
   private void loadTrack() {
     try {
       //String trackName = savedTracks.getValue();
-      trackAccess.loadTrack(1 /*TODO: load track from new api based on id*/);
+      trackAccess.loadTrack(composer, 1 /*TODO: load track from new api based on id*/);
 
       // Track is successfully loaded
       Platform.runLater(this::updateElements);

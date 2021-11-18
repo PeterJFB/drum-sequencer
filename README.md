@@ -5,7 +5,7 @@
 
 **develop:**
 [![pipeline status](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/develop/pipeline.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/develop)
-[![coverage report](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/develop/coverage.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/develop) (headless)
+[![coverage report](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/develop/coverage.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/develop) ([headless](#tests-jacoco))
 
 ## Project: Drum sequencer
 
@@ -60,11 +60,13 @@ After which the GUI will be visible on the open `6080` port
 
 ## Server with REST-API
 
-The server uses [Spring Boot](https://spring.io/projects/spring-boot) with [Apache Tomcat](http://tomcat.apache.org/). By default it is hosted on port 8080. To run, type the following from the `sequencer-folder`:
+The server uses [Spring Boot](https://spring.io/projects/spring-boot) with [Apache Tomcat](http://tomcat.apache.org/). By default it is hosted on port 8080. To run, type the following from the `sequencer` folder:
 
 ```bash
 $ mvn -pl rest spring-boot:run #Start server
 ```
+
+Docs about our api are located in the [sequencer folder](./sequencer#rest-api).
 
 ## Code quality and CI
 
@@ -92,7 +94,7 @@ $ mvn verify # Perform all tests and store test coverage.
 
 > ## CI and frontend
 >
-> Currently there are few docker-images available which supports testing of GUI, which means test coverage deviates greatly from test coverage shown locally. The fxui-module has therefore been removed from coverage testing in CI, as this percentage is more accurate and useful. To get the most accurate coverage possible, run Jacoco locally.
+> Currently there are few docker-images available which supports testing of GUI, which means test coverage would deviate from test coverage shown locally. The fxui-module has therefore been removed from coverage testing in CI, as this percentage is more accurate and useful. To get the most accurate coverage possible, run Jacoco locally.
 
 ### Spotbugs
 

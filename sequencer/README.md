@@ -57,7 +57,7 @@ GET `/api/tracks?name={name}&artist={artist}`
 
 Returns: A list of all tracks, with id, name, artist and timestamp. Use the search queries "name" and "artist" to filter the results to songs that match the queries.
 
-Example
+Example:
 
 ```json
 [
@@ -117,9 +117,9 @@ GET `api/track/5`
 
 POST `api/track`
 
-Returns "success" or "fail". The body of the request must be of type `application/json` with the format described at "File format for tracks".
+Returns: Body of the posted track with their id if it was sucessful, as per REST-standards. The body of the request must be of type `application/json` with the format described at [File format for tracks](#file-format-for-tracks).
 
-Example
+Example:
 
 POST `api/track`
 
@@ -143,9 +143,28 @@ Content-Type: application/json
 
 Response:
 
+```json
+Content-Type: application/json
+Location: localhost:8080/api/track/{id} /* Assuming server is running at localhost:8080 */
+{
+  "name": "postedTrack",
+  "artist": "POST Malone",
+  "instruments" : {
+    "hihat": [
+      true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true
+    ],
+    "kick": [
+      true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false
+    ]
+  }
+}
 ```
-success
-```
+
+## Rate limiting based on IP-adress
+
+Our application uses rate limiting to prevent overloading our server, achieved with [Bucket4j](https://github.com/MarcGiffing/bucket4j-spring-boot-starter). Limiting is based on both the current load on the server and IP-adresses. We use [caffeine](https://github.com/ben-manes/caffeine) to create in-memory cache where we can store our [buckets](https://en.wikipedia.org/wiki/Token_bucket), meaning the server can maintain high performance while handling all the tokens.
+
+Read more about our choice of implementation in the [release docs](./../docs/release3)
 
 ## Test-classes
 
@@ -153,8 +172,8 @@ success
 - PersistenceHandler: [`localpersistence/src/test/java/sequencer/persistence/PersistenceHandlerTest.java`](./localpersistence/src/test/java/sequencer/persistence/PersistenceHandlerTest.java)
 - Composer: [`core/src/test/java/sequencer/core/ComposerTest.java`](./core/src/test/java/sequencer/core/ComposerTest.java)
 - SequencerController: [`fxui/src/test/java/sequencer/ui/SequencerControllerTest.java`](./fxui/src/test/java/sequencer/ui/SequencerControllerTest.java)
-- SequencerRestController (Unit): [rest/src/test/java/restapi/SequencerRestControllerTest.java](rest/src/test/java/restapi/SequencerRestControllerTest.java)
-- SequencerServerApplication (integration): [rest/src/test/java/restserver/SequencerServerApplication.java](rest/src/test/java/restserver/SequencerServerApplicationTest.java)
+- SequencerRestController (Unit): [`rest/src/test/java/restapi/SequencerRestControllerTest.java`](rest/src/test/java/restapi/SequencerRestControllerTest.java)
+- SequencerServerApplication (Integration): [`rest/src/test/java/restserver/SequencerServerApplication.java`](rest/src/test/java/restserver/SequencerServerApplicationTest.java)
 
 ## User-stories
 

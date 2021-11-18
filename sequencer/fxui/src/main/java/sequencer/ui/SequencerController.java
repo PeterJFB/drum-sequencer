@@ -460,7 +460,7 @@ public class SequencerController {
         });
       }
     }, 4000L);
-
+    timer.cancel();
   }
 
   /**

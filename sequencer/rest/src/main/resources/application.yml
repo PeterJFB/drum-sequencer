@@ -1,0 +1,36 @@
+# server:
+#   adress: 172.0.0.1
+#   port: 8080
+
+# Configure caching service for ip-based rate limiting (using caffeine).
+# See https://github.com/ben-manes/caffeine
+spring:
+  cache:
+    cache-names:
+      - rate-limit-buckets
+    caffeine:
+      spec: maximumSize=100000,expireAfterAccess=3600s
+
+# Configure rate limiter
+# See https://www.baeldung.com/spring-bucket4j
+# And https://github.com/MarcGiffing/bucket4j-spring-boot-starter#bucket4j_complete_properties
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: rate-limit-buckets # Use our caffeine cache
+      filter-method: servlet
+      url: /api/.*
+      http-response-body: '{ "status": 429, "error": "Too Many Requests", "message": "You have exhausted your API Request Quota" }'
+      strategy: all # We use IP-based and global limiting as to prevent the server to be overloaded by using multiple ip-adresses
+      rate-limits:
+        # IP-based limiting
+        - expression: getRemoteAddr() # We can replace this with a custom method if we want to have user-based limiting instead:)
+          bandwidths:
+            - capacity: 20
+              time: 1
+              unit: minutes
+        # Global limiting
+        - bandwidths:
+            - capacity: 1000
+              time: 1
+              unit: minutes

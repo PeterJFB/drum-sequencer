@@ -43,6 +43,7 @@ public class SequencerRestController {
   @GetMapping(value = "/api/tracks", produces = MediaType.APPLICATION_JSON_VALUE)
   public Collection<TrackSearchResult> getTracks(@RequestParam(required = false) String name,
       @RequestParam(required = false) String artist) {
+
     // If no search query is sent, search for "" (matches everything)
     name = name != null ? name : "";
     artist = artist != null ? artist : "";

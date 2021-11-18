@@ -1,5 +1,6 @@
 package restserver;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import sequencer.core.TrackSerializationInterface;
@@ -10,6 +11,7 @@ import sequencer.persistence.PersistenceHandler;
  * Rest server configuration, including all IoC-containers.
  */
 @Configuration
+@EnableCaching // Tells spring to start using our rate limiter
 public class SequencerServerConfiguration {
   @Bean
   public PersistenceHandler persistenceHandler() {

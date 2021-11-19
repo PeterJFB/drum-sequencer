@@ -17,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import restserver.SequencerServerApplication;
+import sequencer.json.TrackSearchResult;
 import sequencer.persistence.FileMetaData;
 import sequencer.persistence.PersistenceHandler;
 

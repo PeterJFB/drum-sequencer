@@ -1,4 +1,4 @@
-package restapi;
+package sequencer.json;
 
 import sequencer.persistence.FileMetaData;
 

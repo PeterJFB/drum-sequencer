@@ -20,6 +20,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import restserver.SequencerServerApplication;
+import sequencer.json.TrackSearchResult;
 
 
 /**

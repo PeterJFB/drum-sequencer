@@ -1,8 +1,8 @@
 # server:
-#   adress: 172.0.0.1
+#   address: 172.0.0.1
 #   port: 8080
 
-# Configure caching service for ip-based rate limiting (using caffeine).
+# Configure caching service for IP-based rate limiting (using caffeine).
 # See https://github.com/ben-manes/caffeine
 spring:
   cache:
@@ -21,7 +21,7 @@ bucket4j:
       filter-method: servlet
       url: /api/.*
       http-response-body: '{ "status": 429, "error": "Too Many Requests", "message": "You have exhausted your API Request Quota" }'
-      strategy: all # We use IP-based and global limiting as to prevent the server to be overloaded by using multiple ip-adresses
+      strategy: all # We use IP-based and global limiting as to prevent the server to be overloaded by using multiple IP-addresses
       rate-limits:
         # IP-based limiting
         - expression: getRemoteAddr() # We can replace this with a custom method if we want to have user-based limiting instead:)

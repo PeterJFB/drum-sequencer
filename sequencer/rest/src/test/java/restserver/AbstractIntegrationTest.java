@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import restapi.TrackSearchResult;
 import sequencer.core.Track;
+import sequencer.json.TrackSearchResult;
 import sequencer.persistence.FileMetaData;
 import sequencer.persistence.PersistenceHandler;
 

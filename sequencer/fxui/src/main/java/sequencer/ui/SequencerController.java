@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -29,6 +28,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sequencer.core.Composer;
 import sequencer.json.TrackMapper;
+import sequencer.json.TrackSearchResult;
 
 /**
  * Main controller of the sequencer.
@@ -180,9 +180,10 @@ public class SequencerController {
 
     try {
       // TODO: get tracks with search query from api
-      List<Map<String, String>> tracks = trackAccess.loadTracks("", "");
-      savedTracks.getItems().addAll(tracks.get(0).get("name") /*TODO: convert fromat of tracks*/);
+      List<TrackSearchResult> tracks = trackAccess.loadTracks("", "");
+      savedTracks.getItems().addAll(tracks.stream().map(TrackSearchResult::toString).toList());
     } catch (IOException e) {
+      System.err.println(e.getMessage());
       displayStatusMsg("Failed to load saved tracks.", false);
     }
   }
@@ -231,8 +232,8 @@ public class SequencerController {
   private void updateInstrumentAlternatives() {
     List<String> instrumentsInTrack = composer.getInstrumentsInTrack();
     List<String> instrumentsNotUsed = composer.getAvailableInstruments().stream()
-          .filter(instrument -> !instrumentsInTrack.contains(instrument))
-          .collect(Collectors.toList());
+        .filter(instrument -> !instrumentsInTrack.contains(instrument))
+        .collect(Collectors.toList());
     instrumentChoiceBoxes.forEach(instrumentChoiceBox -> {
       String instrumentChosen = instrumentChoiceBox.getValue();
       List<String> instrumentsToRemove = instrumentChoiceBox.getItems();
@@ -360,8 +361,8 @@ public class SequencerController {
   @FXML
   private void loadTrack() {
     try {
-      //String trackName = savedTracks.getValue();
-      trackAccess.loadTrack(composer, 1 /*TODO: load track from new api based on id*/);
+      // String trackName = savedTracks.getValue();
+      trackAccess.loadTrack(composer, 1 /* TODO: load track from new api based on id */);
 
       // Track is successfully loaded
       Platform.runLater(this::updateElements);

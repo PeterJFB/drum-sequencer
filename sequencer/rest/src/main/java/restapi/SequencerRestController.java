@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import sequencer.core.Track;
+import sequencer.json.TrackSearchResult;
 import sequencer.persistence.FileMetaData;
 import sequencer.persistence.FilenameHandler;
 import sequencer.persistence.PersistenceHandler;

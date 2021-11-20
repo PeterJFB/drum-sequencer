@@ -23,8 +23,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import restapi.SequencerRestController;
-import restapi.TrackSearchResult;
 import sequencer.core.Track;
+import sequencer.json.TrackSearchResult;
 
 /**
  * Integration test of {@link SequencerServerApplication}.

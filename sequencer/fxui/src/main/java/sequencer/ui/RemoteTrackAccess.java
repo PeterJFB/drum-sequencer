@@ -1,5 +1,6 @@
 package sequencer.ui;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,16 +8,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import sequencer.core.Composer;
+import sequencer.json.TrackMapper;
+import sequencer.json.TrackSearchResult;
 
 /**
  * Implementation of {@link TrackAccessInterface} that saves/loads tracks from a remote api.
@@ -102,7 +101,6 @@ public class RemoteTrackAccess implements TrackAccessInterface {
         composer.loadTrack(reader);
 
       } else {
-
         String errorBody = readResponse(status);
 
         throw new IOException(
@@ -119,12 +117,12 @@ public class RemoteTrackAccess implements TrackAccessInterface {
    * Loads saved tracks.
    *
    * @param trackName the trackName (or part of the name) you want the returned tracks to match
-   * @param artistName the artistName (or part of the name) you wan the returned tracks to match
+   * @param artistName the artistName (or part of the name) you want the returned tracks to match
    * @return a list of all maps where each map is a saved track that matches the given search quary
    * @throws IOException if something went wrong while loading the tracks
    */
   @Override
-  public List<Map<String, String>> loadTracks(String trackName, String artistName)
+  public List<TrackSearchResult> loadTracks(String trackName, String artistName)
       throws IOException {
     final String path = String.format("/tracks?name=%s&artist=%s", trackName, artistName);
     setConnection(path, "GET");
@@ -139,7 +137,8 @@ public class RemoteTrackAccess implements TrackAccessInterface {
 
     connection.disconnect();
 
-    return deseralizeTracks(responseString);
+    TrackMapper tm = new TrackMapper();
+    return tm.readFromString(responseString, new TypeReference<List<TrackSearchResult>>() {});
   }
 
   /**
@@ -151,17 +150,17 @@ public class RemoteTrackAccess implements TrackAccessInterface {
    */
   private String readResponse(int status) throws IOException {
     Reader inputStreamReader;
-    if (status > 299) {
-      inputStreamReader = new InputStreamReader(connection.getErrorStream(), "UTF-8");
+    if (status <= 299) {
+      inputStreamReader = new InputStreamReader(connection.getInputStream(), "UTF-8");
     } else {
       try {
-        inputStreamReader = new InputStreamReader(connection.getInputStream(), "UTF-8");
+        inputStreamReader = new InputStreamReader(connection.getErrorStream(), "UTF-8");
       } catch (IOException e) {
         throw new IOException("Could not get inputstream from connection to server", e);
       }
     }
 
-    StringBuffer content = new StringBuffer();
+    StringBuilder content = new StringBuilder();
     try (BufferedReader in = new BufferedReader(inputStreamReader)) {
       String inputLine;
       while ((inputLine = in.readLine()) != null) {
@@ -171,32 +170,5 @@ public class RemoteTrackAccess implements TrackAccessInterface {
       throw new IOException("Something went wrong while reading response from server", e);
     }
     return content.toString();
-  }
-
-  /**
-   * Deseralizes a string holding the tracks (what has been returned after calling readResponse
-   * after a get call to the endpoint /tracks).
-   *
-   * @param tracksString the string to be deseralized
-   * @return a map of lists where each map represents a track
-   */
-  private List<Map<String, String>> deseralizeTracks(String tracksString) {
-    tracksString = tracksString.substring(2, tracksString.length() - 2);
-    final String[] tracksArray = tracksString.split("\\},\\{");
-
-    List<Map<String, String>> tracks = new ArrayList<>();
-    for (int i = 0; i < tracksArray.length; i++) {
-      final Map<String, String> trackMap = new HashMap<>();
-      final String[] trackParams = tracksArray[i].split(",");
-      for (int j = 0; j < trackParams.length; j++) {
-        final String[] trackParamArray = trackParams[j].split(":");
-        final String param = trackParamArray[0].replaceAll("\"", "");
-        final String value = trackParamArray[1].replaceAll("\"", "");
-        trackMap.put(param, value);
-      }
-      tracks.add(trackMap);
-    }
-
-    return tracks;
   }
 }

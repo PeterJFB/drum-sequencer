@@ -1,6 +1,8 @@
 package sequencer.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.Reader;
@@ -82,6 +84,14 @@ public class TrackMapper implements TrackSerializationInterface {
     }
 
     return jsonString;
+  }
+
+  /**
+   * Method to deserialize json from the given json content string.
+   */
+  public <T> T readFromString(String content, TypeReference<T> valueType)
+      throws JsonProcessingException, JsonMappingException {
+    return mapper.readValue(content, valueType);
   }
 
   /**

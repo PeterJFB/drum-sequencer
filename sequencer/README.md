@@ -4,27 +4,40 @@ Drum sequencer is an application which lets users quickly create, edit
 
 ## Project overview
 
-Project is currently in a monolithic architecture, divided into three *layers*. Each layer is represented by the following modules:
+Project is currently divided into a REST client and server. Both client and server are again divided into different *layers*, represented by the following modules:
 
-#### *presentation-layer* : fxui
+#### Client | *presentation-layer* and *data-access-layer* : fxui
 
-Essential module responsible for rendering all graphics within the application. The module is using `javafx` to render in a window, and delegating all logic to the **core** module, and storage to the **localpersistence** module.
+Essential module responsible for rendering all graphics within the application. The module is using `javafx` to render in a window, and delegating all logic playing/editing beats to the **core** module, and storage to classes in the ui.util-package.
 
 ---
 
-#### *application-layer* : core
+#### Client | *logic-layer* : core
 
 Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all important class-info can be serialized to a json-format through the `jackson` dependency.
 
 ---
 
-#### *persistence-layer* : localpersistence
+#### Server | *service-layer* : rest
 
-Detachable module which is handling local storage of classes. The modules save-handling is tailored to the project: The methods avaliable allows the user to list all files with a given filetype from a directory (e.g. a `.json` file in the `~/drumsequencer` directory), and read from/write to a specific file. The saving is implicit, and the user is not expected to handle the files. The serialization must be handled by whoever is handling the `Reader`.
+Essential module serving as the REST server. The module uses `spring-boot` to service all http requests, running as a servlet with `tomcat`. Rate limiting is achieved with `bucket4j`, storing ip-adressses in-memory with `caffeine`. All persistence logic is delegated to the **localpersistence** module.
+
+
+#### Server | *persistence-layer* : localpersistence
+
+Detachable module which is handling local storage of classes. The modules save-handling is tailored to the project: The methods avaliable allows the user to list all files with a given filetype from a directory in `$HOME` (e.g. a `.json` file in the `$HOME/drumsequencer` directory), and read from/write to these files. The saving is implicit, and the user is not expected to handle the files. The serialization must be handled by whoever is handling the `Reader`/`Writer`.
 
 ---
 
-![project overview as a diagram](./../docs/release2/project-overview.png)
+Below is a package diagram showing what dependecies each module has:
+
+![project overview as a diagram](./../docs/release3/package-diagram.png)
+
+Notice how **localpersistence** is used by restapi instead of sequencer.json. These modules/packages are communicating with each other in a manner shown in the diagram below.
+
+<div align="center">
+<img src="./../docs/release3/client-and-server.svg" width=700></img>
+</div>
 
 ## File format for Tracks
 

@@ -9,7 +9,7 @@
 
 ## Project: Drum sequencer
 
-> An app to quickly create, edit and save different drum patterns 📾
+> An app to quickly create, edit and share different drum patterns 📾
 
 The app requires `Java 16` or later, other dependecies are compiled and built using `maven`.
 
@@ -26,28 +26,37 @@ Documentation for each release is located in the [docs folder](./docs).
 
 The project is setup to run both locally and on [Gitpod](https://www.gitpod.io/), where each requires a slightly different setup.
 
-### Local
+### 1) Server with REST-API (used by both)
+
+The project by default will always attempt to connect to the server, which is why it should always be started before running the application. If the server is for some reason running on a different device, or you want to run the project without a server, please see [changing storage endpoint](#additional-configuration-changing-storage-endpoint).
+
+The server uses [Spring Boot](https://spring.io/projects/spring-boot) with [Apache Tomcat](http://tomcat.apache.org/). By default it is hosted on port 8080. To run, type the following from the `sequencer` folder:
+
+```bash
+$ mvn install # Compile and build modules
+$ mvn -pl rest spring-boot:run #Start server
+```
+
+Docs about our api are located in the [sequencer folder](./sequencer#rest-api).
+
+### 2) Option 1: Local
 
 After installing `Java 16` and `maven` (both of which can be done with [SDKMAN](https://sdkman.io/)), the project will start by running:
 
 ```bash
 $ cd sequencer/ # Move into sequencer folder
-$ mvn install # Compile and build parent module
-$ mvn install -f ./core/ # Compile and build modules used by fxui
-$ mvn install -f ./localpersistence/
-$ mvn javafx:run -f ./fxui/ # Run application
+$ mvn install # Compile and build parent module (if not done already)
+$ mvn javafx:run -pl fxui # Run application
 ```
 
-### Gitpod
+### 2) Option 2: Gitpod
 
 The [gitpod-icon](#Group%20gr2101%20repository) above will open a network-based IDE, which will automatically install required libraries.
 
 ```bash
 $ cd sequencer/ # Move into sequencer folder
-$ mvn install # Compile and build modules
-$ mvn install -f ./core/ # Compile and build modules used by fxui
-$ mvn install -f ./localpersistence/
-$ mvn javafx:run -f ./fxui/ # Run application
+$ mvn install # Compile and build modules (if not done already)
+$ mvn javafx:run -pl fxui # Run application
 ```
 
 After which the GUI will be visible on the open `6080` port
@@ -58,15 +67,22 @@ After which the GUI will be visible on the open `6080` port
 >
 > As of now, the `gitlab/workspace-full-vnc` dockerimage is [resticted when it comes to audio support](https://www.gitpod.io/blog/native-ui-with-vnc). This makes it difficult to test the audio-specific features within the network-based IDE. While the project runs fine within gitpod, it is recommended to experience the audio-based features of the project locally.
 
-## Server with REST-API
+## Additional configuration: Changing storage endpoint
 
-The server uses [Spring Boot](https://spring.io/projects/spring-boot) with [Apache Tomcat](http://tomcat.apache.org/). By default it is hosted on port 8080. To run, type the following from the `sequencer` folder:
+Our application is as of now designed to utilize a local server to store/share tracks made with the application. The url for this is by default `http://localhost:8080/api`. This value can be changed by declaring the environment varaible `SEQUENCER_ACCESS` with a different endpoint. There is additionally an option to run the application without running a sever, declared with `SEQUENCER_ACCESS=LOCAL`. Below are some examples of running the application with these varaibles:
 
 ```bash
-$ mvn -pl rest spring-boot:run #Start server
+$ SEQUENCER_ACCESS=http://216.58.211.14:8080/api mvn javafx:run -pl fxui # Run application with external server
+$ SEQUENCER_ACCESS=LOCAL mvn javafx:run -pl fxui # Run application without the need of a server
+$ SEQUENCER_ACCESS=http://216.58.211.14:8080/api Sequener # Run the installed application with external server
 ```
 
-Docs about our api are located in the [sequencer folder](./sequencer#rest-api).
+On Windows:
+
+```cmd
+> set SEQUENCER_ACCESS=http://216.58.211.14:8080/api # Make SEQUENCER_ACCESS a temporary variable
+> Sequencer.exe  # Run application
+```
 
 ## Code quality and CI
 

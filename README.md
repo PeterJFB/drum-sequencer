@@ -120,10 +120,10 @@ Below is a graph from [bitbucket](https://www.atlassian.com/git/tutorials/compar
 
 ### Naming policy
 
-Our motivation for formally implementing a naming policy is mainly to improve the overall reading experience of the Git history. `Gitlab` let's you [interact with the Git history](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/network/main) in a trouble-free way, but we image adding e.g. a issue number to each commit message will make it easier to keep track of it all.
+Our motivation for formally implementing a naming policy is mainly to improve the overall reading experience of the Git history. `Gitlab` let's you [interact with the Git history](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/network/main) in a trouble-free way, but we imagine adding a issue number to each commit message will make it easier to keep track of it all.
 
 Branch names must reflect its related issue. This is done by naming it _issue-n-description_, where _n_ is the issue number. Furthermore, the _description_ employs the naming convention ["kebab case"](https://en.wiktionary.org/wiki/kebab_case). For example; _issue-69-review-persistence-feedback_.
 
-Every commit must include a message identifying the changes made. This is to be written in the [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood), e.g. "Add this" or "Fix that". A rule of thumb is to make sure you can say "With this commit I ..." before the message. It must also include the issue number it is related to. An example of a valid commit message would be; _Related to #69. Improve and secure features in PersistenceHandler_.
+Every commit must include a message identifying the changes made. This is to be written in the [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood), e.g. "Add this" or "Fix that". A rule of thumb is to make sure you can say "With this commit, ..." before the message. It must also include the issue number it is related to. An example of a valid commit message would be; _Related to #69. Improve and secure features in PersistenceHandler_.
 
 The title of both the merge request and issue also follow the same grammatical tense as the commit message, present tense. The only exeption to this are issues labled with _bug_, in which the task of the title is only to state the bug itself and not what to be done.

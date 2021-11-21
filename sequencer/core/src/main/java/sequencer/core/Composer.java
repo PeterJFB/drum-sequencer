@@ -50,7 +50,7 @@ public class Composer {
   }
 
   /**
-   * Composer constructor. Equal to Composer(true, false). Use this in production.
+   * Composer constructor. Use this in production.
    */
   public Composer() {
     this(true, false);
@@ -65,11 +65,14 @@ public class Composer {
    * @param testMode If testMode is set to true, the AudioClips will not be loaded
    */
   private Composer(boolean createDaemonTimer, boolean testMode) {
+    
     progress = 0;
     timer = new Timer(createDaemonTimer);
     playing = false;
     listeners = new ArrayList<>();
     currentTrack = new Track();
+    
+    // Map instrumentsNames to audio files.
     instrumentAudioClips = new HashMap<>();
     try (BufferedReader instrumentReader = new BufferedReader(new InputStreamReader(
         Composer.class.getResource("instrumentNames.csv").openStream(), StandardCharsets.UTF_8))) {
@@ -112,9 +115,17 @@ public class Composer {
     return new ArrayList<>(instrumentAudioClips.keySet());
   }
 
-  private void setTrack(Track track) {
-    // TODO: validate Track
+  /**
+   * Change what track the composer will use.
+   *
+   * @return true if the change was successful
+   */
+  private boolean setTrack(Track track) {
+    if (track == null) {
+      return false;
+    }
     currentTrack = track;
+    return true;
   }
 
   /**
@@ -323,15 +334,13 @@ public class Composer {
    * Loads a track.
    *
    * @param reader the reader of the track to load
+   * @return true if the composer sucessfully changed to the new track
    * @throws IOException if the reading fails
    */
-  public void loadTrack(Reader reader) throws IOException {
+  public boolean loadTrack(Reader reader) throws IOException {
     Track newTrack = null;
     newTrack = trackSerializer.readTrack(reader);
 
-    if (newTrack == null) {
-      return;
-    }
-    setTrack(newTrack);
+    return setTrack(newTrack);
   }
 }

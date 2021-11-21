@@ -59,23 +59,23 @@ public class SequencerRestControllerTest extends AbstractUnitTest {
   }
 
   @Test
-  @DisplayName("/api/track/{id} should respond with the given track")
+  @DisplayName("/api/tracks/{id} should respond with the given track")
   public void testGetTrackById() throws Exception {
+    final String uri = "/api/tracks/";
 
     // SETUP
-    MvcResult result =
-        mvc.perform(get("/api/track/" + testId).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andDo(print()).andReturn();
+    MvcResult result = mvc.perform(get(uri + testId).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk()).andDo(print()).andReturn();
 
     // TEST
     assertEquals(testContent, result.getResponse().getContentAsString());
 
     // Non-existing track should respond with NOT_FOUND
-    mvc.perform(get("/api/track/" + fileNotFoundId).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(get(uri + fileNotFoundId).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
 
     // Critical errors should be respond with INTERNAL_SERVER_ERROR.
-    mvc.perform(get("/api/track/" + errorId).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(get(uri + errorId).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isInternalServerError());
 
 

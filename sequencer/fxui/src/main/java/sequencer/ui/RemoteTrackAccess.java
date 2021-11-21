@@ -64,7 +64,7 @@ public class RemoteTrackAccess implements TrackAccessInterface {
    */
   @Override
   public void saveTrack(Composer composer) throws IOException {
-    setConnection("/track", "POST");
+    setConnection("/tracks", "POST");
     connection.setDoOutput(true);
 
     try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
@@ -87,7 +87,7 @@ public class RemoteTrackAccess implements TrackAccessInterface {
    */
   @Override
   public void loadTrack(Composer composer, int id) throws IOException {
-    final String path = String.format("/track/%d", id);
+    final String path = String.format("/tracks/%d", id);
     setConnection(path, "GET");
 
     try {

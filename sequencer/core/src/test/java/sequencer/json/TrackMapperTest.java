@@ -28,8 +28,8 @@ public class TrackMapperTest {
     track.setTrackName("placeholder-name");
     track.setArtistName("placeholder-artist");
 
-    testTrackMapperWithExpectedOutputString(track,
-        "{\"name\":\"placeholder-name\",\"artist\":\"placeholder-artist\",\"instruments\":{}}");
+    testTrackMapperWithExpectedOutputString(track, """
+        {"name":"placeholder-name","artist":"placeholder-artist","instruments":{}}""");
   }
 
   @Test
@@ -55,9 +55,9 @@ public class TrackMapperTest {
 
     track.addInstrument("snare", snarePattern);
 
-    testTrackMapperWithExpectedOutputString(track,
-        "{\"name\":null,\"artist\":null,\"instruments\":{\"kick\":[%s],\"snare\":[%s]}}"
-            .formatted(kickPatternString, snarePatternString));
+    testTrackMapperWithExpectedOutputString(track, """
+        {"name":null,"artist":null,"instruments":{"kick":[%s],"snare":[%s]}}"""
+        .formatted(kickPatternString, snarePatternString));
 
   }
 
@@ -75,7 +75,7 @@ public class TrackMapperTest {
       outputString = writer.toString();
 
     } catch (IOException e) {
-      fail("Test failed with an unexpected IOException");
+      fail("Test failed with an unexpected IOException: " + e.getMessage());
     }
 
     Assertions.assertEquals(clearWhitespace(expectedString), clearWhitespace(outputString));
@@ -110,33 +110,29 @@ public class TrackMapperTest {
     TrackMapper tm = new TrackMapper();
 
     Track newTrack = null;
-    String serString;
+    String serString = "";
 
-    try {
-
-      Writer writer = new StringWriter();
-
+    try (Writer writer = new StringWriter()) {
       tm.writeTrack(track, writer);
       serString = writer.toString();
-
-      writer.close();
-
-      Reader reader = new StringReader(serString);
-      newTrack = tm.readTrack(reader);
-
-      reader.close();
-
     } catch (IOException e) {
-      fail("Test failed with an unexpected IOException");
+      fail("Test failed with an unexpected IOException: " + e.getMessage());
     }
-    Assertions.assertTrue(tracksAreEqual(track, newTrack), 
+
+    try (Reader reader = new StringReader(serString)) {
+      newTrack = tm.readTrack(reader);
+    } catch (IOException e) {
+      fail("Test failed with an unexpected IOException: " + e.getMessage());
+    }
+
+    Assertions.assertTrue(tracksAreEqual(track, newTrack),
         "Serialized track did not match the original");
 
   }
 
   /**
-   * Check if two tracks are equal: It compares trackname, artistname, and all
-   * instruments with their patterns.
+   * Check if two tracks are equal: It compares trackname, artistname, and all instruments with
+   * their patterns.
    *
    * @param track1 track to be compared
    * @param track2 track to compare with

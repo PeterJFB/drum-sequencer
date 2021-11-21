@@ -56,9 +56,8 @@ public class SequencerRestController {
    * Returns a track as a json-object.
    *
    * @param id the id of the track to load
-   * @return the track, or the text "Track not found" with an error code of 404
    */
-  @GetMapping(value = "/api/track/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/api/tracks/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getTrack(@PathVariable int id) {
     StringBuilder stringBuilder = new StringBuilder();
     try {
@@ -94,7 +93,7 @@ public class SequencerRestController {
    * @param trackAsJson the track as a JSON-object
    * @return "fail" or "success" with error codes
    */
-  @PostMapping("/api/track")
+  @PostMapping("/api/tracks")
   public ResponseEntity<String> postTrack(@RequestBody String trackAsJson) {
     String responseBody = "";
     int newId = -1;
@@ -130,7 +129,7 @@ public class SequencerRestController {
       return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
     } catch (UncheckedIOException e) {
       e.printStackTrace();
-      return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(responseBody, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     HttpHeaders headers = new HttpHeaders();

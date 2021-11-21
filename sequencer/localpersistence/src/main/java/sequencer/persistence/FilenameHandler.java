@@ -8,9 +8,12 @@ import java.util.regex.Pattern;
  * {@link FileMetaData}-objects.
  */
 public class FilenameHandler {
+  public static final String SEPARATOR = "-";
+
   // Only matches strings on in the format "id-name-artist-timestamp"
-  private static final String FILENAME_REGEX = "^(?<id>[\\d&&[^0]]+\\d*)\\-"
-      + "(?<name>[a-zA-Z0-9_ ]+)\\-" + "(?<artist>[a-zA-Z0-9_ ]+)\\-" + "(?<timestamp>\\d+)$";
+  private static final String FILENAME_REGEX =
+      ("^(?<id>\\-?[1-9]\\d*)\\%s" + "(?<name>[a-zA-Z0-9_ ]+)\\%<s"
+          + "(?<artist>[a-zA-Z0-9_ ]+)\\%<s" + "(?<timestamp>\\d+)$").formatted(SEPARATOR);
 
   /**
    * Read the metadata of a file name.
@@ -53,9 +56,20 @@ public class FilenameHandler {
    *
    * @param metaData the metadata to base the generation on
    * @return the generated filename
+   * 
+   * @throws IllegalArgumentException if title or author contains the value used as separator
    */
   public static String generateFilenameFromMetaData(FileMetaData metaData) {
-    return metaData.id() + "-" + metaData.title() + "-" + metaData.author() + "-"
+    if (metaData.title().contains(SEPARATOR)) {
+      throw new IllegalArgumentException(
+          "title contains illegal character %s: %s".formatted(SEPARATOR, metaData.title()));
+    }
+    if (metaData.author().contains(SEPARATOR)) {
+      throw new IllegalArgumentException(
+          "author contains illegal character %s: %s".formatted(SEPARATOR, metaData.title()));
+    }
+
+    return metaData.id() + SEPARATOR + metaData.title() + SEPARATOR + metaData.author() + SEPARATOR
         + metaData.timestamp();
   }
 }

@@ -30,16 +30,18 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sequencer.core.Composer;
 import sequencer.json.TrackMapper;
-import sequencer.json.TrackSearchResult;
+import sequencer.ui.utils.LocalTrackAccess;
+import sequencer.ui.utils.RemoteTrackAccess;
+import sequencer.ui.utils.TrackAccessInterface;
 
 /**
  * Main controller of Drum Sequencer.
  */
 public class SequencerController {
 
-  private Composer composer;
+  protected Composer composer;
   private TrackAccessInterface trackAccess;
-  protected static final String SEQUENCER_ACCESS_ENV = "SEQUENCER_ACCESS";
+  public static final String SEQUENCER_ACCESS_ENV = "SEQUENCER_ACCESS";
 
   @FXML
   void initialize() {
@@ -60,8 +62,6 @@ public class SequencerController {
     }
 
     createElements();
-
-    modal.toBack();
   }
 
   // By utilizing a constant throughout the code, the sizes and layout locations
@@ -165,7 +165,7 @@ public class SequencerController {
 
       Button resetRowBtn = new Button();
       final int rowArg = row;
-      resetRowBtn.setOnMouseClicked((event) -> resetRow(rowArg));
+      resetRowBtn.setOnMouseClicked((event) -> resetRow(rowArg, false));
       resetRowBtn.setId("resetRowBtn" + row);
       resetRowBtn.getStyleClass().add("resetRowBtn");
       instrumentSubPanel.add(resetRowBtn, 2, 0);
@@ -187,22 +187,13 @@ public class SequencerController {
     }
 
     addBorderToSixteenths(0);
-
-    try {
-      // TODO: get tracks with search query from api
-      List<TrackSearchResult> tracks = trackAccess.loadTracks("", "");
-      savedTracks.getItems().addAll(tracks.stream().map(TrackSearchResult::toString).toList());
-    } catch (IOException e) {
-      System.err.println(e.getMessage());
-      displayStatusMsg("Failed to load saved tracks.", false);
-    }
   }
 
   /**
    * Updating elements when loading a new track, instead of re-using createElements(), as it
    * contains unnecessery code.
    */
-  private void updateElements() {
+  protected void updateElements() {
     updateInstrumentAlternatives();
 
     List<String> instruments = composer.getInstrumentsInTrack();
@@ -211,7 +202,7 @@ public class SequencerController {
       ChoiceBox<String> instrumentChoiceBox = instrumentChoiceBoxes.get(row);
 
       if (row >= instruments.size()) {
-        resetRow(row);
+        resetRow(row, true);
         continue;
       }
 
@@ -254,15 +245,15 @@ public class SequencerController {
     fl.setController(trackLoaderModalController);
     GridPane gridPane = fl.load();
     modal.getChildren().setAll(gridPane);
-    modal.toFront();
+    modal.setVisible(true);;
     content.setEffect(new BoxBlur());
   }
 
   /**
    * Removes the BoxBlur effect of "content" when closing TrackLoaderModal.
    */
-  protected void removeContentEffect() {
-    modal.toBack();
+  protected void removeModal() {
+    modal.setVisible(false);
     content.setEffect(null);
   }
 
@@ -289,15 +280,20 @@ public class SequencerController {
    * Resets a given row by clearing the ChoiceBox and turning off every sixteenth.
    *
    * @param row the index of the row that is to be reset
+   * @param updatingElements indicates if we're updating a track in the GUI, and if so, the row (or
+   *        the instrument and its pattern) should not be removed from the composer, as this holds a
+   *        different track.
    */
-  private void resetRow(int row) {
+  private void resetRow(int row, boolean updatingElements) {
     ChoiceBox<String> instruments = instrumentChoiceBoxes.get(row);
     final String instrument = instruments.getValue();
     if (instrument == null || instrument == "") {
       return;
     }
     instruments.setValue("");
-    composer.removeInstrumentFromTrack(instrument);
+    if (!updatingElements) {
+      composer.removeInstrumentFromTrack(instrument);
+    }
     instrumentChoiceBoxes.forEach(i -> i.getItems().add(instrument));
 
     final String toggledColor = COLORS.get(row % COLORS.size())[1];
@@ -379,7 +375,6 @@ public class SequencerController {
       trackAccess.saveTrack(composer);
 
       // Track is successfully saved
-      // savedTracks.getItems().add(composer.getTrackName());
       displayStatusMsg(composer.getTrackName() + " saved.", true);
 
     } catch (IllegalArgumentException e) {
@@ -397,22 +392,6 @@ public class SequencerController {
     loadTrackBtn.setDisable(false);
   }
 
-  /**
-   * Fires when user presses the "Load" button. Loads the pattern and metadata of the track.
-   */
-  @FXML
-  private void loadTrack() {
-    try {
-      // String trackName = savedTracks.getValue();
-      trackAccess.loadTrack(composer, 1 /* TODO: load track from new api based on id */);
-
-      // Track is successfully loaded
-      Platform.runLater(this::updateElements);
-      displayStatusMsg(composer.getTrackName() + " loaded.", true);
-    } catch (IOException e) {
-      displayStatusMsg("Failed to load track.", false);
-    }
-  }
 
   /**
    * Fires when the text in the trackName TextField changes, and updates the track name for the
@@ -458,7 +437,7 @@ public class SequencerController {
   private StackPane statusMsg;
 
   @FXML
-  private Rectangle statusMsgBackground;
+  private Rectangle statusMsgBg;
 
   @FXML
   private ImageView statusMsgIcon;
@@ -484,17 +463,17 @@ public class SequencerController {
     statusMsg.setLayoutY(HEIGHT_OF_SIXTEENTH * 5);
     statusMsg.getStyleClass().setAll(success ? "successMsg" : "failureMsg");
 
-    statusMsgBackground.setWidth(WIDTH_OF_SIXTEENTH * 4);
-    statusMsgBackground.setHeight(WIDTH_OF_SIXTEENTH * 1.3);
+    statusMsgBg.setWidth(WIDTH_OF_SIXTEENTH * 4);
+    statusMsgBg.setHeight(WIDTH_OF_SIXTEENTH * 1.3);
 
     statusMsgIcon.setImage(success ? SUCCESS_ICON : FAILURE_ICON);
 
     statusMsgText.setText(msg);
-    statusMsgText.setWrappingWidth(statusMsgBackground.getWidth() * 0.7);
+    statusMsgText.setWrappingWidth(statusMsgBg.getWidth() * 0.7);
 
     playStatusMsgTransition(true);
     // Removing the message after 4 seconds (4000L):
-    Timer timer = new Timer();
+    Timer timer = new Timer(true);
     timer.schedule(new TimerTask() {
       @Override
       public void run() {
@@ -503,7 +482,6 @@ public class SequencerController {
         });
       }
     }, 4000L);
-    timer.cancel();
   }
 
   /**

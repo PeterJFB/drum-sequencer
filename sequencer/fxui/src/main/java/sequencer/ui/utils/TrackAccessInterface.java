@@ -1,4 +1,4 @@
-package sequencer.ui;
+package sequencer.ui.utils;
 
 import java.io.IOException;
 import java.util.List;
@@ -6,7 +6,7 @@ import sequencer.core.Composer;
 import sequencer.json.TrackSearchResult;
 
 /**
- * Interface for classes that save/load tracks.
+ * Interface for classes that save/fetch tracks.
  */
 public interface TrackAccessInterface {
 
@@ -19,19 +19,23 @@ public interface TrackAccessInterface {
   public void saveTrack(Composer composer) throws IOException;
 
   /**
-   * Loads the track with the given trackName to the composer.
+   * Loads the track with the given id into the composer.
    *
-   * @param composer the composer you want to load the track to
+   * @param composer the composer you want to load the track into
    * @param id the id of the track you want to load
    * @throws IOException if something went wrong while loading the track
    */
   public void loadTrack(Composer composer, int id) throws IOException;
-
+  
   /**
-   * Lists all saved tracks matching the search given by trackName and artistName. argument
+   * Fetches all saved tracks matching the search given by trackName and artistName. Argument
    * {@code null} or {@code ""} will match all tracks.
-   *
+   * 
+   * @param trackName the name of the track (or part of it) you want the returned tracks to match
+   * @param artistName the name of the artist (or part of it) you want the returned tracks to match
    * @return a list {@link TrackSearchResults} for all the saved tracks.
+   * @throws IOException if something went wrong while fetching the tracks
    */
-  public List<TrackSearchResult> loadTracks(String trackName, String artistName) throws IOException;
+  public List<TrackSearchResult> fetchTracks(String trackName, String artistName)
+      throws IOException;
 }

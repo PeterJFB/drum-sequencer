@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.List;
 import java.util.function.Consumer;
@@ -94,7 +95,7 @@ abstract class AbstractUnitTest {
       }
 
       if (id == errorId) {
-        throw new IOException();
+        throw new UncheckedIOException(new IOException());
       }
 
       c.accept(testContentReader);

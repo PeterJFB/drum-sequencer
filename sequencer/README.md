@@ -90,13 +90,13 @@ Example:
 
 ### Get a specific track
 
-GET `api/track/{id}`
+GET `api/tracks/{id}`
 
 Returns: The data of the track with the given ID
 
 Example:
 
-GET `api/track/5`
+GET `api/tracks/5`
 
 ```json
 {
@@ -115,13 +115,13 @@ GET `api/track/5`
 
 ### Post a new track
 
-POST `api/track`
+POST `api/tracks`
 
 Returns: Body of the posted track with their id if it was sucessful, as per REST-standards. The body of the request must be of type `application/json` with the format described at [File format for tracks](#file-format-for-tracks).
 
 Example:
 
-POST `api/track`
+POST `api/tracks`
 
 Body:
 
@@ -145,7 +145,7 @@ Response:
 
 ```json
 Content-Type: application/json
-Location: localhost:8080/api/track/{id} /* Assuming server is running at localhost:8080 */
+Location: localhost:8080/api/tracks/{id} /* Assuming server is running at localhost:8080 */
 {
   "name": "postedTrack",
   "artist": "POST Malone",

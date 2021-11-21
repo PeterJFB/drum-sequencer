@@ -61,7 +61,7 @@ public class SequencerServerApplicationTest extends AbstractIntegrationTest {
    */
   private ResponseEntity<String> postTrack(Track track, HttpStatus expectedStatus)
       throws IOException {
-    final String uri = "/api/track";
+    final String uri = "/api/tracks";
 
     String request = objectMapper.writer().writeValueAsString(track);
 
@@ -79,7 +79,7 @@ public class SequencerServerApplicationTest extends AbstractIntegrationTest {
    */
   @ParameterizedTest
   @MethodSource
-  @DisplayName("posting to /api/track should return expected response")
+  @DisplayName("posting to /api/tracks should return expected response")
   public void postTrackTests(Track track, HttpStatus expectedStatus) throws IOException {
     ResponseEntity<String> response = postTrack(track, expectedStatus);
 
@@ -151,7 +151,7 @@ public class SequencerServerApplicationTest extends AbstractIntegrationTest {
    * Helper function to post track and get it by Id.
    */
   public Track postAndGetTrackById(Track track) throws IOException {
-    final String uri = "/api/track/";
+    final String uri = "/api/tracks/";
 
     ResponseEntity<String> createdResponse = postTrack(track, HttpStatus.CREATED);
 
@@ -167,9 +167,9 @@ public class SequencerServerApplicationTest extends AbstractIntegrationTest {
   }
 
   @Test
-  @DisplayName("/api/track/{id} should respond with the given track")
+  @DisplayName("/api/tracks/{id} should respond with the given track")
   public void testGetTrackById() throws IOException {
-    final String uri = "/api/track/";
+    final String uri = "/api/tracks/";
 
     // Invalid id should respond with NOT_FOUND.
     ResponseEntity<String> emptyResponse = controller.getForEntity(uri + testId, String.class);

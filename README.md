@@ -126,4 +126,4 @@ Branch names must reflect its related issue. This is done by naming it _issue-n-
 
 Every commit must include a message identifying the changes made. This is to be written in the [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood), e.g. "Add this" or "Fix that". A rule of thumb is to make sure you can say "With this commit, ..." before the message. It must also include the issue number it is related to. An example of a valid commit message would be; _Related to #69. Improve and secure features in PersistenceHandler_.
 
-The title of both the merge request and issue also follow the same grammatical tense as the commit message, present tense. The only exeption to this are issues labled with _bug_, in which the task of the title is only to state the bug itself and not what to be done.
+The title of both the merge request and issue also follow the same grammatical tense as the commit message, imperative mood. The only exeption to this are issues labled with _bug_, in which the task of the title is only to state the bug itself and not what to be done.

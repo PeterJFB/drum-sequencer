@@ -154,8 +154,10 @@ public class Track {
     if (pattern == null) {
       throw new IllegalArgumentException("Cannot update non-existing instrument");
     }
-    if (sixteenth >= TRACK_LENGTH) {
-      throw new IllegalArgumentException("Cannot update instrument. Index out of bounds");
+    if (0 > sixteenth || sixteenth >= TRACK_LENGTH) {
+      throw new IllegalArgumentException(
+          "Cannot update instrument. Sixteenth index is outside track length (%s): %s"
+              .formatted(TRACK_LENGTH, sixteenth));
     }
     pattern.set(sixteenth, !pattern.get(sixteenth));
   }

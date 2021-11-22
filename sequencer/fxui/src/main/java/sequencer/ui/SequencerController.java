@@ -37,6 +37,7 @@ public class SequencerController {
 
   private Composer composer;
   private TrackAccessInterface trackAccess;
+  protected static final String SEQUENCER_ACCESS_ENV = "SEQUENCER_ACCESS";
 
   @FXML
   void initialize() {
@@ -45,7 +46,17 @@ public class SequencerController {
     composer.addListener(progress -> {
       Platform.runLater(() -> addBorderToSixteenths(progress));
     });
-    trackAccess = new RemoteTrackAccess();
+
+    final String sequencerAccess = System.getenv(SEQUENCER_ACCESS_ENV);
+
+    // Choose which access class should be used based on the environment variable. Default is
+    // RemoteTrackAccess.
+    // See docs about valid values of the variable
+    if (sequencerAccess != null && sequencerAccess.equals("LOCAL")) {
+      trackAccess = new LocalTrackAccess();
+    } else {
+      trackAccess = new RemoteTrackAccess();
+    }
 
     createElements();
   }

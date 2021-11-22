@@ -1,6 +1,6 @@
 ## Stricter naming policy
 
-It was decided to enforce a stricter naming policy to improve the overall reading experience of the Git history. `Gitlab` let's you [interact with the Git history](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/network/main) in a trouble-free way, but we imagine adding a issue number to each commit message will make it easier to keep track of it all.
+It was decided to enforce a stricter naming policy to improve the overall reading experience of the Git history. Gitlab let's you [interact with the Git history](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/network/main) in a trouble-free way, but we imagine adding a issue number to each commit message will make it easier to keep track of it all.
 
 Branch names must reflect its related issue. This is done by naming it _issue-n-description_, where _n_ is the issue number. Furthermore, the _description_ employs the naming convention ["kebab case"](https://en.wiktionary.org/wiki/kebab_case). For example; _issue-69-review-persistence-feedback_.
 
@@ -9,6 +9,105 @@ Every commit must include a message identifying the changes made. This is to be 
 The title of both the merge request and issue also follow the same grammatical tense as the commit message, imperative mood. The only exeption to this are issues labled with _bug_, in which the task of the title is only to state the bug itself and not what to be done.
 
 We decided to put this information in the [root readme](../), so to make it easily accessible to anyone interested in contributing to the project.
+
+## Project overview
+
+The project has now moved from a monolithic structure to a using a REST client and server. Both client and server are again divided into different *layers*, represented by the following modules:
+
+#### Client | *presentation-layer* and *data-access-layer* : fxui
+
+Essential module responsible for rendering all graphics within the application. The module is using `javafx` to render in a window, and delegating all logic regarding playing/editing tracks to the **core** module, and storage to classes in the ui.util-package.
+
+---
+
+#### Client | *logic-layer* : core
+
+Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all important class-info can be serialized to a json-format through the `jackson` dependency.
+
+---
+
+#### Server | *service-layer* : rest
+
+Essential module serving as the REST server. The module uses `spring-boot` to service all http requests, running as a servlet with `tomcat`. Rate limiting is achieved with `bucket4j`, storing ip-adressses in-memory with `caffeine`. All persistence logic is delegated to the **localpersistence** module.
+
+
+#### Server | *persistence-layer* : localpersistence
+
+Detachable module which is handling local storage of classes. The modules save-handling is tailored to the project: The methods avaliable allows the user to list all files with a given filetype from a directory in `$HOME` (e.g. a `.json` file in the `$HOME/drumsequencer` directory), and read from/write to these files. The saving is implicit, and the user is not expected to handle the files. The serialization must be handled by whoever is handling the `Reader`/`Writer`.
+
+---
+
+This has introduced a new module, **rest**. It is responsible for running the REST server, capable of storing, loading and listing tracks over http. More details about the new module is in the [sections further down](#spring-boot-as-a-web-service).
+
+This means the package-diagram has received additional changes. The old diagram is still applicable when using `LocalTrackAccess` as the access class, but we have added a second diagram below illustrating dependencies with `RemoteTrackAccess`, which is utilizing the **rest** module for storing tracks:
+
+
+![project overview as a diagram](./package-diagram.png)
+
+Notice how **localpersistence** is now used by restapi instead of sequencer.json, as it is the backend which is now storing objects. These modules/packages are communicating with each other in a manner shown in the diagram below.
+<div align="center">
+<img src="./client-and-server.svg" width=700></img>
+</div>
+
+<!--
+```plantuml
+skinparam BackgroundColor transparent
+skinparam ComponentFontStyle bold
+skinparam PackageFontStyle plain
+
+component fxui {
+ package sequencer.ui {
+ }
+}
+component core {
+    package sequencer.core {}
+    package sequencer.json {}
+}
+component localpersistence {
+    package sequencer.persistence {}
+}
+
+component rest {
+
+    package restapi {}
+    package restserver {}
+}
+
+component javafx {
+}
+component fxml {
+}
+component "javafx-media" {
+}
+component jackson {
+}
+
+component "spring-boot" {
+}
+component bucket4j {
+}
+component caffeine {
+}
+
+sequencer.ui ...> sequencer.core
+sequencer.core .right.> sequencer.json
+
+fxui .left.> javafx
+fxui .left.> fxml
+
+rest ...> "spring-boot"
+rest ...> bucket4j
+rest ...> caffeine
+
+restserver .right.> restapi
+restapi .down.> sequencer.persistence
+restapi ...> sequencer.json
+
+core .right.> "javafx-media"
+core .right.> jackson
+```
+-->
+
 
 ## Spring Boot as a web service
 

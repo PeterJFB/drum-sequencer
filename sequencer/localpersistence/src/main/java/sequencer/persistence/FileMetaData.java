@@ -27,12 +27,16 @@ public record FileMetaData(int id, String title, String author, long timestamp)
   }
 
   /**
-   * Compares lexiographal order of title, author and finally timestamp (with most recent first).
+   * Compares lexiographal order of day (with most recent first), title and finally author.
    */
   @Override
   public int compareTo(FileMetaData other) {
     if (other == null) {
       return -1;
+    }
+
+    if (!getDay().equals(other.getDay())) {
+      return getDay().compareTo(other.getDay());
     }
 
     if (!title.equals(other.title)) {
@@ -43,9 +47,11 @@ public record FileMetaData(int id, String title, String author, long timestamp)
       return author.compareTo(other.author);
     }
 
+    // When all above fields match, we ensure the track posted most recent on the same day is first
     if (!getInstant().equals(other.getInstant())) {
       return getInstant().compareTo(other.getInstant());
     }
+
 
     return 0;
   }

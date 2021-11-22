@@ -41,13 +41,13 @@
             </rowConstraints>
         </GridPane> 
 
-        <TextField promptText="Track name ..." layoutX="60.0" layoutY="200.0" /> 
+        <TextField fx:id="trackNameField" promptText="Track name ..." layoutX="60.0" layoutY="200.0" /> 
          
-        <TextField promptText="Artist name ..." layoutX="60.0" layoutY="300.0" />
+        <TextField fx:id="artistNameField" promptText="Artist name ..." layoutX="60.0" layoutY="300.0" />
 
-        <DatePicker layoutX="60.0" layoutY="400.0" prefHeight="56.0" prefWidth="392.0" />
+        <DatePicker fx:id="timestampPicker" layoutX="60.0" layoutY="400.0" prefHeight="56.0" prefWidth="392.0" />
          
-        <Button fx:id="searchBtn" layoutX="60.0" layoutY="500.0" text="Search" />        
+        <Button fx:id="searchBtn" onMouseClicked="#filterTracks" layoutX="60.0" layoutY="500.0" text="Search" />        
 
         <Text fx:id="infoText" text="Click on the track you wish to load." layoutX="562" layoutY="130" />
         <ScrollPane fx:id="savedTracksScrollPane" layoutX="560.0" layoutY="136.0" prefViewportHeight="440.0" prefViewportWidth="455.0">

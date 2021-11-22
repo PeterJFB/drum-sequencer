@@ -50,7 +50,6 @@ public class SequencerRestControllerTest extends AbstractUnitTest {
 
     // Convert response
     String response = result.getResponse().getContentAsString();
-    System.out.println(response);
 
     TrackSearchResult responseAsSearchResult =
         mapper.readValue(response, new TypeReference<List<TrackSearchResult>>() {}).get(0);

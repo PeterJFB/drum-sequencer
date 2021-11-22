@@ -226,7 +226,7 @@ public class SequencerController {
   }
 
   @FXML
-  private GridPane modal;
+  private GridPane trackLoaderModal;
 
   @FXML
   private AnchorPane content;
@@ -235,7 +235,7 @@ public class SequencerController {
 
   /**
    * Opening the the modal used for loading a saved track.
-   * 
+   *
    * @throws IOExeption if TrackLoaderModal.fxml is not found
    */
   @FXML
@@ -244,8 +244,8 @@ public class SequencerController {
     FXMLLoader fl = new FXMLLoader(getClass().getResource("TrackLoaderModal.fxml"));
     fl.setController(trackLoaderModalController);
     GridPane gridPane = fl.load();
-    modal.getChildren().setAll(gridPane);
-    modal.setVisible(true);;
+    trackLoaderModal.getChildren().setAll(gridPane);
+    trackLoaderModal.setVisible(true);;
     content.setEffect(new BoxBlur());
   }
 
@@ -253,7 +253,7 @@ public class SequencerController {
    * Closes the modal and removes the BoxBlur effect from the "content".
    */
   protected void closeTrackLoaderModal() {
-    modal.setVisible(false);
+    trackLoaderModal.setVisible(false);
     content.setEffect(null);
   }
 
@@ -287,7 +287,7 @@ public class SequencerController {
   private void resetRow(int row, boolean updatingElements) {
     ChoiceBox<String> instruments = instrumentChoiceBoxes.get(row);
     final String instrument = instruments.getValue();
-    if (instrument == null || instrument == "") {
+    if (instrument == null || instrument.isBlank()) {
       return;
     }
     instruments.setValue("");
@@ -459,12 +459,10 @@ public class SequencerController {
     statusMsg.setLayoutX(WIDTH_OF_SIXTEENTH);
     statusMsg.setLayoutY(HEIGHT_OF_SIXTEENTH * NUMBER_OF_ROWS);
     statusMsg.getStyleClass().setAll(success ? "successMsg" : "failureMsg");
-    // statusMsg.setPrefSize(HEIGHT_OF_SIXTEENTH * 2, WIDTH_OF_SIXTEENTH * 2);
 
     statusMsgIcon.setImage(success ? SUCCESS_ICON : FAILURE_ICON);
 
     statusMsgText.setText(msg);
-    // statusMsgText.setWrappingWidth(statusMsg.getPrefWidth() * 0.7);
 
     playStatusMsgTransition(true);
     // Removing the message after 4 seconds (4000L):

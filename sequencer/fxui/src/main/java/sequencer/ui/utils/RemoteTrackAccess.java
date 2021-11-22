@@ -121,7 +121,10 @@ public class RemoteTrackAccess implements TrackAccessInterface {
   @Override
   public List<TrackSearchResult> fetchTracks(String trackName, String artistName, Long timestamp)
       throws IOException {
-    final String path = String.format("/tracks?name=%s&artist=%s", trackName, artistName);
+    final String path = "/tracks?" + (trackName != null ? "name=" + trackName : "")
+        + (artistName != null ? "&artist=" + artistName : "")
+        + (timestamp != null ? "&timestamp=" + timestamp : "");
+    
     final HttpURLConnection connection = prepareConnection(path, "GET");
 
     String responseString;

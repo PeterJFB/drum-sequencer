@@ -216,28 +216,19 @@ public class PersistenceHandler {
    * @return a list with {@link FileMetaData}-objects representing saved tracks
    */
   public Collection<FileMetaData> listSavedFiles() {
-
     return listFilenames().stream().filter(FilenameHandler::validFilename)
         .map(FilenameHandler::readMetaData).toList();
   }
 
   /**
-   * List all saved tracks that match the given filter, sorted by time.
+   * List all saved tracks that match the given filter.
    *
    * @param title The string to filter names with
    * @param author The string to filter artist with
    * @param timestamp The date to filter timestamp with (by day)
-   * @return a collection with {@link FileMetaData}-objects representing saved tracks, sorted by
-   *         time
+   * @return a collection with {@link FileMetaData}-objects representing saved tracks
    */
   public List<FileMetaData> listSavedFiles(String title, String author, Long timestamp) {
-    System.out.println("SAVED FILES: " + listSavedFiles());
-    return listSavedFiles().stream()
-        .filter(fileMetadata -> fileMetadata.title().toLowerCase().contains(title.toLowerCase()))
-        .filter(fileMetadata -> fileMetadata.author().toLowerCase().contains(author.toLowerCase()))
-        .filter(fileMetadata -> timestamp == null
-            || fileMetadata.getDay().equals(FileMetaData.getDay(timestamp)))
-        .sorted().toList();
     return listSavedFiles().stream()
         .filter(fileMetadata -> fileMetadata.title().toLowerCase().contains(title.toLowerCase()))
         .filter(fileMetadata -> fileMetadata.author().toLowerCase().contains(author.toLowerCase()))

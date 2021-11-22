@@ -30,7 +30,7 @@ public interface TrackAccessInterface {
   /**
    * Fetches all saved tracks matching the search given by trackName, artistName and timestamp.
    * Argument {@code null} or {@code ""} will match all tracks.
-   * 
+   *
    * @param trackName the name of the track (or part of it) you want the returned tracks to match
    * @param artistName the name of the artist (or part of it) you want the returned tracks to match
    * @param timestamp the time which you want returned tracks to match (matches by day);

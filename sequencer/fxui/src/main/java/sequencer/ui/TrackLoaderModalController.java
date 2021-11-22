@@ -2,10 +2,15 @@ package sequencer.ui;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import javafx.fxml.FXML;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -23,15 +28,18 @@ public class TrackLoaderModalController {
   private SequencerController sequencerController;
   private TrackAccessInterface trackAccess;
 
+  private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
+
   @FXML
   void initialize() {
     trackAccess = new RemoteTrackAccess();
-    fetchAndDisplayTracks("", ""); // An empty string as argument will match all tracks
+    fetchAndDisplayTracks("", "", null); // An empty string as argument will match all tracks
   }
 
   /**
-   * Setting the SequencerController, as it's crucial for the two controllers to have a relation.
-   * 
+   * Setting the SequencerController. The modal uses this relation to display 
+   * status messages and update the sequencer UI when the track is loaded.
+   *
    * @param controller the SequencerController
    */
   protected void setSequencerController(SequencerController sequencerController) {
@@ -60,13 +68,16 @@ public class TrackLoaderModalController {
    *
    * @param trackName the name of the track (or part of it) to search for
    * @param artistName the name of the artist (or part of it) to search for
+   * @param timestamp the timestamp to search for
    */
-  private void fetchAndDisplayTracks(String trackName, String artistName) {
-    // savedTracksPanel.setSpacing(10);
+  private void fetchAndDisplayTracks(String trackName, String artistName, Long timestamp) {
+
+    // Clearing savedTracksPanel
+    savedTracksPanel.getChildren().clear();
 
     List<TrackSearchResult> searchResult;
     try {
-      searchResult = trackAccess.fetchTracks(trackName, artistName, null);
+      searchResult = trackAccess.fetchTracks(trackName, artistName, timestamp);
     } catch (IOException e) {
       sequencerController.displayStatusMsg("Failed to load tracks", false);
       return;
@@ -74,20 +85,20 @@ public class TrackLoaderModalController {
 
     for (TrackSearchResult track : searchResult) {
       HBox trackOption = new HBox(80);
-      trackOption.setPrefSize(savedTracksScrollPane.getPrefViewportWidth() - 10, 50);
+      trackOption.setMaxSize(savedTracksScrollPane.getPrefViewportWidth() - 10, 50);
       trackOption.getStyleClass().add("trackOption");
       trackOption.setOnMousePressed(event -> loadTrack(event));
       trackOption.setId(String.valueOf(track.id()));
 
       final Text displayedTrackName = new Text(track.name());
       final Text displayedArtistName = new Text(track.artist());
-      final String formattedTimestamp =
-          new SimpleDateFormat("dd/MM/yyyy").format(new Date(track.timestamp()));
+      final String formattedTimestamp = dateFormatter.format(new Date(track.timestamp()));
       final Text displayedTimestamp = new Text(formattedTimestamp);
       trackOption.getChildren().addAll(displayedTrackName, displayedArtistName, displayedTimestamp);
 
       savedTracksPanel.getChildren().add(trackOption);
     }
+
   }
 
   /**
@@ -107,6 +118,31 @@ public class TrackLoaderModalController {
     } catch (IOException e) {
       sequencerController.displayStatusMsg("Failed to load track.", false);
     }
+  }
+
+
+  @FXML
+  private TextField trackNameField;
+
+  @FXML
+  private TextField artistNameField;
+
+  @FXML
+  private DatePicker timestampPicker;
+
+  @FXML
+  private void filterTracks() {
+    final String trackName = trackNameField.getText() != null ? trackNameField.getText() : "";
+    final String artistName = artistNameField.getText() != null ? artistNameField.getText() : "";
+    final Long timestamp;
+    if (timestampPicker.getValue() != null) {
+      LocalDate localDate = timestampPicker.getValue();
+      Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+      timestamp = Date.from(instant).getTime();
+    } else {
+      timestamp = null;
+    }
+    fetchAndDisplayTracks(trackName, artistName, timestamp);
   }
 
 }

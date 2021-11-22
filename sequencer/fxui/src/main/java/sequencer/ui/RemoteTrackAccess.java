@@ -21,12 +21,21 @@ import sequencer.json.TrackSearchResult;
  * Implementation of {@link TrackAccessInterface} that saves/loads tracks from a remote api.
  */
 public class RemoteTrackAccess implements TrackAccessInterface {
-  String baseUrl;
-  URL url;
-  HttpURLConnection connection;
+  private final String baseUrl;
 
+  /**
+   * Instantiates a new access class and attempts to get the baseUrl from the environment variable.
+   * If it is not defined it will default to http://localhost:8080/api. See docs about defining the
+   * environment variable.
+   */
   public RemoteTrackAccess() {
-    baseUrl = "http://localhost:8080/api";
+    final String sequencerAccess = System.getenv(SequencerController.SEQUENCER_ACCESS_ENV);
+    if (sequencerAccess == null || sequencerAccess.isBlank()) {
+      baseUrl = "http://localhost:8080/api";
+    } else {
+      baseUrl = sequencerAccess;
+    }
+    System.out.println("Using remote access server with url: " + baseUrl);
   }
 
   /**
@@ -37,9 +46,11 @@ public class RemoteTrackAccess implements TrackAccessInterface {
    * @throws IOException if the url is wrongly formatted, the requestmetod is illegal or something
    *         went wrong while opening the connection
    */
-  private void setConnection(String path, String requestMethod) throws IOException {
+  private HttpURLConnection prepareConnection(String path, String requestMethod)
+      throws IOException {
+    final HttpURLConnection connection;
     try {
-      url = new URL(baseUrl + path);
+      URL url = new URL(baseUrl + path);
       connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod(requestMethod);
       connection.setRequestProperty("Content-Type", "application/json; utf-8");
@@ -53,7 +64,7 @@ public class RemoteTrackAccess implements TrackAccessInterface {
     } catch (IOException e) {
       throw new IOException("The program was unable to preparing a connection to the server", e);
     }
-
+    return connection;
   }
 
   /**
@@ -64,7 +75,7 @@ public class RemoteTrackAccess implements TrackAccessInterface {
    */
   @Override
   public void saveTrack(Composer composer) throws IOException {
-    setConnection("/tracks", "POST");
+    final HttpURLConnection connection = prepareConnection("/tracks", "POST");
     connection.setDoOutput(true);
 
     try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
@@ -88,7 +99,7 @@ public class RemoteTrackAccess implements TrackAccessInterface {
   @Override
   public void loadTrack(Composer composer, int id) throws IOException {
     final String path = String.format("/tracks/%d", id);
-    setConnection(path, "GET");
+    final HttpURLConnection connection = prepareConnection(path, "GET");
 
     try {
       final int status = connection.getResponseCode();
@@ -101,7 +112,7 @@ public class RemoteTrackAccess implements TrackAccessInterface {
         composer.loadTrack(reader);
 
       } else {
-        String errorBody = readResponse(status);
+        String errorBody = readResponse(connection, status);
 
         throw new IOException(
             "Request to server gave unexpected status: %s body: %s".formatted(status, errorBody));
@@ -125,12 +136,12 @@ public class RemoteTrackAccess implements TrackAccessInterface {
   public List<TrackSearchResult> loadTracks(String trackName, String artistName)
       throws IOException {
     final String path = String.format("/tracks?name=%s&artist=%s", trackName, artistName);
-    setConnection(path, "GET");
+    final HttpURLConnection connection = prepareConnection(path, "GET");
 
     String responseString;
     try {
       final int status = connection.getResponseCode();
-      responseString = readResponse(status);
+      responseString = readResponse(connection, status);
     } catch (IOException e) {
       throw new IOException("The program was unable to load list of tracks", e);
     }
@@ -148,7 +159,7 @@ public class RemoteTrackAccess implements TrackAccessInterface {
    * @return a string with the response from the call
    * @throws IOException if the response can not be read
    */
-  private String readResponse(int status) throws IOException {
+  private String readResponse(HttpURLConnection connection, int status) throws IOException {
     Reader inputStreamReader;
     if (status <= 299) {
       inputStreamReader = new InputStreamReader(connection.getInputStream(), "UTF-8");

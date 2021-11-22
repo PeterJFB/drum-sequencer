@@ -9,9 +9,8 @@
 [![pipeline status](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/develop/pipeline.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/develop)
 [![coverage report](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/develop/coverage.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/develop) ([headless](#tests-jacoco))
 
-## Project: Drum sequencer
 
-The app requires `Java 16` or later, other dependecies are compiled and built using `Maven`.
+The app requires `Java 16` or later, other dependecies are compiled and built using `Maven 3.8.2`.
 
 The project itself and further descriptions is located in the [sequencer folder](./sequencer).
 

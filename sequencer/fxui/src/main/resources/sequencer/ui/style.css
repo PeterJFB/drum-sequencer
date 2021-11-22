@@ -1,5 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&display=swap');
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-stretch: 100%;
+    font-display: swap;
+    src: url(fonts/OpenSans-Regular.ttf) format('ttf');
+  }
 
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/Roboto-Regular.ttf) format('ttf');
+  }
 /* Defining color variables in the root element */
 * {
     -fx-success-dark-green: #419E6D;

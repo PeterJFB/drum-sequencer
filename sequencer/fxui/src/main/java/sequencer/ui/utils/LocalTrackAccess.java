@@ -63,14 +63,14 @@ public class LocalTrackAccess implements TrackAccessInterface {
   }
 
   @Override
-  public List<TrackSearchResult> fetchTracks(String trackName, String artistName)
+  public List<TrackSearchResult> fetchTracks(String trackName, String artistName, Long timestamp)
       throws IOException {
 
     trackName = trackName != null ? trackName : "";
     artistName = artistName != null ? artistName : "";
 
-    return persistenceHandler.listSavedFiles(trackName, artistName).stream()
+    return persistenceHandler.listSavedFiles(trackName, artistName, timestamp).stream()
         .map(TrackSearchResult::createFromFileMetaData).toList();
   }
-  
+
 }

@@ -81,8 +81,8 @@ abstract class AbstractUnitTest {
 
     // Mock listing of files
     Mockito.when(persistenceHandler.listSavedFiles()).thenReturn(List.of(testFileMetaData));
-    Mockito.when(persistenceHandler.listSavedFiles(Mockito.anyString(), Mockito.anyString()))
-        .thenReturn(List.of(testFileMetaData));
+    Mockito.when(persistenceHandler.listSavedFiles(Mockito.anyString(), Mockito.anyString(),
+        Mockito.isNull())).thenReturn(List.of(testFileMetaData));
 
     // Mock reader. Read contents from a StringReader which can be verified later.
     doAnswer(invocation -> {

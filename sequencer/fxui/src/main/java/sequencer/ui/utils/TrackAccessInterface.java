@@ -26,16 +26,17 @@ public interface TrackAccessInterface {
    * @throws IOException if something went wrong while loading the track
    */
   public void loadTrack(Composer composer, int id) throws IOException;
-  
+
   /**
-   * Fetches all saved tracks matching the search given by trackName and artistName. Argument
-   * {@code null} or {@code ""} will match all tracks.
+   * Fetches all saved tracks matching the search given by trackName, artistName and timestamp.
+   * Argument {@code null} or {@code ""} will match all tracks.
    * 
    * @param trackName the name of the track (or part of it) you want the returned tracks to match
    * @param artistName the name of the artist (or part of it) you want the returned tracks to match
+   * @param timestamp the time which you want returned tracks to match (matches by day);
    * @return a list {@link TrackSearchResults} for all the saved tracks.
    * @throws IOException if something went wrong while fetching the tracks
    */
-  public List<TrackSearchResult> fetchTracks(String trackName, String artistName)
+  public List<TrackSearchResult> fetchTracks(String trackName, String artistName, Long timestamp)
       throws IOException;
 }

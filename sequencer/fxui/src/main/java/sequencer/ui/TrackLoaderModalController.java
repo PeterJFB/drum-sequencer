@@ -66,7 +66,7 @@ public class TrackLoaderModalController {
 
     List<TrackSearchResult> searchResult;
     try {
-      searchResult = trackAccess.fetchTracks(trackName, artistName);
+      searchResult = trackAccess.fetchTracks(trackName, artistName, null);
     } catch (IOException e) {
       sequencerController.displayStatusMsg("Failed to load tracks", false);
       return;
@@ -81,9 +81,9 @@ public class TrackLoaderModalController {
 
       final Text displayedTrackName = new Text(track.name());
       final Text displayedArtistName = new Text(track.artist());
-      final String timestamp =
+      final String formattedTimestamp =
           new SimpleDateFormat("dd/MM/yyyy").format(new Date(track.timestamp()));
-      final Text displayedTimestamp = new Text(timestamp);
+      final Text displayedTimestamp = new Text(formattedTimestamp);
       trackOption.getChildren().addAll(displayedTrackName, displayedArtistName, displayedTimestamp);
 
       savedTracksPanel.getChildren().add(trackOption);

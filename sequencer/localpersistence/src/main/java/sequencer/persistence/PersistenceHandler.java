@@ -12,9 +12,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Timestamp;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -219,18 +222,28 @@ public class PersistenceHandler {
   }
 
   /**
-   * List all saved tracks that match the given filter.
+   * List all saved tracks that match the given filter, sorted by time.
    *
-   * @param name The string to filter names with
-   * @param artist The string to filter artist with
-   * @return a collection with {@link FileMetaData}-objects representing saved tracks
+   * @param title The string to filter names with
+   * @param author The string to filter artist with
+   * @param timestamp The date to filter timestamp with (by day)
+   * @return a collection with {@link FileMetaData}-objects representing saved tracks, sorted by
+   *         time
    */
-  public Collection<FileMetaData> listSavedFiles(String name, String artist) {
+  public List<FileMetaData> listSavedFiles(String title, String author, Long timestamp) {
+    System.out.println("SAVED FILES: " + listSavedFiles());
     return listSavedFiles().stream()
-        .filter(trackMetadata -> trackMetadata.title().toLowerCase().contains(name.toLowerCase()))
-        .filter(
-            trackMetadata -> trackMetadata.author().toLowerCase().contains(artist.toLowerCase()))
-        .toList();
+        .filter(fileMetadata -> fileMetadata.title().toLowerCase().contains(title.toLowerCase()))
+        .filter(fileMetadata -> fileMetadata.author().toLowerCase().contains(author.toLowerCase()))
+        .filter(fileMetadata -> timestamp == null
+            || fileMetadata.getDay().equals(FileMetaData.getDay(timestamp)))
+        .sorted().toList();
+    return listSavedFiles().stream()
+        .filter(fileMetadata -> fileMetadata.title().toLowerCase().contains(title.toLowerCase()))
+        .filter(fileMetadata -> fileMetadata.author().toLowerCase().contains(author.toLowerCase()))
+        .filter(fileMetadata -> timestamp == null
+            || fileMetadata.getDay().equals(FileMetaData.getDay(timestamp)))
+        .sorted().toList();
   }
 
   /**

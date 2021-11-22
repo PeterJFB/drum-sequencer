@@ -142,3 +142,88 @@ There are several solutions to mitigate this, such as requiring authentication, 
 Track information contains no user-sensitive data (see examples of post-requests), which means our greatest concern is server load. A satisfying solution to this is to use IP-based rate limiting, which is implemented with [Bucket4j](https://github.com/MarcGiffing/bucket4j-spring-boot-starter#bucket4j_complete_properties). Our implementation can also easily be changed to be user-based, if this is something we wish to use later.
 
 IP-based limiting requires somewhere to store the IP-addresses and their respective [buckets](https://en.wikipedia.org/wiki/Token_bucket). There's no reason to store this long-term, though a high access time is crucial to maintain a high server performance. This is why we store it with in-memory cache, which is achieved with [caffeine](https://github.com/ben-manes/caffeine).
+
+## Sequencial diagram
+
+Sequenctial diagram describing a possible interaction sequence between the actors, their devices and the server. This sequence of interactions is based on user story three, which you can find in [brukerhistorier.md](../../brukerhistorier.md).
+
+```plantuml
+skinparam BackgroundColor transparent
+skinparam ComponentFontStyle bold
+skinparam PackageFontStyle plain
+
+component fxui {
+ package sequencer.ui {
+ }
+}
+component core {
+    package sequencer.core {}
+    package sequencer.json {}
+}
+component localpersistence {
+    package sequencer.persistence {}
+}
+
+component javafx {
+}
+component fxml {
+}
+component "javafx-media" {
+}
+component jackson {
+}
+
+fxui ...> javafx
+fxui ...> fxml
+
+core ...> "javafx-media"
+core ...> jackson
+
+sequencer.ui ...> sequencer.core
+sequencer.ui ...> sequencer.persistence
+sequencer.ui ...> sequencer.json
+```
+
+```plantuml
+title User story 3
+
+actor "John Doe" as John
+participant "John Doe's computer" as JohnPC
+participant "Sequencer Server" as server
+participant "Jane Doe's computer" as JanePC
+actor "Jane Doe" as Jane
+
+John -> JohnPC: initialize
+loop 5
+    John -> JohnPC: addInstrument
+    JohnPC -> John:updateInstrumentAlternatives
+end
+group Create Track [until track is finished]
+    John -> JohnPC: toggleSixteenth
+end
+John -> JohnPC: editTrackName
+John -> JohnPC: editArtistName
+John -> JohnPC: saveTrack
+
+
+JohnPC -> server: saveTrack
+activate server
+server -> JohnPC: HTTP response: 201 Created
+deactivate server
+JohnPC -> John: displayStatusMsg
+
+John -> Jane: "Check out track"
+Jane -> JanePC: initialize
+Jane -> JanePC: openTrackLoaderModal
+JanePC -> Jane: Modal Opened
+Jane -> JanePC: fetchAndDisplayTracks
+
+JanePC -> server: fetchTracks
+activate server
+server -> JanePC: Heyooo
+deactivate server
+
+JanePC -> Jane: Show list of\n tracks matching search
+Jane -> JanePC: loadTrack
+JanePC -> Jane: displayStatusMsg
+```

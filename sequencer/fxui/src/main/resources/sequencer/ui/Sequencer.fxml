@@ -8,6 +8,8 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
@@ -15,105 +17,95 @@
 <?import javafx.scene.text.Text?>
 
 
-<StackPane stylesheets="@style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sequencer.ui.SequencerController">
-
-    <AnchorPane fx:id="content">
-
-        <GridPane fx:id="header" alignment="TOP_CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"> 
-            
-            <StackPane GridPane.columnIndex="0">
-                <ImageView fx:id="saveTrackBtn" onMouseClicked="#saveTrack">
-                    <image>
-                        <Image url="@images/save.png" />
-                    </image>
-                </ImageView>
-            </StackPane>
-
-            <Button fx:id="modalOpener" onAction="#openTrackLoaderModal" text="Find a track" GridPane.columnIndex="1" />    
-
-            <GridPane fx:id="trackNamePane" GridPane.columnIndex="2">
-                <Text fx:id="trackNameLabel" text="TRACK NAME" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
-                <TextField fx:id="trackName" text="untitled" onTextChange="#editTrackName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
-                <columnConstraints>
-                    <ColumnConstraints hgrow="ALWAYS" />
-                </columnConstraints>
-                <rowConstraints>
-                    <RowConstraints vgrow="ALWAYS" />
-                    <RowConstraints vgrow="ALWAYS" />
-                </rowConstraints>
-            </GridPane>
-
-            <GridPane fx:id="artistNamePane" GridPane.columnIndex="3">
-                <Text fx:id="artistNameLabel" text="ARTIST NAME" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
-                <TextField fx:id="artistName" text="unknown" onTextChange="#editArtistName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
-                <columnConstraints>
-                    <ColumnConstraints hgrow="ALWAYS" />
-                </columnConstraints>
-                <rowConstraints>
-                    <RowConstraints vgrow="ALWAYS" />
-                    <RowConstraints vgrow="ALWAYS" />
-                </rowConstraints>
-            </GridPane>
-            
-            <StackPane GridPane.columnIndex="4">
-                <ImageView fx:id="startStopBtn" onMouseClicked="#togglePlayingTrack">
-                    <image>
-                        <Image url="@images/play.png" />
-                    </image>
-                </ImageView>
-            </StackPane>
-
-            <columnConstraints>
-                <ColumnConstraints hgrow="ALWAYS" />
-                <ColumnConstraints hgrow="ALWAYS" />
-                <ColumnConstraints hgrow="ALWAYS" />
-                <ColumnConstraints hgrow="ALWAYS" />
-                <ColumnConstraints hgrow="ALWAYS" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints vgrow="ALWAYS" />
-            </rowConstraints>
-
-        </GridPane>
-        
-        <Pane fx:id="instrumentsPanel" />
-
-        <Pane fx:id="timeline" />
-
-        <Pane fx:id="instrumentsPattern" />
-
-        <StackPane fx:id="statusMsg">
-            <Rectangle fx:id="statusMsgBg" />
-
-            <GridPane fx:id="statusMsgContent" alignment="CENTER">
-
-                <ImageView fx:id="statusMsgIcon" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS">
-                    <image>
-                        <Image url="@#" />
-                    </image>
-                </ImageView>
-                <Text fx:id="statusMsgText" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" />
-                
-                <columnConstraints>
-                    <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
-                    <ColumnConstraints halignment="CENTER" />
-                </columnConstraints>
-                <rowConstraints>
-                    <RowConstraints vgrow="ALWAYS" />
-                </rowConstraints>
-
-            </GridPane>
-        </StackPane>
-     
-    </AnchorPane>
+<Pane stylesheets="@style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sequencer.ui.SequencerController">
     
-    <GridPane fx:id="modal" visible="false" alignment="CENTER" StackPane.alignment="CENTER">
-      <columnConstraints>
-         <ColumnConstraints />
-      </columnConstraints>
-      <rowConstraints>
-         <RowConstraints />
-      </rowConstraints>
-    </GridPane>
+    <StackPane>
+        
+        <AnchorPane fx:id="content">
 
-</StackPane>
+            <GridPane fx:id="header" alignment="TOP_CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"> 
+                
+                <StackPane GridPane.columnIndex="0">
+                    <ImageView fx:id="saveTrackBtn" onMouseClicked="#saveTrack">
+                        <image>
+                            <Image url="@images/save.png" />
+                        </image>
+                    </ImageView>
+                </StackPane>
+
+                <Button fx:id="modalOpener" onAction="#openTrackLoaderModal" text="Find a track" GridPane.columnIndex="1" />    
+
+                <GridPane fx:id="trackNamePane" GridPane.columnIndex="2">
+                    <Text fx:id="trackNameLabel" text="TRACK NAME" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
+                    <TextField fx:id="trackName" text="untitled" onTextChange="#editTrackName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints vgrow="ALWAYS" />
+                        <RowConstraints vgrow="ALWAYS" />
+                    </rowConstraints>
+                </GridPane>
+
+                <GridPane fx:id="artistNamePane" GridPane.columnIndex="3">
+                    <Text fx:id="artistNameLabel" text="ARTIST NAME" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
+                    <TextField fx:id="artistName" text="unknown" onTextChange="#editArtistName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints vgrow="ALWAYS" />
+                        <RowConstraints vgrow="ALWAYS" />
+                    </rowConstraints>
+                </GridPane>
+                
+                <StackPane GridPane.columnIndex="4">
+                    <ImageView fx:id="startStopBtn" onMouseClicked="#togglePlayingTrack">
+                        <image>
+                            <Image url="@images/play.png" />
+                        </image>
+                    </ImageView>
+                </StackPane>
+
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints vgrow="ALWAYS" />
+                </rowConstraints>
+
+            </GridPane>
+            
+            <Pane fx:id="instrumentsPanel" />
+
+            <Pane fx:id="timeline" />
+
+            <Pane fx:id="instrumentsPattern" />
+ 
+        </AnchorPane>
+        
+        <GridPane fx:id="modal" visible="false" alignment="CENTER" StackPane.alignment="CENTER">
+        <columnConstraints>
+            <ColumnConstraints />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints />
+        </rowConstraints>
+        </GridPane>
+
+    </StackPane>
+
+    <HBox fx:id="statusMsg">
+        <ImageView fx:id="statusMsgIcon">
+            <image>
+                <Image url="@#" />
+            </image>
+        </ImageView>
+        <Text fx:id="statusMsgText" />
+    </HBox>
+
+</Pane>

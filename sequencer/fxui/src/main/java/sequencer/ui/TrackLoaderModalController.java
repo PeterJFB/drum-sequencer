@@ -46,7 +46,7 @@ public class TrackLoaderModalController {
    */
   @FXML
   private void closeTrackLoaderModal() {
-    sequencerController.removeModal();
+    sequencerController.closeTrackLoaderModal();
   }
 
   @FXML

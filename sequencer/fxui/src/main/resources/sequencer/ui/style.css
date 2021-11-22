@@ -194,35 +194,16 @@
         stroke: #FCBA03;
 }
 
-.successMsg #statusMsgBg {
-    -fx-fill: -fx-success-light-green;
-        fill: -fx-success-light-green;
-    -fx-stroke: -fx-success-dark-green;
-        stroke: -fx-success-dark-green;
-}
-
-.successMsg #statusMsgText {
-    -fx-fill: -fx-success-dark-green;
-        fill: -fx-success-dark-green;
-}
-
-.failureMsg #statusMsgBg {
-    -fx-fill: -fx-failure-light-red;
-        fill: -fx-failure-light-red;
-    -fx-stroke: -fx-failure-dark-red;
-        stroke: -fx-failure-dark-red;
-}
-
-.failureMsg #statusMsgText {
-    -fx-fill: -fx-failure-dark-red;
-        fill: -fx-failure-dark-red;
-}
-
-#statusMsgBg {
-    -fx-stroke-width: 3.2;
-        stroke-width: 3.2;
-    -fx-arc-width: 25.0; 
-    -fx-arc-height: 25.0;
+#statusMsg {
+    -fx-alignment: center;
+    -fx-padding: 20px;
+        padding: 20px;
+    -fx-spacing: 15px;
+    -fx-border-width: 3.2;
+        border-width: 3.2;
+    -fx-border-radius: 25px;
+        border-radius: 25px;
+    -fx-background-radius: 25px;
 }
 
 #statusMsgText {
@@ -230,4 +211,28 @@
         font-size: 25px;
     -fx-font-family: 'Open Sans', sans-serif;
         font-family: 'Open Sans', sans-serif;
+}
+
+.successMsg {
+    -fx-background-color: -fx-success-light-green;
+        background-color: -fx-success-light-green;
+    -fx-border-color: -fx-success-dark-green;
+        border-color: -fx-success-dark-green;
+}
+
+.successMsg #statusMsgText {
+    -fx-fill: -fx-success-dark-green;
+        fill: -fx-success-dark-green;
+}
+
+.failureMsg {
+    -fx-background-color: -fx-failure-light-red;
+        background-color: -fx-failure-light-red;
+    -fx-border-color: -fx-failure-dark-red;
+        border-color: -fx-failure-dark-red;
+}
+
+.failureMsg #statusMsgText {
+    -fx-fill: -fx-failure-dark-red;
+        fill: -fx-failure-dark-red;
 }

@@ -22,8 +22,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -250,9 +250,9 @@ public class SequencerController {
   }
 
   /**
-   * Removes the BoxBlur effect of "content" when closing TrackLoaderModal.
+   * Closes the modal and removes the BoxBlur effect from the "content".
    */
-  protected void removeModal() {
+  protected void closeTrackLoaderModal() {
     modal.setVisible(false);
     content.setEffect(null);
   }
@@ -434,10 +434,7 @@ public class SequencerController {
   }
 
   @FXML
-  private StackPane statusMsg;
-
-  @FXML
-  private Rectangle statusMsgBg;
+  private HBox statusMsg;
 
   @FXML
   private ImageView statusMsgIcon;
@@ -460,16 +457,14 @@ public class SequencerController {
    */
   protected void displayStatusMsg(String msg, boolean success) {
     statusMsg.setLayoutX(WIDTH_OF_SIXTEENTH);
-    statusMsg.setLayoutY(HEIGHT_OF_SIXTEENTH * 5);
+    statusMsg.setLayoutY(HEIGHT_OF_SIXTEENTH * NUMBER_OF_ROWS);
     statusMsg.getStyleClass().setAll(success ? "successMsg" : "failureMsg");
-
-    statusMsgBg.setWidth(WIDTH_OF_SIXTEENTH * 4);
-    statusMsgBg.setHeight(WIDTH_OF_SIXTEENTH * 1.3);
+    // statusMsg.setPrefSize(HEIGHT_OF_SIXTEENTH * 2, WIDTH_OF_SIXTEENTH * 2);
 
     statusMsgIcon.setImage(success ? SUCCESS_ICON : FAILURE_ICON);
 
     statusMsgText.setText(msg);
-    statusMsgText.setWrappingWidth(statusMsgBg.getWidth() * 0.7);
+    // statusMsgText.setWrappingWidth(statusMsg.getPrefWidth() * 0.7);
 
     playStatusMsgTransition(true);
     // Removing the message after 4 seconds (4000L):

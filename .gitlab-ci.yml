@@ -20,7 +20,6 @@ stages:
   - build
   - verify
   - test
-  - report
 
 build:
   stage: build
@@ -50,13 +49,6 @@ test:
       - "*/*/target"
 
   script:
-    - mvn clean test $SKIP_UI_TESTS
-
-jacoco:
-  stage: report
-  cache:
-    paths:
-  script:
-    - mvn jacoco:report-aggregate $SKIP_ALL_TESTS $IGNORE_UI_COVERAGE
+    - mvn clean test jacoco:report-aggregate $SKIP_UI_TESTS $IGNORE_UI_COVERAGE
     - 'cat report/target/site/jacoco-aggregate/index.html | grep -oP "Total[^%]*>\K\d+%{1}" | sed -e "s/^/Jacoco-Test-Coverage: /g"'
   coverage: '/Jacoco-Test-Coverage: (\d+.?\d*)%/'

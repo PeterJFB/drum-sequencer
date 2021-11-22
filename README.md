@@ -74,9 +74,9 @@ This project is set up to use jlink in [open-jfx-jdk](https://github.com/javafxp
 ```bash
 $ cd sequencer/ # Move into sequencer folder
 $ mvn install # Compile and build modules
-$ mvn install -f ./core/ # Compile and build modules used by fxui
-$ mvn install -f ./localpersistence/
-$ mvn compile javafx:jlink jpackage:jpackage -f .\fxui\ #Build and package the project
+$ mvn install -pl core # Compile and build modules used by fxui
+$ mvn install -f localpersistence
+$ mvn compile javafx:jlink jpackage:jpackage -pl fxui #Build and package the project
 ```
 
 After this, you will find the installer in `/fxui/target/dist`

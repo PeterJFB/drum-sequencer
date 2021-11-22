@@ -1,4 +1,6 @@
-# Group gr2101 repository
+<img src="docs/release3/Logo.svg" alt="Drum Sequencer">
+
+> An app to quickly create, edit and share different drum patterns 📾
 
 **main:**
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.stud.ntnu.no/#https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101)
@@ -9,9 +11,7 @@
 
 ## Project: Drum sequencer
 
-> An app to quickly create, edit and share different drum patterns 📾
-
-The app requires `Java 16` or later, other dependecies are compiled and built using `maven`.
+The app requires `Java 16` or later, other dependecies are compiled and built using `Maven`.
 
 The project itself and further descriptions is located in the [sequencer folder](./sequencer).
 
@@ -41,7 +41,7 @@ Docs about our api are located in the [sequencer folder](./sequencer#rest-api).
 
 ### 2) Option 1: Local
 
-After installing `Java 16` and `maven` (both of which can be done with [SDKMAN](https://sdkman.io/)), the project will start by running:
+After installing `Java 16` and `Maven` (both of which can be done with [SDKMAN](https://sdkman.io/) on most Unix based systems), the project will start by running:
 
 ```bash
 $ cd sequencer/ # Move into sequencer folder
@@ -61,7 +61,7 @@ $ mvn javafx:run -pl fxui # Run application
 
 After which the GUI will be visible on the open `6080` port
 
-<img src=https://cdn-images-1.medium.com/max/2000/1*-yHSkPGNR6Vs07MjLKQAUA.gif width=800></img>
+<img src=https://cdn-images-1.medium.com/max/2000/1*-yHSkPGNR6Vs07MjLKQAUA.gif width=800 />
 
 > ## 🛈 gitpod and audio support
 >

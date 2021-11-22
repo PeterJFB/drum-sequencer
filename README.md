@@ -9,9 +9,8 @@
 [![pipeline status](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/develop/pipeline.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/develop)
 [![coverage report](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/develop/coverage.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/develop) ([headless](#tests-jacoco))
 
-## Project: Drum sequencer
 
-The app requires `Java 16` or later, other dependecies are compiled and built using `Maven`.
+The app requires `Java 16` or later, other dependecies are compiled and built using `Maven 3.8.2`.
 
 The project itself and further descriptions is located in the [sequencer folder](./sequencer).
 
@@ -66,6 +65,20 @@ After which the GUI will be visible on the open `6080` port
 > ## 🛈 gitpod and audio support
 >
 > As of now, the `gitlab/workspace-full-vnc` dockerimage is [resticted when it comes to audio support](https://www.gitpod.io/blog/native-ui-with-vnc). This makes it difficult to test the audio-specific features within the network-based IDE. While the project runs fine within gitpod, it is recommended to experience the audio-based features of the project locally.
+
+### Building the app
+
+This project is set up to use jlink in [open-jfx-jdk](https://github.com/javafxports/openjdk-jfx) and [jpackage](https://github.com/petr-panteleyev/jpackage-maven-plugin) to build an installer. If using Windows, you need to install [WiX tool](https://wixtoolset.org/) before building. If using Mac, you need to install [XCode](https://developer.apple.com/xcode/) before building. Most Linux distros does not require any additional tools.
+
+```bash
+$ cd sequencer/ # Move into sequencer folder
+$ mvn install # Compile and build modules
+$ mvn install -pl core # Compile and build modules used by fxui
+$ mvn install -f localpersistence
+$ mvn compile javafx:jlink jpackage:jpackage -pl fxui #Build and package the project
+```
+
+After this, you will find the installer in `/fxui/target/dist`
 
 ## Additional configuration: Changing storage endpoint
 

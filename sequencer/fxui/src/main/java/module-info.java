@@ -8,5 +8,5 @@ module sequencer.ui {
 
   exports sequencer.ui;
 
-  opens sequencer.ui to javafx.fxml;
+  opens sequencer.ui to javafx.fxml, javafx.graphics;
 }

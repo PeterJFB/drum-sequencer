@@ -102,12 +102,37 @@
                 <version>0.0.6</version>
                 <configuration>
                     <mainClass>sequencer.ui/sequencer.ui.SequencerApp</mainClass>
+                    <!-- rest of options are for jlink -->
+                    <compress>2</compress>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <stripDebug>false</stripDebug>
+                    <noManPages>true</noManPages>
+                    <launcher>sequencer</launcher>
+                    <jlinkImageName>sequencer</jlinkImageName>
+                    <jlinkZipName>sequencer</jlinkZipName>
                 </configuration>
             </plugin>
             <!-- Configure jacoco code coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+            <!-- config above and below taken from https://dev.to/cherrychain/javafx-jlink-and-jpackage-h9 -->
+            <plugin>
+                <groupId>org.panteleyev</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <configuration>
+                    <name>Sequencer</name>
+                    <appVersion>1.0.0</appVersion>
+                    <vendor>it1901</vendor>
+                    <destination>target/dist</destination>
+                    <module>sequencer.ui/sequencer.ui.SequencerApp</module>
+                    <runtimeImage>target/sequencer</runtimeImage>
+                    <javaOptions>
+                        <option>-Dfile.encoding=UTF-8</option>
+                    </javaOptions>
+                </configuration>
             </plugin>
         </plugins>
     </build>

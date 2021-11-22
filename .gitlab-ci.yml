@@ -11,29 +11,26 @@ image: maven:3-openjdk-16
 before_script:
   - echo ${CI_PROJECT_DIR}
   - cd sequencer
-  - mvn install $SKIP_UI_TESTS -DskipTests=true
-  - mvn install -f report $SKIP_UI_TESTS -DskipTests=true
 
 cache:
   paths:
     - .m2/repository
-    - "*/target"
-    - "*/*/target"
 
 stages:
   - build
-  - test
   - verify
+  - test
+  - report
 
 build:
   stage: build
+  artifacts:
+    paths:
+      - "*/target"
+      - "*/*/target"
+
   script:
     - mvn compile
-
-test:
-  stage: test
-  script:
-    - mvn test $SKIP_UI_TESTS
 
 checkstyle:
   stage: verify
@@ -45,11 +42,21 @@ spotbugs:
   script:
     - mvn spotbugs:check
 
+test:
+  stage: test
+  artifacts:
+    paths:
+      - "*/target"
+      - "*/*/target"
+
+  script:
+    - mvn clean test $SKIP_UI_TESTS
+
 jacoco:
-  stage: verify
+  stage: report
   cache:
     paths:
   script:
-    - mvn verify $SKIP_UI_TESTS $IGNORE_UI_COVERAGE
+    - mvn jacoco:report-aggregate $SKIP_ALL_TESTS $IGNORE_UI_COVERAGE
     - 'cat report/target/site/jacoco-aggregate/index.html | grep -oP "Total[^%]*>\K\d+%{1}" | sed -e "s/^/Jacoco-Test-Coverage: /g"'
   coverage: '/Jacoco-Test-Coverage: (\d+.?\d*)%/'

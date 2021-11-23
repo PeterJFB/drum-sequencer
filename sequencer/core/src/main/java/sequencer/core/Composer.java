@@ -45,15 +45,15 @@ public class Composer {
    *
    * @return a new composer without audio files
    */
-  public static Composer createSilentComposer() {
-    return new Composer(false, true);
+  public static Composer createSilentComposer(TrackSerializationInterface newTrackSerializer) {
+    return new Composer(false, true, newTrackSerializer);
   }
 
   /**
    * Composer constructor. Use this in production.
    */
-  public Composer() {
-    this(true, false);
+  public Composer(TrackSerializationInterface newTrackSerializer) {
+    this(true, false, newTrackSerializer);
   }
 
   /**
@@ -64,14 +64,16 @@ public class Composer {
    *        If set to false, the composer will not stop when the window is closed
    * @param testMode If testMode is set to true, the AudioClips will not be loaded
    */
-  private Composer(boolean createDaemonTimer, boolean testMode) {
-    
+  private Composer(boolean createDaemonTimer, boolean testMode,
+      TrackSerializationInterface newTrackSerializer) {
+
     progress = 0;
     timer = new Timer(createDaemonTimer);
     playing = false;
     listeners = new ArrayList<>();
     currentTrack = new Track();
-    
+    trackSerializer = newTrackSerializer.copy();
+
     // Map instrumentsNames to audio files.
     instrumentAudioClips = new HashMap<>();
     try (BufferedReader instrumentReader = new BufferedReader(new InputStreamReader(
@@ -96,13 +98,6 @@ public class Composer {
       System.err.println("Could not close instrumentReader");
     }
 
-  }
-
-  /**
-   * Set Track Mapper for writing an reading tracks.
-   */
-  public void setTrackMapper(TrackSerializationInterface newTrackSerializer) {
-    trackSerializer = newTrackSerializer.copy();
   }
 
   /**

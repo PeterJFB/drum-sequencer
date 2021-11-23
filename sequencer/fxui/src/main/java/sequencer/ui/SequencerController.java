@@ -41,8 +41,7 @@ public class SequencerController {
 
   @FXML
   void initialize() {
-    composer = new Composer();
-    composer.setTrackMapper(new TrackMapper());
+    composer = new Composer(new TrackMapper());
     composer.addListener(progress -> {
       Platform.runLater(() -> addBorderToSixteenths(progress));
     });

@@ -185,3 +185,9 @@ There are several solutions to mitigate this, such as requiring authentication, 
 Track information contains no user-sensitive data (see examples of post-requests), which means our greatest concern is server load. A satisfying solution to this is to use IP-based rate limiting, which is implemented with [Bucket4j](https://github.com/MarcGiffing/bucket4j-spring-boot-starter#bucket4j_complete_properties). Our implementation can also easily be changed to be user-based, if this is something we wish to use later.
 
 IP-based limiting requires somewhere to store the IP-addresses and their respective [buckets](https://en.wikipedia.org/wiki/Token_bucket). There's no reason to store this long-term, though a high access time is crucial to maintain a high server performance. This is why we store it with in-memory cache, which is achieved with [caffeine](https://github.com/ben-manes/caffeine).
+
+## Sequence diagram
+
+Sequence diagram describing a possible interaction sequence between the actors, their devices and the server. This sequence of interactions is based on the first half of user story three, which you can find in [brukerhistorier.md](../../brukerhistorier.md).
+
+![Example use sequence diagram](diagrams/ExampleUse.png)

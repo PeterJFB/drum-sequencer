@@ -143,8 +143,8 @@ Track information contains no user-sensitive data (see examples of post-requests
 
 IP-based limiting requires somewhere to store the IP-addresses and their respective [buckets](https://en.wikipedia.org/wiki/Token_bucket). There's no reason to store this long-term, though a high access time is crucial to maintain a high server performance. This is why we store it with in-memory cache, which is achieved with [caffeine](https://github.com/ben-manes/caffeine).
 
-## Sequencial diagram
+## Sequence diagram
 
-Sequenctial diagram describing a possible interaction sequence between the actors, their devices and the server. This sequence of interactions is based on the first half of user story three, which you can find in [brukerhistorier.md](../../brukerhistorier.md).
+Sequence diagram describing a possible interaction sequence between the actors, their devices and the server. This sequence of interactions is based on the first half of user story three, which you can find in [brukerhistorier.md](../../brukerhistorier.md).
 
 ![Example use sequence diagram](diagrams/ExampleUse.png)

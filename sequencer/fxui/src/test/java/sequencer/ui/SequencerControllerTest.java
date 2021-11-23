@@ -42,7 +42,7 @@ public class SequencerControllerTest extends ApplicationTest {
   public void testToggleOfSixteenth() {
     // Running the test on 3 random sixteenths
     for (int i = 0; i < 3; i++) {
-      Random rand = new Random();
+      final Random rand = new Random();
       final int x = rand.nextInt(Composer.getTrackLength());
       final int y = rand.nextInt(SequencerController.NUMBER_OF_ROWS);
       final String id = "#" + String.valueOf(x) + "," + String.valueOf(y);
@@ -51,7 +51,7 @@ public class SequencerControllerTest extends ApplicationTest {
     }
 
     for (int j = 0; j < 3; j++) {
-      Random rand = new Random();
+      final Random rand = new Random();
       final int x = rand.nextInt(Composer.getTrackLength());
       final int y = rand.nextInt(SequencerController.NUMBER_OF_ROWS);
       final String id = "#" + String.valueOf(x) + "," + String.valueOf(y);
@@ -79,7 +79,7 @@ public class SequencerControllerTest extends ApplicationTest {
   @Test
   @DisplayName("Test the input (text) fields for track name and artist name")
   public void testTextFields() {
-    TextField trackNameField = lookup("#trackName").query();
+    final TextField trackNameField = lookup("#trackName").query();
     assertEquals("untitled", trackNameField.getText());
     trackNameField.setText("");
     assertEquals("", trackNameField.getText());
@@ -87,7 +87,7 @@ public class SequencerControllerTest extends ApplicationTest {
     clickOn(trackNameField).write(exampleTrackName);
     assertEquals(exampleTrackName, trackNameField.getText());
 
-    TextField artistNameField = lookup("#artistName").query();
+    final TextField artistNameField = lookup("#artistName").query();
     assertEquals("unknown", artistNameField.getText());
     artistNameField.setText("");
     assertEquals("", artistNameField.getText());
@@ -97,22 +97,22 @@ public class SequencerControllerTest extends ApplicationTest {
   }
 
   @Test
-  @DisplayName("Test if one can employ the same instrument more than once")
+  @DisplayName("Test that one cannot employ the same instrument more than once")
   public void testInstrumentUsageConstraint() {
-    final int amountOfChecks = 2; // The amount of checks must be greater than 1
-    if (SequencerController.NUMBER_OF_ROWS < amountOfChecks) {
+    final int amountOfInstrumentsToAdd = 2; // The amount of instruments must be greater than 1
+    if (SequencerController.NUMBER_OF_ROWS < amountOfInstrumentsToAdd) {
       return;
     }
 
     Set<String> chosenInstruments = new HashSet<>();
-    for (int i = 0; i < amountOfChecks; i++) {
+    for (int i = 0; i < amountOfInstrumentsToAdd; i++) {
       ChoiceBox<?> choiceBox = ((ChoiceBox<?>) lookup("#choiceBox" + String.valueOf(i)).query());
       chooseFirstOption(i);
       chosenInstruments.add(choiceBox.getValue().toString());
     }
     // Since chosenInstruments is a set, a size equal to the amount of checks must
     // verify that all the instruments added are unique
-    assertEquals(chosenInstruments.size(), amountOfChecks);
+    assertEquals(chosenInstruments.size(), amountOfInstrumentsToAdd);
   }
 
   @Test
@@ -129,16 +129,17 @@ public class SequencerControllerTest extends ApplicationTest {
       assertNull(lookup("#" + col + "," + String.valueOf(row)).query().getEffect(),
           "Expected the sixteenth to have been reset, in other words have an Effect of null");
     }
-    ChoiceBox<?> choiceBox = ((ChoiceBox<?>) lookup("#choiceBox" + String.valueOf(row)).query());
+    final ChoiceBox<?> choiceBox =
+        ((ChoiceBox<?>) lookup("#choiceBox" + String.valueOf(row)).query());
     assertEquals("", choiceBox.getValue().toString(),
         "Expected the ChoiceBox to have a value of an empty string");
   }
 
-  //@Test
-  //@DisplayName("Test if modal can be opened")
-  //public void testModalOpener() {
-  //  clickOn("#modalOpener");
-  //  assertTrue(window("TrackLoaderModal").isShowing());
-  //}
+  // @Test
+  // @DisplayName("Test if modal can be opened")
+  // public void testModalOpener() {
+  // clickOn("#modalOpener");
+  // assertTrue(window("TrackLoaderModal").isShowing());
+  // }
 
 }

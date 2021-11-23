@@ -10,7 +10,9 @@ actor "Jane Doe" as Jane
 John -> JohnPC: initialize
 loop 5
     John -> JohnPC: addInstrument
+    activate JohnPC
     JohnPC -> John:updateInstrumentAlternatives
+    deactivate JohnPC
 end
 group Create Track [until track is finished]
     John -> JohnPC: toggleSixteenth
@@ -18,6 +20,7 @@ end
 John -> JohnPC: editTrackName
 John -> JohnPC: editArtistName
 John -> JohnPC: saveTrack
+activate JohnPC
 
 
 JohnPC -> server: saveTrack
@@ -25,12 +28,15 @@ activate server
 server -> JohnPC: HTTP response: 201 Created
 deactivate server
 JohnPC -> John: displayStatusMsg
+deactivate JohnPC
 
 John -> Jane: "Check out track"
-Jane -> JanePC: initialize
 Jane -> JanePC: openTrackLoaderModal
+activate JanePC
 JanePC -> Jane: Modal Opened
-Jane -> JanePC: fetchAndDisplayTracks
+deactivate JanePC
+Jane -> JanePC: filterTracks
+activate JanePC
 
 JanePC -> server: fetchTracks
 activate server
@@ -38,6 +44,9 @@ server -> JanePC: Tracks in HTTP body
 deactivate server
 
 JanePC -> Jane: Show list of\n tracks matching search
+deactivate JanePC
 Jane -> JanePC: loadTrack
+activate JanePC
 JanePC -> Jane: updateElements
+deactivate JanePC
 @enduml

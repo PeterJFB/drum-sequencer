@@ -70,7 +70,7 @@ public class SequencerController {
   // The number of rows in the application, or in other words, the maximum number
   // of instruments that can be played simultaneously. This can be safely changed
   // according to one's needs.
-  private static final int NUMBER_OF_ROWS = 5;
+  protected static final int NUMBER_OF_ROWS = 5;
 
   @FXML
   private GridPane header;
@@ -151,7 +151,7 @@ public class SequencerController {
 
       // Creating the instrument ChoiceBox, and adding it to the sub panel:
       ChoiceBox<String> availableInstruments = new ChoiceBox<>();
-      availableInstruments.setId(String.valueOf(row));
+      availableInstruments.setId("choiceBox" + String.valueOf(row));
       availableInstruments.getStyleClass().add("availableInstruments");
       List<String> instrumentsNotUsed = composer.getAvailableInstruments().stream()
           .filter(instrument -> !composer.getInstrumentsInTrack().contains(instrument))
@@ -165,6 +165,7 @@ public class SequencerController {
       Rectangle resetRowBtn = new Rectangle(40, 40);
       final int rowArg = row;
       resetRowBtn.setOnMouseClicked((event) -> resetRow(rowArg));
+      resetRowBtn.setId("resetRowBtn" + row);
       resetRowBtn.getStyleClass().add("resetRowBtn");
       resetRowBtn.setFill(new ImagePattern(
           new Image(SequencerController.class.getResource("images/reset.png").toExternalForm())));

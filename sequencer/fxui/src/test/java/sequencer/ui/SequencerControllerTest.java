@@ -1,16 +1,20 @@
 package sequencer.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.effect.Effect;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,57 +26,120 @@ import sequencer.core.Composer;
  */
 public class SequencerControllerTest extends ApplicationTest {
 
-  private SequencerController controller;
-  private Parent root;
-
   /**
    * Will be called with {@code @Before} semantics, i. e. before each test method.
    */
   @Override
-  public void start(Stage stage) throws IOException {
-    FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("Sequencer.fxml"));
-    root = fxmlLoader.load();
-    controller = fxmlLoader.getController();
+  public void start(final Stage stage) throws IOException {
+    final FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("Sequencer.fxml"));
+    final Parent root = fxmlLoader.load();
     stage.setScene(new Scene(root));
     stage.show();
-  }
-
-  public Parent getRootNode() {
-    return root;
   }
 
   @Test
   @DisplayName("Test the toggle of sixteenths, both before and after choosing an instrument")
   public void testToggleOfSixteenth() {
-    // Running the test 5 times, on 5 random sixteenths
-    for (int i = 0; i < 5; i++) {
-      Random rand = new Random();
-      int x = rand.nextInt(Composer.getTrackLength());
-      int y = rand.nextInt(5); // 5 is the number of rows in the application
-      String id = "#" + String.valueOf(x) + "," + String.valueOf(y);
+    // Running the test on 3 random sixteenths
+    for (int i = 0; i < 3; i++) {
+      final Random rand = new Random();
+      final int x = rand.nextInt(Composer.getTrackLength());
+      final int y = rand.nextInt(SequencerController.NUMBER_OF_ROWS);
+      final String id = "#" + String.valueOf(x) + "," + String.valueOf(y);
       clickOn(id);
-      assertEquals(((Rectangle) getRootNode().lookup(id)).getEffect(), null);
+      assertNull(lookup(id).query().getEffect());
     }
+
+    for (int j = 0; j < 3; j++) {
+      final Random rand = new Random();
+      final int x = rand.nextInt(Composer.getTrackLength());
+      final int y = rand.nextInt(SequencerController.NUMBER_OF_ROWS);
+      final String id = "#" + String.valueOf(x) + "," + String.valueOf(y);
+      chooseFirstOption(y);
+      final Effect effectBeforeClick = lookup(id).query().getEffect();
+      clickOn(id);
+      assertNotEquals(lookup(id).query().getEffect(), effectBeforeClick,
+          "The sixteenth must be toggled when clicked on");
+    }
+  }
+
+  /**
+   * Choosing (clicking on) the first option in a ChoiceBox, in this case the first available
+   * instrument.
+   *
+   * @param row the row of the ChoicBox to choose from
+   */
+  private void chooseFirstOption(int row) {
+    // To click, type DOWN and then type ENTER is a way of choosing the first option
+    clickOn("#choiceBox" + String.valueOf(row));
+    type(KeyCode.DOWN);
+    type(KeyCode.ENTER);
   }
 
   @Test
   @DisplayName("Test the input (text) fields for track name and artist name")
   public void testTextFields() {
-    TextField trackNameField = (TextField) getRootNode().lookup("#trackName");
+    final TextField trackNameField = lookup("#trackName").query();
     assertEquals("untitled", trackNameField.getText());
     trackNameField.setText("");
     assertEquals("", trackNameField.getText());
-    String exampleTrackName = "my new track";
+    final String exampleTrackName = "my new track";
     clickOn(trackNameField).write(exampleTrackName);
     assertEquals(exampleTrackName, trackNameField.getText());
 
-    TextField artistNameField = (TextField) getRootNode().lookup("#artistName");
+    final TextField artistNameField = lookup("#artistName").query();
     assertEquals("unknown", artistNameField.getText());
     artistNameField.setText("");
     assertEquals("", artistNameField.getText());
-    String exampleArtistName = "John Doe";
+    final String exampleArtistName = "John Doe";
     clickOn(artistNameField).write(exampleArtistName);
     assertEquals(exampleArtistName, artistNameField.getText());
   }
+
+  @Test
+  @DisplayName("Test that one cannot employ the same instrument more than once")
+  public void testInstrumentUsageConstraint() {
+    final int amountOfInstrumentsToAdd = 2; // The amount of instruments must be greater than 1
+    if (SequencerController.NUMBER_OF_ROWS < amountOfInstrumentsToAdd) {
+      return;
+    }
+
+    Set<String> chosenInstruments = new HashSet<>();
+    for (int i = 0; i < amountOfInstrumentsToAdd; i++) {
+      ChoiceBox<?> choiceBox = ((ChoiceBox<?>) lookup("#choiceBox" + String.valueOf(i)).query());
+      chooseFirstOption(i);
+      chosenInstruments.add(choiceBox.getValue().toString());
+    }
+    // Since chosenInstruments is a set, a size equal to the amount of checks must
+    // verify that all the instruments added are unique
+    assertEquals(chosenInstruments.size(), amountOfInstrumentsToAdd);
+  }
+
+  @Test
+  @DisplayName("Test if resetPattern() does its intended job")
+  public void testResetPattern() {
+    final int row = 0; // The row we wish to test
+    chooseFirstOption(row);
+    // Creating a nice beat
+    for (int col = 0; col < Composer.getTrackLength(); col += 2) {
+      clickOn("#" + col + "," + String.valueOf(row));
+    }
+    clickOn("#resetRowBtn" + row);
+    for (int col = 0; col < Composer.getTrackLength(); col++) {
+      assertNull(lookup("#" + col + "," + String.valueOf(row)).query().getEffect(),
+          "Expected the sixteenth to have been reset, in other words have an Effect of null");
+    }
+    final ChoiceBox<?> choiceBox =
+        ((ChoiceBox<?>) lookup("#choiceBox" + String.valueOf(row)).query());
+    assertEquals("", choiceBox.getValue().toString(),
+        "Expected the ChoiceBox to have a value of an empty string");
+  }
+
+  // @Test
+  // @DisplayName("Test if modal can be opened")
+  // public void testModalOpener() {
+  // clickOn("#modalOpener");
+  // assertTrue(window("TrackLoaderModal").isShowing());
+  // }
 
 }

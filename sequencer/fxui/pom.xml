@@ -124,7 +124,7 @@
             <plugin>
                 <groupId>org.panteleyev</groupId>
                 <artifactId>jpackage-maven-plugin</artifactId>
-                <version>1.4.0</version>
+                <version>1.5.1</version>
                 <configuration>
                     <name>Sequencer</name>
                     <appVersion>1.0.0</appVersion>
@@ -135,6 +135,15 @@
                     <javaOptions>
                         <option>-Dfile.encoding=UTF-8</option>
                     </javaOptions>
+                    <!-- linux options --> 
+                    <linuxShortcut>true</linuxShortcut>
+                    <linuxMenuGroup>Sequencer</linuxMenuGroup>
+
+                    <!-- windows options --> 
+                    <winDirChooser>true</winDirChooser>
+                    <winShortcut>true</winShortcut>
+                    <winMenu>true</winMenu>
+                    <winMenuGroup>Sequencer</winMenuGroup>
                 </configuration>
             </plugin>
         </plugins>

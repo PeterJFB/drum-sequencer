@@ -35,7 +35,7 @@ public class Composer {
   // reflect this
   private int lastCheckedBpm;
 
-  private TrackSerializationInterface trackSerializer;
+  private TrackMapperInterface trackMapper;
 
   private Track currentTrack;
 
@@ -45,14 +45,14 @@ public class Composer {
    *
    * @return a new composer without audio files
    */
-  public static Composer createSilentComposer(TrackSerializationInterface newTrackSerializer) {
+  public static Composer createSilentComposer(TrackMapperInterface newTrackSerializer) {
     return new Composer(false, true, newTrackSerializer);
   }
 
   /**
    * Composer constructor. Use this in production.
    */
-  public Composer(TrackSerializationInterface newTrackSerializer) {
+  public Composer(TrackMapperInterface newTrackSerializer) {
     this(true, false, newTrackSerializer);
   }
 
@@ -65,14 +65,14 @@ public class Composer {
    * @param testMode If testMode is set to true, the AudioClips will not be loaded
    */
   private Composer(boolean createDaemonTimer, boolean testMode,
-      TrackSerializationInterface newTrackSerializer) {
+      TrackMapperInterface newTrackSerializer) {
 
     progress = 0;
     timer = new Timer(createDaemonTimer);
     playing = false;
     listeners = new ArrayList<>();
     currentTrack = new Track();
-    trackSerializer = newTrackSerializer.copy();
+    trackMapper = newTrackSerializer.copy();
 
     // Map instrumentsNames to audio files.
     instrumentAudioClips = new HashMap<>();
@@ -322,7 +322,7 @@ public class Composer {
    * @throws IOException if the writing fails
    */
   public void saveTrack(Writer writer) throws IOException {
-    trackSerializer.writeTrack(currentTrack.copy(), writer);
+    trackMapper.writeTrack(currentTrack.copy(), writer);
   }
 
   /**
@@ -334,7 +334,7 @@ public class Composer {
    */
   public boolean loadTrack(Reader reader) throws IOException {
     Track newTrack = null;
-    newTrack = trackSerializer.readTrack(reader);
+    newTrack = trackMapper.readTrack(reader);
 
     return setTrack(newTrack);
   }

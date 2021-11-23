@@ -3,7 +3,7 @@ package restserver;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import sequencer.core.TrackSerializationInterface;
+import sequencer.core.TrackMapperInterface;
 import sequencer.json.TrackMapper;
 import sequencer.persistence.PersistenceHandler;
 
@@ -19,7 +19,7 @@ public class SequencerServerConfiguration {
   }
 
   @Bean
-  public TrackSerializationInterface trackSerializer() {
+  public TrackMapperInterface trackSerializer() {
     return new TrackMapper();
   }
 

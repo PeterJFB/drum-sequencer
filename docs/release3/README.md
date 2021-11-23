@@ -26,7 +26,9 @@ Essential module responsible for rendering all graphics within the appli
 
 #### Client | *logic-layer* : core
 
-Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all important class-info can be serialized to a json-format through the `jackson` dependency.
+Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all important class-info can be serialized to a json-format through the `jackson` dependency. The two most essential classes in this module is the `Composer` and `Track`, which interact with eachother in the following way:
+
+![Core class diagram](./core-class-diagram.png)
 
 ---
 
@@ -52,6 +54,12 @@ Notice how **localpersistence** is now used by restapi instead of sequencer.json
 <div align="center">
 <img src="./client-and-server.svg" width=700></img>
 </div>
+
+---
+
+As mentioned in [the root README](../README.md#additional-configuration:-changing-storage-endpoint) one can choose between running the app wih local or remote storage. This is achieved by having an interface, `TrackAccessInterface`, for accessing stored tracks. Furthermore we have two classes implementing this interface; `RemoteTrackAccess` for remote storage through the api and `LocalTrackAccess` for local storage. With this structure one can easily switch between the two by just changing which implememntation the controllers use. This is decided based on an enviroment variable, that one can send in when starting the app through the command line (as described in the root README).
+
+![TrackAccess class diagram](./trackAccess-class-diagram.png)
 
 ## Spring Boot as a web service
 

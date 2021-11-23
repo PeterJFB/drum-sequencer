@@ -14,7 +14,9 @@ Essential module responsible for rendering all graphics within the appli
 
 #### Client | *logic-layer* : core
 
-Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all important class-info can be serialized to a json-format through the `jackson` dependency.
+Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all important class-info can be serialized to a json-format through the `jackson` dependency. The two most essential classes in this module is the `Composer` and `Track`, which interact with eachother in the following way:
+
+![Core class diagram](../docs/release3/core-class-diagram.png)
 
 ---
 

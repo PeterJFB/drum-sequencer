@@ -199,3 +199,8 @@ IP-based limiting requires somewhere to store the IP-addresses and their respect
 Sequence diagram describing a possible interaction sequence between the actors, their devices and the server. This sequence of interactions is based on the first half of user story three, which you can find in [brukerhistorier.md](../../brukerhistorier.md).
 
 ![Example use sequence diagram](diagrams/ExampleUse.png)
+
+
+## Adding search capabilities
+
+With this release we have implemented search capabilities. A user no longer has to scroll through a long list of tracks when loading a new track, but can instead search for tracks and only get a list of the tracks that match the given search query. The search query contains the artist name, the track name and the upload date for the track. With this new feature, we have also added a modal where all search related ui is located here. This modal opens when a user clicks the "Find a track" button, and closes when they've chosen a track to load.

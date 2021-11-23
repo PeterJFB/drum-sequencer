@@ -1,4 +1,4 @@
-package sequencer.ui;
+package sequencer.ui.utils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -22,12 +22,6 @@ public class LocalTrackAccess implements TrackAccessInterface {
         Composer.getSerializationFormat());
   }
 
-  /**
-   * Saves the track that the composer is currently holding.
-   *
-   * @param composer the composer holding the track you want to save
-   * @throws IOException if something went wrong while saving the track
-   */
   @Override
   public void saveTrack(Composer composer) throws IOException {
 
@@ -66,17 +60,17 @@ public class LocalTrackAccess implements TrackAccessInterface {
     } catch (IOException | UncheckedIOException e) {
       throw new IOException("Track failed to load", e);
     }
-
   }
 
   @Override
-  public List<TrackSearchResult> loadTracks(String trackName, String artistName)
+  public List<TrackSearchResult> fetchTracks(String trackName, String artistName, Long timestamp)
       throws IOException {
 
     trackName = trackName != null ? trackName : "";
     artistName = artistName != null ? artistName : "";
 
-    return persistenceHandler.listSavedFiles(trackName, artistName).stream()
+    return persistenceHandler.listSavedFiles(trackName, artistName, timestamp).stream()
         .map(TrackSearchResult::createFromFileMetaData).toList();
   }
+
 }

@@ -1,0 +1,101 @@
+
+#content {
+    -fx-pref-width: 1100px;
+    -fx-pref-height: 650px;
+    -fx-background-color: #313131;
+        background-color: #313131;
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+        border-radius: 15px;
+    -fx-border-width: 5px;
+        border-width: 5px;
+    -fx-border-color: #222;
+        border-color: #222;
+    -fx-font-size: 30px;
+        font-size: 30px;
+    -fx-effect: dropshadow(three-pass-box, rgba(25, 25, 25, 0.7), 32, 0, 0, 0);
+}
+
+#header {
+    -fx-background-color: inherit;
+        background-color: inherit;
+    -fx-backgorund-radius: 15px;
+}
+
+#title {
+    -fx-fill: white;
+        fill: white;
+    -fx-font-size: 40px;
+        font-size: 40px;
+}
+
+#modalCloser {
+    -fx-background-color: #1F1F1F;
+        background-color: #1F1F1F;
+    -fx-pref-width: 70px;
+    -fx-pref-height: 70px; 
+    -fx-background-radius: 50%;
+    -fx-cursor: hand;
+        cursor: hand;
+}
+
+#modalCloser:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(119, 57, 212, 0.7), 10, 0, 5, 4);
+}
+
+#modalCloser:pressed {
+    -fx-scale-y: 0.9;
+    -fx-scale-x: 0.9;
+}
+
+#searchBtn {
+    -fx-cursor: hand;
+        cursor: hand;
+    -fx-text-fill: white;
+    -fx-background-radius: 10px;
+    -fx-background-color: #7739D4;
+        background-color: #7739D4;
+}
+
+#infoText {
+    -fx-fill: white;
+        fill: white;
+    -fx-font-size: 20px;
+        font-size: 20px;
+}
+
+#savedTracksPanel {
+    -fx-background-color: #313131;
+        background-color: #313131;
+}
+
+#savedTracksScrollPane {
+    -fx-background: #313131;
+        background: #313131;
+    -fx-border-color: #313131;
+        border-color: #313131;
+}
+
+.trackOption {
+    -fx-cursor: hand;
+        cursor: hand;
+    -fx-alignment: center;
+    -fx-padding: 10px;
+        padding: 10px;
+    -fx-color: white;
+        color: white;
+    -fx-text-fill: white;
+    -fx-background-color: #545454;
+        background-color: #545454;
+    -fx-background-radius: 7px;
+}
+
+.trackOption:hover {
+    -fx-background-color: #424242;
+        background-color: #424242; 
+}
+
+.trackOption:pressed {
+    -fx-scale-y: 0.95;
+    -fx-scale-x: 0.95;
+}

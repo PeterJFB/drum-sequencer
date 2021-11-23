@@ -1,4 +1,4 @@
-package sequencer.ui;
+package sequencer.ui.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.BufferedReader;
@@ -16,6 +16,7 @@ import java.util.List;
 import sequencer.core.Composer;
 import sequencer.json.TrackMapper;
 import sequencer.json.TrackSearchResult;
+import sequencer.ui.SequencerController;
 
 /**
  * Implementation of {@link TrackAccessInterface} that saves/loads tracks from a remote api.
@@ -89,13 +90,6 @@ public class RemoteTrackAccess implements TrackAccessInterface {
     connection.disconnect();
   }
 
-  /**
-   * Loads the track with the given trackName to the composer.
-   *
-   * @param composer the composer you want to load the track to
-   * @param id the id of the track you want to load
-   * @throws IOException if something went wrong while loading the track
-   */
   @Override
   public void loadTrack(Composer composer, int id) throws IOException {
     final String path = String.format("/tracks/%d", id);
@@ -124,18 +118,13 @@ public class RemoteTrackAccess implements TrackAccessInterface {
     connection.disconnect();
   }
 
-  /**
-   * Loads saved tracks.
-   *
-   * @param trackName the trackName (or part of the name) you want the returned tracks to match
-   * @param artistName the artistName (or part of the name) you want the returned tracks to match
-   * @return a list of all maps where each map is a saved track that matches the given search quary
-   * @throws IOException if something went wrong while loading the tracks
-   */
   @Override
-  public List<TrackSearchResult> loadTracks(String trackName, String artistName)
+  public List<TrackSearchResult> fetchTracks(String trackName, String artistName, Long timestamp)
       throws IOException {
-    final String path = String.format("/tracks?name=%s&artist=%s", trackName, artistName);
+    final String path = "/tracks?" + (trackName != null ? "name=" + trackName : "")
+        + (artistName != null ? "&artist=" + artistName : "")
+        + (timestamp != null ? "&timestamp=" + timestamp : "");
+    
     final HttpURLConnection connection = prepareConnection(path, "GET");
 
     String responseString;
@@ -182,4 +171,5 @@ public class RemoteTrackAccess implements TrackAccessInterface {
     }
     return content.toString();
   }
+
 }

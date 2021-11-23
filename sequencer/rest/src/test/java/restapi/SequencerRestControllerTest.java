@@ -51,9 +51,13 @@ public class SequencerRestControllerTest extends AbstractUnitTest {
     // Convert response
     String response = result.getResponse().getContentAsString();
 
+    TrackSearchResult responseAsSearchResult =
+        mapper.readValue(response, new TypeReference<List<TrackSearchResult>>() {}).get(0);
+
     // TEST
-    assertTrue(isEqualSearchResults(testTrackSearchResult,
-        mapper.readValue(response, new TypeReference<List<TrackSearchResult>>() {}).get(0)));
+    assertTrue(isEqualSearchResults(testTrackSearchResult, responseAsSearchResult),
+        "The TrackSearchResult from response did not match: Expected %s, got %s"
+            .formatted(testTrackSearchResult, responseAsSearchResult));
 
 
   }

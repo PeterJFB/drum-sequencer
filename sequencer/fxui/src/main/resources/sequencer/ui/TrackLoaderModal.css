@@ -16,7 +16,7 @@
 }
 
 #content {
-    -fx-pref-width: 1100px;
+    -fx-pref-width: 1110px;
     -fx-pref-height: 650px;
     -fx-background-color: #313131;
         background-color: #313131;
@@ -58,7 +58,7 @@
 }
 
 #modalCloser:hover {
-    -fx-effect: dropshadow(three-pass-box, rgba(119, 57, 212, 0.7), 10, 0, 0, 0);
+    -fx-effect: dropshadow(three-pass-box, rgba(70, 70, 70, 0.7), 15, 0, 0, 0);
 }
 
 #modalCloser:pressed {
@@ -145,7 +145,6 @@
 .trackOption {
     -fx-cursor: hand;
         cursor: hand;
-    -fx-alignment: center;
     -fx-padding: 10px;
         padding: 10px;
     -fx-color: white;
@@ -153,12 +152,11 @@
     -fx-text-fill: white;
     -fx-background-color: #D9CFFE;
         background-color: #D9CFFE;
-    -fx-background-radius: 7px;
 }
 
 .trackOption > Text {
-    -fx-font-size: 25px;
-        font-size: 25px;
+    -fx-font-size: 23px;
+        font-size: 23px;
 }
 
 .trackOption:hover {

@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -15,6 +16,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sequencer.json.TrackSearchResult;
@@ -88,17 +91,24 @@ public class TrackLoaderModalController {
     }
 
     for (TrackSearchResult track : searchResult) {
-      HBox trackOption = new HBox(80);
-      trackOption.setMaxSize(savedTracksScrollPane.getPrefViewportWidth() - 10, 50);
+      final Text displayedTrackName = new Text(track.name());
+      displayedTrackName.setWrappingWidth(130);
+      final Text displayedArtistName = new Text(track.artist());
+      displayedArtistName.setWrappingWidth(130);
+      final String date = FileMetaData.getDay(track.timestamp()).format(formatter).toString();
+      final Text displayedTimestamp = new Text(date);
+
+      final Region region1 = new Region();
+      HBox.setHgrow(region1, Priority.ALWAYS);
+      final Region region2 = new Region();
+      HBox.setHgrow(region2, Priority.ALWAYS);
+
+      HBox trackOption =
+          new HBox(displayedTrackName, region1, displayedArtistName, region2, displayedTimestamp);
+      trackOption.setMaxWidth(savedTracksScrollPane.getPrefViewportWidth());
       trackOption.getStyleClass().add("trackOption");
       trackOption.setOnMousePressed(event -> loadTrack(event));
       trackOption.setId(String.valueOf(track.id()));
-
-      final Text displayedTrackName = new Text(track.name());
-      final Text displayedArtistName = new Text(track.artist());
-      final String date = FileMetaData.getDay(track.timestamp()).format(formatter).toString();
-      final Text displayedTimestamp = new Text(date);
-      trackOption.getChildren().addAll(displayedTrackName, displayedArtistName, displayedTimestamp);
 
       savedTracksPanel.getChildren().add(trackOption);
     }

@@ -64,7 +64,7 @@ public class SequencerControllerTest extends ApplicationTest {
   }
 
   /**
-   * Choosing (or clickin on) the first option in a ChoiceBox, in this case the first available
+   * Choosing (clicking on) the first option in a ChoiceBox, in this case the first available
    * instrument.
    *
    * @param row the row of the ChoicBox to choose from

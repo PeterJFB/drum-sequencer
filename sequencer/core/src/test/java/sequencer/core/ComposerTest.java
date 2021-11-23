@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import sequencer.json.TrackMapper;
 
 /**
  * Tests for the composer.
@@ -25,7 +26,7 @@ public class ComposerTest {
 
   @BeforeEach
   public void createComposer() {
-    composer = Composer.createSilentComposer();
+    composer = Composer.createSilentComposer(new TrackMapper());
   }
 
   @Test
@@ -123,7 +124,7 @@ public class ComposerTest {
 
     StringReader stringReader = new StringReader(stringWriter.toString());
 
-    Composer composer2 = Composer.createSilentComposer();
+    Composer composer2 = Composer.createSilentComposer(new TrackMapper());
     assertDoesNotThrow(() -> composer2.loadTrack(stringReader),
         "Did not expect saving to throw an exception");
     assertEquals("trackName", composer2.getTrackName(),

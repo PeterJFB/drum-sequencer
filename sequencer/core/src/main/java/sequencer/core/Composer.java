@@ -35,7 +35,7 @@ public class Composer {
   // reflect this
   private int lastCheckedBpm;
 
-  private TrackSerializationInterface trackSerializer;
+  private TrackMapperInterface trackMapper;
 
   private Track currentTrack;
 
@@ -45,15 +45,15 @@ public class Composer {
    *
    * @return a new composer without audio files
    */
-  public static Composer createSilentComposer() {
-    return new Composer(false, true);
+  public static Composer createSilentComposer(TrackMapperInterface newTrackMapper) {
+    return new Composer(false, true, newTrackMapper);
   }
 
   /**
    * Composer constructor. Use this in production.
    */
-  public Composer() {
-    this(true, false);
+  public Composer(TrackMapperInterface newTrackMapper) {
+    this(true, false, newTrackMapper);
   }
 
   /**
@@ -64,14 +64,16 @@ public class Composer {
    *        If set to false, the composer will not stop when the window is closed
    * @param testMode If testMode is set to true, the AudioClips will not be loaded
    */
-  private Composer(boolean createDaemonTimer, boolean testMode) {
-    
+  private Composer(boolean createDaemonTimer, boolean testMode,
+      TrackMapperInterface newTrackMapper) {
+
     progress = 0;
     timer = new Timer(createDaemonTimer);
     playing = false;
     listeners = new ArrayList<>();
     currentTrack = new Track();
-    
+    trackMapper = newTrackMapper.copy();
+
     // Map instrumentsNames to audio files.
     instrumentAudioClips = new HashMap<>();
     try (BufferedReader instrumentReader = new BufferedReader(new InputStreamReader(
@@ -96,13 +98,6 @@ public class Composer {
       System.err.println("Could not close instrumentReader");
     }
 
-  }
-
-  /**
-   * Set Track Mapper for writing an reading tracks.
-   */
-  public void setTrackMapper(TrackSerializationInterface newTrackSerializer) {
-    trackSerializer = newTrackSerializer.copy();
   }
 
   /**
@@ -327,7 +322,7 @@ public class Composer {
    * @throws IOException if the writing fails
    */
   public void saveTrack(Writer writer) throws IOException {
-    trackSerializer.writeTrack(currentTrack.copy(), writer);
+    trackMapper.writeTrack(currentTrack.copy(), writer);
   }
 
   /**
@@ -339,7 +334,7 @@ public class Composer {
    */
   public boolean loadTrack(Reader reader) throws IOException {
     Track newTrack = null;
-    newTrack = trackSerializer.readTrack(reader);
+    newTrack = trackMapper.readTrack(reader);
 
     return setTrack(newTrack);
   }

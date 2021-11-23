@@ -45,15 +45,15 @@ public class Composer {
    *
    * @return a new composer without audio files
    */
-  public static Composer createSilentComposer(TrackMapperInterface newTrackSerializer) {
-    return new Composer(false, true, newTrackSerializer);
+  public static Composer createSilentComposer(TrackMapperInterface newTrackMapper) {
+    return new Composer(false, true, newTrackMapper);
   }
 
   /**
    * Composer constructor. Use this in production.
    */
-  public Composer(TrackMapperInterface newTrackSerializer) {
-    this(true, false, newTrackSerializer);
+  public Composer(TrackMapperInterface newTrackMapper) {
+    this(true, false, newTrackMapper);
   }
 
   /**
@@ -65,14 +65,14 @@ public class Composer {
    * @param testMode If testMode is set to true, the AudioClips will not be loaded
    */
   private Composer(boolean createDaemonTimer, boolean testMode,
-      TrackMapperInterface newTrackSerializer) {
+      TrackMapperInterface newTrackMapper) {
 
     progress = 0;
     timer = new Timer(createDaemonTimer);
     playing = false;
     listeners = new ArrayList<>();
     currentTrack = new Track();
-    trackMapper = newTrackSerializer.copy();
+    trackMapper = newTrackMapper.copy();
 
     // Map instrumentsNames to audio files.
     instrumentAudioClips = new HashMap<>();

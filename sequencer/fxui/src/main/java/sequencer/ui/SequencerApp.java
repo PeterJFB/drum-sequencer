@@ -16,7 +16,7 @@ public class SequencerApp extends Application {
   public void start(Stage stage) throws Exception {
     Parent parent = FXMLLoader.load(getClass().getResource("Sequencer.fxml"));
     Scene scene = new Scene(parent);
-    scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+    scene.getStylesheets().add(getClass().getResource("Sequencer.css").toExternalForm());
     stage.setScene(scene);
     stage.setResizable(false);
     stage.setTitle("Drum Sequencer");

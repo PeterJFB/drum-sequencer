@@ -53,9 +53,6 @@ public class TrackLoaderModalController {
     this.sequencerController = sequencerController;
   }
 
-  @FXML
-  private GridPane modal;
-
   /**
    * Closing the modal.
    */

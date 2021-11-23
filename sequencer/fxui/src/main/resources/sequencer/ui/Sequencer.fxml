@@ -17,7 +17,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<Pane stylesheets="@style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sequencer.ui.SequencerController">
+<Pane stylesheets="@Sequencer.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sequencer.ui.SequencerController">
     
     <StackPane>
         
@@ -25,8 +25,8 @@
 
             <GridPane fx:id="header" alignment="TOP_CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"> 
                 
-                <StackPane GridPane.columnIndex="0">
-                    <ImageView fx:id="saveTrackBtn" onMouseClicked="#saveTrack">
+                <StackPane fx:id="saveTrackBtn" onMouseClicked="#saveTrack" GridPane.columnIndex="0">
+                    <ImageView>
                         <image>
                             <Image url="@images/save.png" />
                         </image>

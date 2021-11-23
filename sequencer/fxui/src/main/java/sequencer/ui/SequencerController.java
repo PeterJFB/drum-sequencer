@@ -8,6 +8,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
@@ -259,7 +260,7 @@ public class SequencerController {
     fl.setController(trackLoaderModalController);
     GridPane gridPane = fl.load();
     trackLoaderModal.getChildren().setAll(gridPane);
-    trackLoaderModal.setVisible(true);;
+    trackLoaderModal.setVisible(true);
     content.setEffect(new BoxBlur());
   }
 
@@ -387,10 +388,8 @@ public class SequencerController {
   private void saveTrack() {
     try {
       trackAccess.saveTrack(composer);
-
       // Track is successfully saved
       displayStatusMsg(composer.getTrackName() + " saved.", true);
-
     } catch (IllegalArgumentException e) {
       displayStatusMsg("Track name has an invalid format.", false);
     } catch (IOException e) {
@@ -405,7 +404,6 @@ public class SequencerController {
   private void toggleLoadBtn() {
     loadTrackBtn.setDisable(false);
   }
-
 
   /**
    * Fires when the text in the trackName TextField changes, and updates the track name for the
@@ -519,6 +517,7 @@ public class SequencerController {
     }
     ParallelTransition parallelTransition = new ParallelTransition();
     parallelTransition.getChildren().addAll(fadeTransition, translateTransition);
+    parallelTransition.setInterpolator(Interpolator.LINEAR);
     parallelTransition.play();
   }
 

@@ -33,12 +33,12 @@ Detachable module which is handling local storage of classes. The modu
 
 Below is a package diagram showing what dependecies each module has:
 
-![project overview as a diagram](./../docs/release3/package-diagram.png)
+![project overview as a diagram](./../docs/release3/diagrams/package-diagram.png)
 
 Notice how **localpersistence** is used by restapi instead of sequencer.json. These modules/packages are communicating with each other in a manner shown in the diagram below.
 
 <div align="center">
-<img src="./../docs/release3/client-and-server.svg" width=700></img>
+<img src="./../docs/release3/diagrams/client-and-server.svg" width=700></img>
 </div>
 
 ## File format for Tracks

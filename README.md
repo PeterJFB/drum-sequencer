@@ -82,7 +82,7 @@ After this, you will find the installer in `/fxui/target/dist`
 
 ## Additional configuration: Changing storage endpoint
 
-Our application is as of now designed to utilize a local server to store/share tracks made with the application. The url for this is by default `http://localhost:8080/api`. This value can be changed by declaring the environment varaible `SEQUENCER_ACCESS` with a different endpoint. There is additionally an option to run the application without running a sever, declared with `SEQUENCER_ACCESS=LOCAL`. Below are some examples of running the application with these varaibles:
+Our application is as of now designed to utilize a local server to store/share tracks made with the application. The url for this is by default `http://localhost:8080/api`. This value can be changed by declaring the environment variable `SEQUENCER_ACCESS` with a different endpoint. There is additionally an option to run the application without running a sever, declared with `SEQUENCER_ACCESS=LOCAL`. Below are some examples of running the application with these varaibles:
 
 ```bash
 $ SEQUENCER_ACCESS=http://216.58.211.14:8080/api mvn javafx:run -pl fxui # Run application with external server

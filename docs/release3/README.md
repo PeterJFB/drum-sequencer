@@ -28,7 +28,7 @@ Essential module responsible for rendering all graphics within the appli
 
 Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all important class-info can be serialized to a json-format through the `jackson` dependency. The two most essential classes in this module is the `Composer` and `Track`, which interact with eachother in the following way:
 
-![Core class diagram](./core-class-diagram.png)
+![Core class diagram](./diagrams/core-class-diagram.png)
 
 ---
 
@@ -48,18 +48,18 @@ This has introduced a new module, **rest**. It is responsible for running the RE
 This means the package-diagram has received additional changes. The old diagram is still applicable when using `LocalTrackAccess` as the access class, but we have added a second diagram below illustrating dependencies with `RemoteTrackAccess`, which is utilizing the **rest** module for storing tracks:
 
 
-![project overview as a diagram](./package-diagram.png)
+![project overview as a diagram](./diagrams/package-diagram.png)
 
 Notice how **localpersistence** is now used by restapi instead of sequencer.json, as it is the backend which is now storing objects. These modules/packages are communicating with each other in a manner shown in the diagram below.
 <div align="center">
-<img src="./client-and-server.svg" width=700></img>
+<img src="./diagrams/client-and-server.svg" width=700></img>
 </div>
 
 ---
 
-As mentioned in [the root README](../README.md#additional-configuration:-changing-storage-endpoint) one can choose between running the app wih local or remote storage. This is achieved by having an interface, `TrackAccessInterface`, for accessing stored tracks. Furthermore we have two classes implementing this interface; `RemoteTrackAccess` for remote storage through the api and `LocalTrackAccess` for local storage. With this structure one can easily switch between the two by just changing which implememntation the controllers use. This is decided based on an enviroment variable, that one can send in when starting the app through the command line (as described in the root README).
+As mentioned in [the root README](../README.md#additional-configuration:-changing-storage-endpoint) one can choose between running the app wih local or remote storage. This is achieved by having an interface, `TrackAccessInterface`, for accessing stored tracks. Furthermore we have two classes implementing this interface; `RemoteTrackAccess` for remote storage through the api and `LocalTrackAccess` for local storage. With this structure one can easily switch between the two by just changing which implementation the controllers use. This is decided based on an environment variable, that one can send in when starting the app through the command line (as described in the root README).
 
-![TrackAccess class diagram](./trackAccess-class-diagram.png)
+![TrackAccess class diagram](./diagrams/trackAccess-class-diagram.png)
 
 ## Spring Boot as a web service
 

@@ -57,7 +57,7 @@ Notice how **localpersistence** is now used by restapi instead of sequencer.json
 
 ---
 
-As mentioned in [the root README](../README.md#additional-configuration:-changing-storage-endpoint) one can choose between running the app wih local or remote storage. This is achieved by having an interface, `TrackAccessInterface`, for accessing stored tracks. Furthermore we have two classes implementing this interface; `RemoteTrackAccess` for remote storage through the api and `LocalTrackAccess` for local storage. With this structure one can easily switch between the two by just changing which implementation the controllers use. This is decided based on an environment variable, that one can send in when starting the app through the command line (as described in the root README).
+As mentioned in [the root README](../../README.md#additional-configuration-changing-storage-endpoint) one can choose between running the app wih local or remote storage. This is achieved by having an interface, `TrackAccessInterface`, for accessing stored tracks. Furthermore we have two classes implementing this interface; `RemoteTrackAccess` for remote storage through the api and `LocalTrackAccess` for local storage. With this structure one can easily switch between the two by just changing which implementation the controllers use. This is decided based on an environment variable, that one can send in when starting the app through the command line (as described in the root README).
 
 ![TrackAccess class diagram](./diagrams/trackAccess-class-diagram.png)
 

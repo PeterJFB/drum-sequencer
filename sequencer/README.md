@@ -14,7 +14,9 @@ Essential module responsible for rendering all graphics within the appli
 
 #### Client | *logic-layer* : core
 
-Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all important class-info can be serialized to a json-format through the `jackson` dependency.
+Detachable module which is handling all logic essential to the sequencer. Audio is currently played through `javafx-media`, and all important class-info can be serialized to a json-format through the `jackson` dependency. The two most essential classes in this module is the `Composer` and `Track`, which interact with eachother in the following way:
+
+![Core class diagram](../docs/release3/core-class-diagram.png)
 
 ---
 
@@ -31,12 +33,12 @@ Detachable module which is handling local storage of classes. The modu
 
 Below is a package diagram showing what dependecies each module has:
 
-![project overview as a diagram](./../docs/release3/package-diagram.png)
+![project overview as a diagram](./../docs/release3/diagrams/package-diagram.png)
 
 Notice how **localpersistence** is used by restapi instead of sequencer.json. These modules/packages are communicating with each other in a manner shown in the diagram below.
 
 <div align="center">
-<img src="./../docs/release3/client-and-server.svg" width=700></img>
+<img src="./../docs/release3/diagrams/client-and-server.svg" width=700></img>
 </div>
 
 ## File format for Tracks

@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class Track {
 
-  public static final int BPM = 128;
+  public static final float BPM = 128f;
   public static final int TRACK_LENGTH = 16;
 
   public static final int TRACK_NAME_LENGTH = 30;

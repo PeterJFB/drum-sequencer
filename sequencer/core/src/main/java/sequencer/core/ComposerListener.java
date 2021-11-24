@@ -1,13 +1,14 @@
 package sequencer.core;
 
 /**
- * Listener used by classes which want to keep track of the beat progression.
+ * Implemented by all classes who want to listen to the composer's progress, i.e. which sixteenth it
+ * is currently playing.
  */
 public interface ComposerListener {
   /**
    * The function to run when the composer progresses.
    *
-   * @param beatProgress the sixteenth currently being played (0 is the first)
+   * @param progress the index of the sixteenth currently being played
    */
-  public void run(int beatProgress);
+  public void run(int progress);
 }

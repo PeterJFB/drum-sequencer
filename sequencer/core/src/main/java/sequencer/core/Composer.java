@@ -18,26 +18,28 @@ import javafx.scene.media.AudioClip;
 import sequencer.json.TrackMapper;
 
 /**
- * The {@link Composer} class handles the playback of a given track, mutating the track and ensuring
- * each sound is played at the correct sixteenth beat.
+ * The {@link Composer} encapsulated a {@link Track}. It handles the playback of this track,
+ * mutating it and ensuring each sound is played at the correct sixteenth according to the track's
+ * pattern.
  */
 public class Composer {
 
+  private Track track;
+
   private int progress; // How many sixteenths of the measure has been played
-  private Timer timer;
+  private final Timer timer;
   private TimerTask progressBeatTask;
   private boolean playing;
-  private Collection<ComposerListener> listeners;
+  private final Collection<ComposerListener> listeners;
 
-  private Map<String, AudioClip> instrumentAudioClips;
+  private final Map<String, AudioClip> instrumentAudioClips;
 
-  // Used for detecting changes in BPM, and updating the timer to
-  // reflect this
-  private int lastCheckedBpm;
+  // Used for detecting changes in BPM, and updating the timer to reflect this
+  private float lastCheckedBpm;
 
-  private TrackMapperInterface trackMapper;
+  // Delegate for loading and storing tracks by serialization
+  private final TrackMapperInterface trackMapper;
 
-  private Track currentTrack;
 
   /**
    * Factory function that creates a composer that does not load audio files, nor stops the timer
@@ -71,7 +73,7 @@ public class Composer {
     timer = new Timer(createDaemonTimer);
     playing = false;
     listeners = new ArrayList<>();
-    currentTrack = new Track();
+    track = new Track();
     trackMapper = newTrackMapper.copy();
 
     // Map instrumentsNames to audio files.
@@ -81,7 +83,7 @@ public class Composer {
 
       String line;
       while ((line = instrumentReader.readLine()) != null) {
-        String[] instrument = line.split(",");
+        final String[] instrument = line.split(",");
         if (testMode) {
           // Don't load audio during testing. This is because audio is never played, and can't load
           // during CI
@@ -101,7 +103,7 @@ public class Composer {
   }
 
   /**
-   * Looks through avaliable audio clips and returns them.
+   * Looks through avaliable audio clips and returns their names.
    *
    * @return a {@link Collection} of the available instruments (each as a {@link String}) added to
    *         instrumentAudioClips
@@ -111,7 +113,7 @@ public class Composer {
   }
 
   /**
-   * Change what track the composer will use.
+   * Change the encapsulated track which the composer will use.
    *
    * @return true if the change was successful
    */
@@ -119,12 +121,12 @@ public class Composer {
     if (track == null) {
       return false;
     }
-    currentTrack = track;
+    this.track = track;
     return true;
   }
 
   /**
-   * Return if the composer is currently playing.
+   * Return true if the composer is currently playing.
    */
   public boolean isPlaying() {
     return playing;
@@ -132,7 +134,7 @@ public class Composer {
 
   /**
    * Sets up a scheduled timer task to fire progressBeat(), where the time between sixteenths is
-   * calculated in millisecondsBetweenSixteenths().
+   * calculated by millisecondsBetweenSixteenths().
    */
   public void start() {
     if (playing) {
@@ -159,7 +161,7 @@ public class Composer {
   }
 
   /**
-   * Calculates time in milliseconds between sixteenths when given the BPM.
+   * Calculates time in milliseconds between sixteenths with the given BPM.
    *
    * @param bpm the BPM to calculate from
    * @return int time in milliseconds between sixteenths
@@ -169,7 +171,7 @@ public class Composer {
   }
 
   /**
-   * Runs every sixteenth. Plays everything that is set for the current sixteenth
+   * Plays everything that is set for the current sixteenth. The method runs every sixteenth.
    */
   private void progressBeat() {
     // Restarts timer if BPM has changed
@@ -177,9 +179,8 @@ public class Composer {
       start();
       return;
     }
-    currentTrack.getInstrumentNames().stream()
-        .filter(instrument -> currentTrack.getPattern(instrument).get(progress))
-        .forEach(instrument -> {
+    track.getInstrumentNames().stream()
+        .filter(instrument -> track.getPattern(instrument).get(progress)).forEach(instrument -> {
           instrumentAudioClips.get(instrument).play();
         });
     progress++;
@@ -189,14 +190,14 @@ public class Composer {
   }
 
   /**
-   * Return int which sixteenth the composer will play next.
+   * Return which sixteenth the composer will play next.
    */
   public int getProgress() {
     return progress;
   }
 
   /**
-   * Add a listener that listens for when the beat progresses.
+   * Adds a listener that listens for when the beat progresses.
    *
    * @param listener the listener to be added
    */
@@ -205,7 +206,7 @@ public class Composer {
   }
 
   /**
-   * Remove a listener that listens for when the beat progresses.
+   * Removes a listener that listens for when the beat progresses.
    *
    * @param listener the listener to be removed
    */
@@ -215,96 +216,96 @@ public class Composer {
   }
 
   /**
-   * Returns the track lenght.
+   * Returns the track length.
    */
   public static int getTrackLength() {
     return Track.TRACK_LENGTH;
   }
 
   /**
-   * Sets the current track's name.
+   * Sets the track's name.
    *
    * @param trackName the new name
    */
   public void setTrackName(String trackName) {
-    currentTrack.setTrackName(trackName);
+    track.setTrackName(trackName);
   }
 
   /**
-   * Get the current track's name.
+   * Gets the track's name.
    */
   public String getTrackName() {
-    return currentTrack.getTrackName();
+    return track.getTrackName();
   }
 
   /**
-   * Set the artist name of the current track.
+   * Sets the artist name of the track.
    *
    * @param artistName the new artist name
    */
   public void setArtistName(String artistName) {
-    currentTrack.setArtistName(artistName);
+    track.setArtistName(artistName);
   }
 
   /**
-   * Returns the artist name of the current track.
+   * Gets the artist name of the track.
    */
   public String getArtistName() {
-    return currentTrack.getArtistName();
+    return track.getArtistName();
   }
 
   /**
-   * Returns a list of all instruments in the current track.
+   * Returns a list of all instruments in the track.
    */
   public List<String> getInstrumentsInTrack() {
-    return currentTrack.getInstrumentNames();
+    return track.getInstrumentNames();
   }
 
   /**
-   * Adds an instrument to the current track.
+   * Adds an instrument to the track.
    *
-   * @param instrument the instrument to add
+   * @param instrumentName the name of the instrument to add
    */
-  public void addInstrumentToTrack(String instrument) {
-    currentTrack.addInstrument(instrument);
+  public void addInstrumentToTrack(String instrumentName) {
+    track.addInstrument(instrumentName);
   }
 
   /**
-   * Adds an instrument to the current track with a given pattern.
+   * Adds an instrument to the track with a given pattern.
    *
-   * @param instrument the instrument to add
+   * @param instrumentName the name of the instrument to add
    * @param pattern the pattern of the instrument
    */
-  public void addInstrumentToTrack(String instrument, List<Boolean> pattern) {
-    currentTrack.addInstrument(instrument, pattern);
+  public void addInstrumentToTrack(String instrumentName, List<Boolean> pattern) {
+    track.addInstrument(instrumentName, pattern);
   }
 
   /**
-   * Removes an instrument from the current track.
+   * Removes an instrument from the track.
    *
-   * @param instrument The instrument to remove
+   * @param instrumentName the name of the instrument to remove
    */
-  public void removeInstrumentFromTrack(String instrument) {
-    currentTrack.removeInstrument(instrument);
+  public void removeInstrumentFromTrack(String instrumentName) {
+    track.removeInstrument(instrumentName);
   }
 
   /**
-   * Returns the pattern of the instrument in the current track.
+   * Returns the pattern of the instrument in the track.
    *
-   * @param instrument the instrument to get the pattern of
+   * @param instrumentName the name of the instrument to get the pattern of
    */
-  public List<Boolean> getTrackPattern(String instrument) {
-    return currentTrack.getPattern(instrument);
+  public List<Boolean> getTrackPattern(String instrumentName) {
+    return track.getPattern(instrumentName);
   }
 
   /**
-   * Toggles a sixteenth in the current track.
+   * Toggles a sixteenth in the track.
    *
-   * @param instrument the instrument that plays the sixteenth
-   * @param sixteenth the index of the sixteenth
+   * @param instrumentName the name of the instrument that plays the sixteenth
+   * @param sixteenthIndex the index of the sixteenth
    */
-  public void toggleTrackSixteenth(String instrument, int sixteenth) {
-    currentTrack.toggleSixteenth(instrument, sixteenth);
+  public void toggleTrackSixteenth(String instrumentName, int sixteenthIndex) {
+    track.toggleSixteenth(instrumentName, sixteenthIndex);
   }
 
   /**
@@ -316,17 +317,17 @@ public class Composer {
 
 
   /**
-   * Saves the current track.
+   * Uses the writer to save the track from the composer.
    *
    * @param writer the writer that writes the track
    * @throws IOException if the writing fails
    */
   public void saveTrack(Writer writer) throws IOException {
-    trackMapper.writeTrack(currentTrack.copy(), writer);
+    trackMapper.writeTrack(track.copy(), writer);
   }
 
   /**
-   * Loads a track.
+   * Uses the reader to load a new track into the composer.
    *
    * @param reader the reader of the track to load
    * @return true if the composer sucessfully changed to the new track

@@ -22,9 +22,9 @@ import sequencer.core.Track;
 public class TrackMapperTest {
 
   @Test
-  @DisplayName("TrackMapper should serialize name and artist when present")
+  @DisplayName("Test if TrackMapper serializes name and artist when present")
   public void testTrackMapperNameArtistString() {
-    Track track = new Track();
+    final Track track = new Track();
     track.setTrackName("placeholder-name");
     track.setArtistName("placeholder-artist");
 
@@ -33,15 +33,15 @@ public class TrackMapperTest {
   }
 
   @Test
-  @DisplayName("TrackMapper should serialize instruments when present")
+  @DisplayName("Test if TrackMapper serializes instruments when present")
   public void testTrackMapperInstrumentsString() {
-    Track track = new Track();
+    final Track track = new Track();
     track.addInstrument("kick");
 
-    StringBuilder kickPatternString = new StringBuilder();
+    final StringBuilder kickPatternString = new StringBuilder();
 
-    StringBuilder snarePatternString = new StringBuilder();
-    List<Boolean> snarePattern = new ArrayList<>();
+    final StringBuilder snarePatternString = new StringBuilder();
+    final List<Boolean> snarePattern = new ArrayList<>();
 
     for (int i = 0; i < Track.TRACK_LENGTH; i++) {
       kickPatternString.append(false + ",");
@@ -62,14 +62,14 @@ public class TrackMapperTest {
   }
 
   private void testTrackMapperWithExpectedOutputString(Track track, String expectedString) {
-    TrackMapper tm = new TrackMapper();
+    final TrackMapper trackMapper = new TrackMapper();
 
-    // Fetch track as a string
+    // Fetch track as a String
     String outputString = "";
     try (Writer writer = new StringWriter()) {
 
       Assertions.assertDoesNotThrow(() -> {
-        tm.writeTrack(track, writer);
+        trackMapper.writeTrack(track, writer);
       });
 
       outputString = writer.toString();
@@ -86,9 +86,11 @@ public class TrackMapperTest {
   }
 
   @Test
-  @DisplayName("TrackMapper should (de)serialize instances of Track without changig the object")
+  @DisplayName("""
+      Test if TrackMapper (de)serializes instances of the Track class without
+      changing the object""")
   public void testTrackMapperSerAndDesers() {
-    Track track;
+    final Track track;
 
     track = new Track();
     track.setArtistName("mr. Worldwide");
@@ -106,21 +108,27 @@ public class TrackMapperTest {
 
   }
 
+  /**
+   * Performs a serialization and deserializtion of the track, after which it tests if the track is
+   * the same as before.
+   *
+   * @param track the track to test
+   */
   private void testTrackMapperSerAndDeser(Track track) {
-    TrackMapper tm = new TrackMapper();
+    final TrackMapper trackMapper = new TrackMapper();
 
     Track newTrack = null;
     String serString = "";
 
     try (Writer writer = new StringWriter()) {
-      tm.writeTrack(track, writer);
+      trackMapper.writeTrack(track, writer);
       serString = writer.toString();
     } catch (IOException e) {
       fail("Test failed with an unexpected IOException: " + e.getMessage());
     }
 
     try (Reader reader = new StringReader(serString)) {
-      newTrack = tm.readTrack(reader);
+      newTrack = trackMapper.readTrack(reader);
     } catch (IOException e) {
       fail("Test failed with an unexpected IOException: " + e.getMessage());
     }
@@ -167,16 +175,16 @@ public class TrackMapperTest {
     }
 
     // Check if the instrument names are equal
-    List<String> instruments1 = track1.getInstrumentNames();
-    List<String> instruments2 = track2.getInstrumentNames();
+    final List<String> instruments1 = track1.getInstrumentNames();
+    final List<String> instruments2 = track2.getInstrumentNames();
     if (!instruments1.equals(instruments2)) {
       return false;
     }
 
     // Check if all the patterns for the instruments are equal
     for (String instrument : instruments1) {
-      List<Boolean> pattern1 = track1.getPattern(instrument);
-      List<Boolean> pattern2 = track2.getPattern(instrument);
+      final List<Boolean> pattern1 = track1.getPattern(instrument);
+      final List<Boolean> pattern2 = track2.getPattern(instrument);
       if (!pattern1.equals(pattern2)) {
         return false;
       }

@@ -5,16 +5,17 @@ import java.io.Reader;
 import java.io.Writer;
 
 /**
- * Interface for writing andd reading tracks.
+ * Interface for writing and reading tracks.
  */
 public interface TrackMapperInterface {
+
   /**
    * Returns the format of the track files.
    */
   public String getFormat();
 
   /**
-   * Reads a track from a reader.
+   * Reads a track from the reader.
    *
    * @param reader The reader to use
    * @return the track
@@ -23,7 +24,7 @@ public interface TrackMapperInterface {
   public Track readTrack(Reader reader) throws IOException;
 
   /**
-   * Writes a track to a writer.
+   * Writes the track to the writer.
    *
    * @param track The track to write
    * @param writer The writer to use

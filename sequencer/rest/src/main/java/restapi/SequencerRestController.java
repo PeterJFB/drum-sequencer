@@ -26,7 +26,7 @@ import sequencer.persistence.FilenameHandler;
 import sequencer.persistence.PersistenceHandler;
 
 /**
- * Controller for the /api/tracks endpoints in the REST-api.
+ * Controller for the /api/tracks endpoints in the REST API.
  */
 @RestController
 @Component

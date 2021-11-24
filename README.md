@@ -29,7 +29,7 @@ Begin by installing `Java 16` and `Maven 3.8.2` (both of which can be done with 
 
 Press the [Gitpod badge](#Group%20gr2101%20repository) at the top of this document to open a network-based IDE. This environment will automatically install all required libraries. Follow the next steps to run the application.
 
-### Step 1: Server with REST-API
+### Step 1: Server with REST API
 
 The project by default will always attempt to connect to the server, which is why it should always be started before running the application. Notice that this is not the case when running tests, as these will automatically start a server if necessary. If, for some reason, the server is running on a different device, or you want to run the project without a server, please see [changing storage endpoint](#additional-configuration-changing-storage-endpoint).
 
@@ -41,7 +41,7 @@ $ mvn install # Compile and build modules
 $ mvn -pl rest spring-boot:run # Start server
 ```
 
-Docs about our api are located in the [sequencer folder](./sequencer#rest-api).
+Docs about our API are located in the [sequencer folder](./sequencer#rest-api).
 
 ### Step 2:
 

@@ -57,19 +57,19 @@ Notice how **localpersistence** is now used by restapi instead of sequencer.json
 
 ---
 
-As mentioned in [the root README](../../README.md#additional-configuration-changing-storage-endpoint) one can choose between running the app wih local or remote storage. This is achieved by having an interface, `TrackAccessInterface`, for accessing stored tracks. Furthermore we have two classes implementing this interface; `RemoteTrackAccess` for remote storage through the api and `LocalTrackAccess` for local storage. With this structure one can easily switch between the two by just changing which implementation the controllers use. This is decided based on an environment variable, that one can send in when starting the app through the command line (as described in the root README).
+As mentioned in [the root README](../../README.md#additional-configuration-changing-storage-endpoint) one can choose between running the app wih local or remote storage. This is achieved by having an interface, `TrackAccessInterface`, for accessing stored tracks. Furthermore we have two classes implementing this interface; `RemoteTrackAccess` for remote storage through the API and `LocalTrackAccess` for local storage. With this structure one can easily switch between the two by just changing which implementation the controllers use. This is decided based on an environment variable, that one can send in when starting the app through the command line (as described in the root README).
 
 ![TrackAccess class diagram](./diagrams/trackAccess-class-diagram.png)
 
 ## Spring Boot as a web service
 
-We previously mentioned accessing storage through a REST-api. This has been achieved with [Spring](https://spring.io/), a popular [IoC](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring)-based framework to create such services.
+We previously mentioned accessing storage through a REST API. This has been achieved with [Spring](https://spring.io/), a popular [IoC](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring)-based framework to create such services.
 
 The framework itself uses similar programming concepts as [Jakarta](https://en.wikipedia.org/wiki/Jakarta_RESTful_Web_Services), i.e. creating independent services which can be injected and managed by a main application. Spring itself is packaged in an additional layer of logic to run the project as a web service, called [Spring Boot](https://spring.io/projects/spring-boot). This has allowed us to focus on writing the REST-logic of our application, while [Tomcat](http://tomcat.apache.org/) and other dependecies are configured to the expected standards. Spring boot also supports strong REST-enforcement with their preconfigured controllers, adding and additional layer of code quality checks when writing the application.
 
 ## REST API
 
-When creating the API, it became important to us to follow the REST standards employed in a real work setting. We have therefore read a few sources about how to best acheive a RESTful api:
+When creating the API, it became important to us to follow the REST standards employed in a real work setting. We have therefore read a few sources about how to best acheive a RESTful API:
 - [Red Hat, What is REST API?](https://www.redhat.com/en/topics/api/what-is-a-rest-api)
 - [Vinay Sahni, Best Practices for Designing a Pragmatic RESTful API](https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api#useful-post-responses)
 

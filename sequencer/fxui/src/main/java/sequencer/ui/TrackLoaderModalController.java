@@ -11,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -37,8 +39,8 @@ public class TrackLoaderModalController {
   }
 
   /**
-   * Setting the SequencerController. The modal uses this relation to display 
-   * status messages and update the sequencer UI when the track is loaded.
+   * Setting the SequencerController. The modal uses this relation to display status messages and
+   * update the sequencer UI when the track is loaded.
    *
    * @param controller the SequencerController
    */
@@ -143,6 +145,13 @@ public class TrackLoaderModalController {
       timestamp = null;
     }
     fetchAndDisplayTracks(trackName, artistName, timestamp);
+  }
+
+  @FXML
+  private void handleKeyPress(KeyEvent event) {
+    if (event.getCode().equals(KeyCode.ENTER)) {
+      filterTracks();
+    }
   }
 
 }

@@ -6,9 +6,10 @@ import sequencer.core.Track;
 
 /**
  * The {@code TrackModule} class contains a library of all custom serializers which
- * {@link TrackMapper} will use.
+ * {@link TrackMapper} and other mappers can utilize.
  */
 public class TrackModule extends SimpleModule {
+
   public static final String NAME = "TrackModule";
 
   /**
@@ -18,6 +19,5 @@ public class TrackModule extends SimpleModule {
     super(NAME, Version.unknownVersion());
     addSerializer(Track.class, new TrackSerializer());
     addDeserializer(Track.class, new TrackDeserializer());
-
   }
 }

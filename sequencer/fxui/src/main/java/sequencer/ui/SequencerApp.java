@@ -20,8 +20,7 @@ public class SequencerApp extends Application {
     stage.setScene(scene);
     stage.setResizable(false);
     stage.setTitle("Drum Sequencer");
-    stage.getIcons()
-        .add(new Image(getClass().getResource("images/sequencer.ico").toExternalForm()));
+    stage.getIcons().add(new Image(getClass().getResource("images/icon.ico").toExternalForm()));
     stage.show();
   }
 

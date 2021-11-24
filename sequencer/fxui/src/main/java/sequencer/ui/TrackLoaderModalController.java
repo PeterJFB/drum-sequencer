@@ -148,8 +148,8 @@ public class TrackLoaderModalController {
   }
 
   @FXML
-  private void handleKeyPress(KeyEvent evt) {
-    if (evt.getCode().equals(KeyCode.ENTER)) {
+  private void handleKeyPress(KeyEvent event) {
+    if (event.getCode().equals(KeyCode.ENTER)) {
       filterTracks();
     }
   }

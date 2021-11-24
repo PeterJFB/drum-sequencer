@@ -18,13 +18,13 @@
 
 
 <Pane stylesheets="@Sequencer.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sequencer.ui.SequencerController">
-    
+
     <StackPane>
-        
+
         <AnchorPane fx:id="content">
 
-            <GridPane fx:id="header" alignment="TOP_CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"> 
-                
+            <GridPane fx:id="header" alignment="TOP_CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+
                 <StackPane fx:id="saveTrackBtn" onMouseClicked="#saveTrack" GridPane.columnIndex="0">
                     <ImageView>
                         <image>
@@ -33,11 +33,11 @@
                     </ImageView>
                 </StackPane>
 
-                <Button fx:id="modalOpener" onAction="#openTrackLoaderModal" text="Find a track" GridPane.columnIndex="1" />    
+                <Button fx:id="modalOpener" onAction="#openTrackLoaderModal" text="Find a track" GridPane.columnIndex="1" />
 
                 <GridPane fx:id="trackNamePane" GridPane.columnIndex="2">
                     <Text fx:id="trackNameLabel" text="TRACK NAME" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
-                    <TextField fx:id="trackName" text="untitled" onTextChange="#editTrackName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                    <TextField fx:id="trackName" promptText="..." onTextChange="#editTrackName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                     <columnConstraints>
                         <ColumnConstraints hgrow="ALWAYS" />
                     </columnConstraints>
@@ -49,7 +49,7 @@
 
                 <GridPane fx:id="artistNamePane" GridPane.columnIndex="3">
                     <Text fx:id="artistNameLabel" text="ARTIST NAME" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
-                    <TextField fx:id="artistName" text="unknown" onTextChange="#editArtistName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                    <TextField fx:id="artistName" promptText="..." onTextChange="#editArtistName" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                     <columnConstraints>
                         <ColumnConstraints hgrow="ALWAYS" />
                     </columnConstraints>
@@ -58,7 +58,7 @@
                         <RowConstraints vgrow="ALWAYS" />
                     </rowConstraints>
                 </GridPane>
-                
+
                 <StackPane GridPane.columnIndex="4">
                     <ImageView fx:id="startStopBtn" onMouseClicked="#togglePlayingTrack">
                         <image>
@@ -79,22 +79,22 @@
                 </rowConstraints>
 
             </GridPane>
-            
+
             <Pane fx:id="instrumentsPanel" />
 
             <Pane fx:id="timeline" />
 
             <Pane fx:id="instrumentsPattern" />
- 
+
         </AnchorPane>
-        
+
         <GridPane fx:id="trackLoaderModal" visible="false" alignment="CENTER" StackPane.alignment="CENTER">
-        <columnConstraints>
-            <ColumnConstraints />
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints />
-        </rowConstraints>
+            <columnConstraints>
+                <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints />
+            </rowConstraints>
         </GridPane>
 
     </StackPane>

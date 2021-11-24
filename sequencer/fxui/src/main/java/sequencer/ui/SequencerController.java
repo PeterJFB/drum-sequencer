@@ -93,25 +93,25 @@ public class SequencerController {
   protected static final int NUMBER_OF_ROWS = 5;
 
   @FXML
-  private GridPane header;
+  GridPane header;
 
   @FXML
-  private Button loadTrackBtn;
+  Button loadTrackBtn;
 
   @FXML
-  private TextField trackName;
+  TextField trackName;
 
   @FXML
-  private TextField artistName;
+  TextField artistName;
 
   @FXML
-  private Pane instrumentsPanel;
+  Pane instrumentsPanel;
 
   @FXML
-  private Pane timeline;
+  Pane timeline;
 
   @FXML
-  private Pane instrumentsPattern;
+  Pane instrumentsPattern;
 
   // The colors used as the background for the clickable sixteenth-rectangles,
   // including both shades of the same color.
@@ -243,10 +243,10 @@ public class SequencerController {
   }
 
   @FXML
-  private GridPane trackLoaderModal;
+  GridPane trackLoaderModal;
 
   @FXML
-  private AnchorPane content;
+  AnchorPane content;
 
   /**
    * Opening the the modal used for loading a saved track.
@@ -446,13 +446,13 @@ public class SequencerController {
   }
 
   @FXML
-  private HBox statusMsg;
+  HBox statusMsg;
 
   @FXML
-  private ImageView statusMsgIcon;
+  ImageView statusMsgIcon;
 
   @FXML
-  private Text statusMsgText;
+  Text statusMsgText;
 
   private static final Image SUCCESS_ICON =
       new Image(SequencerController.class.getResource("images/checked.png").toExternalForm());

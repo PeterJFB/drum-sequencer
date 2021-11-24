@@ -7,14 +7,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -65,10 +63,10 @@ public class TrackLoaderModalController {
   }
 
   @FXML
-  private VBox savedTracksPanel;
+  VBox savedTracksPanel;
 
   @FXML
-  private ScrollPane savedTracksScrollPane;
+  ScrollPane savedTracksScrollPane;
 
   /**
    * Fetch and display the saved tracks. Fires on initialization.
@@ -90,21 +88,36 @@ public class TrackLoaderModalController {
       return;
     }
 
+    final Text trackNameLabel = new Text("Name");
+    trackNameLabel.setWrappingWidth(140);
+    final Text artistNameLabel = new Text("Artist");
+    artistNameLabel.setWrappingWidth(140);
+    final Text timestampLabel = new Text("Date");
+
+    final Region region1 = new Region();
+    HBox.setHgrow(region1, Priority.ALWAYS);
+    final Region region2 = new Region();
+    HBox.setHgrow(region2, Priority.ALWAYS);
+    final HBox labelBox =
+        new HBox(trackNameLabel, region1, artistNameLabel, region2, timestampLabel);
+    labelBox.setId("labelBox");
+    savedTracksPanel.getChildren().add(labelBox);
+
     for (TrackSearchResult track : searchResult) {
       final Text displayedTrackName = new Text(track.name());
-      displayedTrackName.setWrappingWidth(130);
+      displayedTrackName.setWrappingWidth(140);
       final Text displayedArtistName = new Text(track.artist());
-      displayedArtistName.setWrappingWidth(130);
+      displayedArtistName.setWrappingWidth(140);
       final String date = FileMetaData.getDay(track.timestamp()).format(formatter).toString();
       final Text displayedTimestamp = new Text(date);
 
-      final Region region1 = new Region();
-      HBox.setHgrow(region1, Priority.ALWAYS);
-      final Region region2 = new Region();
-      HBox.setHgrow(region2, Priority.ALWAYS);
+      final Region region3 = new Region();
+      HBox.setHgrow(region3, Priority.ALWAYS);
+      final Region region4 = new Region();
+      HBox.setHgrow(region4, Priority.ALWAYS);
 
-      HBox trackOption =
-          new HBox(displayedTrackName, region1, displayedArtistName, region2, displayedTimestamp);
+      final HBox trackOption =
+          new HBox(displayedTrackName, region3, displayedArtistName, region4, displayedTimestamp);
       trackOption.setMaxWidth(savedTracksScrollPane.getPrefViewportWidth());
       trackOption.getStyleClass().add("trackOption");
       trackOption.setOnMousePressed(event -> loadTrack(event));
@@ -138,13 +151,13 @@ public class TrackLoaderModalController {
 
 
   @FXML
-  private TextField trackNameField;
+  TextField trackNameField;
 
   @FXML
-  private TextField artistNameField;
+  TextField artistNameField;
 
   @FXML
-  private DatePicker timestampPicker;
+  DatePicker timestampPicker;
 
   @FXML
   private void filterTracks() {

@@ -88,7 +88,7 @@
  
         </AnchorPane>
         
-        <GridPane fx:id="modal" visible="false" alignment="CENTER" StackPane.alignment="CENTER">
+        <GridPane fx:id="trackLoaderModal" visible="false" alignment="CENTER" StackPane.alignment="CENTER">
         <columnConstraints>
             <ColumnConstraints />
         </columnConstraints>

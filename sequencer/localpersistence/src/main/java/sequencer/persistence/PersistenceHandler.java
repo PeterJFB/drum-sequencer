@@ -12,12 +12,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.Timestamp;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -232,8 +229,9 @@ public class PersistenceHandler {
     return listSavedFiles().stream()
         .filter(fileMetadata -> fileMetadata.title().toLowerCase().contains(title.toLowerCase()))
         .filter(fileMetadata -> fileMetadata.author().toLowerCase().contains(author.toLowerCase()))
-        .filter(fileMetadata -> timestamp == null
-            || fileMetadata.getDay().equals(FileMetaData.getDay(timestamp)))
+        .filter(fileMetadata -> {
+          return timestamp == null || fileMetadata.getDay().equals(FileMetaData.getDay(timestamp));
+        })
         .sorted().toList();
   }
 

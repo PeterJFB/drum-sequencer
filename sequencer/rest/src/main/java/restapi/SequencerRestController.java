@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Instant;
-import java.util.Collection;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,9 +25,8 @@ import sequencer.persistence.FileMetaData;
 import sequencer.persistence.FilenameHandler;
 import sequencer.persistence.PersistenceHandler;
 
-
 /**
- * Controller for the track endpoints in the REST-api.
+ * Controller for the /api/tracks endpoints in the REST-api.
  */
 @RestController
 @Component
@@ -39,10 +38,10 @@ public class SequencerRestController {
   private ObjectMapper objectMapper;
 
   /**
-   * Returns a collection of all tracks.
+   * Returns a {@link List} of all tracks.
    */
   @GetMapping(value = "/api/tracks", produces = MediaType.APPLICATION_JSON_VALUE)
-  public Collection<TrackSearchResult> getTracks(@RequestParam(required = false) String name,
+  public List<TrackSearchResult> getTracks(@RequestParam(required = false) String name,
       @RequestParam(required = false) String artist,
       @RequestParam(required = false) Long timestamp) {
 
@@ -54,20 +53,22 @@ public class SequencerRestController {
   }
 
   /**
-   * Returns a track as a json-object.
+   * Returns a track as a JSON-object.
    *
    * @param id the id of the track to load
    */
   @GetMapping(value = "/api/tracks/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getTrack(@PathVariable int id) {
-    StringBuilder stringBuilder = new StringBuilder();
+
+    final StringBuilder responseBuilder = new StringBuilder();
+
+    // Attempt to load contents of file into responseBuilder
     try {
       persistenceHandler.readFromFileWithId(id, reader -> {
         try {
-          int intValueOfChar = reader.read();
-          while (intValueOfChar != -1) {
-            stringBuilder.append((char) intValueOfChar);
-            intValueOfChar = reader.read();
+          int intValueOfChar;
+          while ((intValueOfChar = reader.read()) != -1) {
+            responseBuilder.append((char) intValueOfChar);
           }
         } catch (IOException exception) {
           throw new UncheckedIOException(exception);
@@ -75,17 +76,20 @@ public class SequencerRestController {
       });
     } catch (FileNotFoundException e) {
       e.printStackTrace();
-      return new ResponseEntity<>("Track not found", HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>("{ message: \"Track not found\" }", HttpStatus.NOT_FOUND);
 
     } catch (IOException e) {
       e.printStackTrace();
-      return new ResponseEntity<>("Failed to find track", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>("{ message: \"Failed to find track\" }",
+          HttpStatus.INTERNAL_SERVER_ERROR);
 
     } catch (UncheckedIOException e) {
       e.printStackTrace();
-      return new ResponseEntity<>("Track failed to load", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>("{ message: \"Track failed to load\" }",
+          HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    return new ResponseEntity<>(stringBuilder.toString(), HttpStatus.OK);
+    // Load was successful
+    return new ResponseEntity<>(responseBuilder.toString(), HttpStatus.OK);
   }
 
   /**
@@ -98,7 +102,9 @@ public class SequencerRestController {
   public ResponseEntity<String> postTrack(@RequestBody String trackAsJson) {
     String responseBody = "";
     int newId = -1;
+
     try {
+      // Attempt to deserialize track and ensure required fields are present
       Track track = objectMapper.readValue(trackAsJson, Track.class);
       if (track.getTrackName() == null || track.getTrackName().isBlank()
           || track.getArtistName() == null || track.getArtistName().isBlank()) {
@@ -112,9 +118,11 @@ public class SequencerRestController {
           });
       newId = maxId + 1;
 
+      // Create and write to a new file with the unique id
       final String filename = FilenameHandler.generateFilenameFromMetaData(new FileMetaData(newId,
           track.getTrackName(), track.getArtistName(), Instant.now().toEpochMilli()));
       final String content = objectMapper.writeValueAsString(track);
+
       persistenceHandler.writeToFile(filename, writer -> {
         try {
           writer.write(content);
@@ -124,7 +132,10 @@ public class SequencerRestController {
         }
 
       });
+
+      // Ensure response also gets the written content, as per REST-standards
       responseBody = content;
+
     } catch (IOException e) {
       e.printStackTrace();
       return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -133,9 +144,11 @@ public class SequencerRestController {
       return new ResponseEntity<>(responseBody, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    HttpHeaders headers = new HttpHeaders();
+    // Attach id of the new file to the response, as per REST-standards
+    final HttpHeaders headers = new HttpHeaders();
     headers.add("Location",
         ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + newId).toUriString());
+
     return new ResponseEntity<>(responseBody, headers, HttpStatus.CREATED);
   }
 }

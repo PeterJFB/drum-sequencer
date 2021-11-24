@@ -1,8 +1,8 @@
 package sequencer.persistence;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 /**
  * Record for metadata of track object. Mainly used for search results
@@ -10,19 +10,11 @@ import java.util.Date;
 public record FileMetaData(int id, String title, String author, long timestamp)
     implements Comparable<FileMetaData> {
 
-  protected static Instant getInstant(long timestamp) {
-    return new Date(timestamp).toInstant();
+  public static LocalDate getDay(Long timestamp) {
+    return Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate();
   }
 
-  protected Instant getInstant() {
-    return getInstant(timestamp);
-  }
-
-  protected static Instant getDay(long timestamp) {
-    return getInstant(timestamp).truncatedTo(ChronoUnit.DAYS);
-  }
-
-  protected Instant getDay() {
+  public LocalDate getDay() {
     return getDay(timestamp);
   }
 
@@ -47,12 +39,7 @@ public record FileMetaData(int id, String title, String author, long timestamp)
       return author.compareTo(other.author);
     }
 
-    // When all above fields match, we ensure the track posted most recent on the same day is first
-    if (!getInstant().equals(other.getInstant())) {
-      return getInstant().compareTo(other.getInstant());
-    }
-
-
-    return 0;
+    // If all other fields match, we ensure that the most recently posted track comes first
+    return Instant.ofEpochMilli(other.timestamp).compareTo(Instant.ofEpochMilli(timestamp));
   }
 }

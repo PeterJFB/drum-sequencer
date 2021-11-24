@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -113,7 +113,7 @@ public class SequencerRestController {
       newId = maxId + 1;
 
       final String filename = FilenameHandler.generateFilenameFromMetaData(new FileMetaData(newId,
-          track.getTrackName(), track.getArtistName(), new Date().getTime()));
+          track.getTrackName(), track.getArtistName(), Instant.now().toEpochMilli()));
       final String content = objectMapper.writeValueAsString(track);
       persistenceHandler.writeToFile(filename, writer -> {
         try {

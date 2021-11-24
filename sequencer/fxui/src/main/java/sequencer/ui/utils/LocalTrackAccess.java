@@ -2,7 +2,7 @@ package sequencer.ui.utils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import sequencer.core.Composer;
 import sequencer.json.TrackSearchResult;
@@ -31,7 +31,7 @@ public class LocalTrackAccess implements TrackAccessInterface {
         }) + 1;
 
     final String filename = FilenameHandler.generateFilenameFromMetaData(new FileMetaData(newId,
-        composer.getTrackName(), composer.getArtistName(), new Date().getTime()));
+        composer.getTrackName(), composer.getArtistName(), Instant.now().toEpochMilli()));
 
     try {
       persistenceHandler.writeToFile(filename, (writer) -> {

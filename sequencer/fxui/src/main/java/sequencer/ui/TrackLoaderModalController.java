@@ -1,11 +1,10 @@
 package sequencer.ui;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
@@ -19,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sequencer.json.TrackSearchResult;
+import sequencer.persistence.FileMetaData;
 import sequencer.ui.utils.RemoteTrackAccess;
 import sequencer.ui.utils.TrackAccessInterface;
 
@@ -30,7 +30,7 @@ public class TrackLoaderModalController {
   private SequencerController sequencerController;
   private TrackAccessInterface trackAccess;
 
-  private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
   @FXML
   void initialize() {
@@ -94,8 +94,8 @@ public class TrackLoaderModalController {
 
       final Text displayedTrackName = new Text(track.name());
       final Text displayedArtistName = new Text(track.artist());
-      final String formattedTimestamp = dateFormatter.format(new Date(track.timestamp()));
-      final Text displayedTimestamp = new Text(formattedTimestamp);
+      final String date = FileMetaData.getDay(track.timestamp()).format(formatter).toString();
+      final Text displayedTimestamp = new Text(date);
       trackOption.getChildren().addAll(displayedTrackName, displayedArtistName, displayedTimestamp);
 
       savedTracksPanel.getChildren().add(trackOption);
@@ -140,7 +140,7 @@ public class TrackLoaderModalController {
     if (timestampPicker.getValue() != null) {
       LocalDate localDate = timestampPicker.getValue();
       Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
-      timestamp = Date.from(instant).getTime();
+      timestamp = instant.toEpochMilli();
     } else {
       timestamp = null;
     }

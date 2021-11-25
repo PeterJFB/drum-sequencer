@@ -25,13 +25,11 @@ public abstract class AbstractIntegrationTest {
   @Autowired
   PersistenceHandler persistenceHandler;
 
-  // Create test values which can be used to get consistent tests.
-  protected final String testFilename = "test-filename-test";
-
+  // Test values which can be used to get consistent tests
   protected static final String testTitle = "Moby Dick";
+  protected static final String testAuthor = "Herman Melville";
   protected static final int testId = 1;
   protected static final int fileNotFoundId = -1;
-  protected static final String testAuthor = "Herman Melville";
   protected static final long timeStamp = 0;
 
   protected final FileMetaData testFileMetaData =
@@ -40,7 +38,6 @@ public abstract class AbstractIntegrationTest {
       new TrackSearchResult(testId, testTitle, testAuthor, timeStamp);
 
   protected final String testContent = "[\"mocked\"]";
-
   protected final StringReader testContentReader = new StringReader(testContent);
   protected final StringWriter testContentWriter = new StringWriter();
 
@@ -50,29 +47,28 @@ public abstract class AbstractIntegrationTest {
   }
 
   protected static final Track testTrackAllContent() {
-    Track testTrack = new Track();
+    final Track testTrack = new Track();
     testTrack.setTrackName(testTitle);
     testTrack.setArtistName(testAuthor);
     testTrack.addInstrument("snare");
     testTrack.toggleSixteenth("snare", 0);
-    testTrack.toggleSixteenth("snare", 8);
     return testTrack;
   }
 
   protected static final Track testTrackWithoutName() {
-    Track testTrack = testTrackAllContent().copy();
+    final Track testTrack = testTrackAllContent().copy();
     testTrack.setTrackName("");
     return testTrack;
   }
 
   protected static final Track testTrackWithoutArtist() {
-    Track testTrack = testTrackAllContent().copy();
+    final Track testTrack = testTrackAllContent().copy();
     testTrack.setArtistName("");
     return testTrack;
   }
 
   protected static final Track testTrackNullArtist() {
-    Track testTrack = testTrackNoContent().copy();
+    final Track testTrack = testTrackNoContent().copy();
     testTrack.setTrackName(testTitle);
     return testTrack;
   }
@@ -112,16 +108,16 @@ public abstract class AbstractIntegrationTest {
     }
 
     // Check if the instrument names are equal
-    List<String> instruments1 = track1.getInstrumentNames();
-    List<String> instruments2 = track2.getInstrumentNames();
+    final List<String> instruments1 = track1.getInstrumentNames();
+    final List<String> instruments2 = track2.getInstrumentNames();
     if (!instruments1.equals(instruments2)) {
       return false;
     }
 
     // Check if all the patterns for the instruments are equal
     for (String instrument : instruments1) {
-      List<Boolean> pattern1 = track1.getPattern(instrument);
-      List<Boolean> pattern2 = track2.getPattern(instrument);
+      final List<Boolean> pattern1 = track1.getPattern(instrument);
+      final List<Boolean> pattern2 = track2.getPattern(instrument);
       if (!pattern1.equals(pattern2)) {
         return false;
       }

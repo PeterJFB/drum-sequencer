@@ -29,26 +29,25 @@ import sequencer.persistence.PersistenceHandler;
 @TestPropertySource(locations = {"classpath:test.properties"})
 abstract class AbstractUnitTest {
 
-  // A mocked persistencehandler, as the unit tests are directed at components within this module.
+  // A mocked persistencehandler, as the unit tests are directed at a single component within this
+  // module.
   @MockBean
   PersistenceHandler persistenceHandler;
 
-  // Create test values which can be used to get consistent tests.
-  protected final String testFilename = "test-filename-test";
+  // Test values which can be used to get consistent tests
+  protected static final String testTitle = "Moby Dick";
+  protected static final String testAuthor = "Herman Melville";
+  protected static final int testId = 1;
+  protected static final int fileNotFoundId = -1;
+  protected static final int errorId = -2;
+  protected static final long timeStamp = 0;
 
-  protected final String testTitle = "Moby Dick";
-  protected final int testId = 1;
-  protected final int fileNotFoundId = -1;
-  protected final int errorId = -2;
-  protected final String testAuthor = "Herman Melville";
-  protected final long timeStamp = 0;
-
-  protected final FileMetaData testFileMetaData =
+  protected static final FileMetaData testFileMetaData =
       new FileMetaData(testId, testTitle, testAuthor, timeStamp);
-  protected final TrackSearchResult testTrackSearchResult =
+  protected static final TrackSearchResult testTrackSearchResult =
       new TrackSearchResult(testId, testTitle, testAuthor, timeStamp);
-  protected final String testContent = "[\"mocked\"]";
 
+  protected static final String testContent = "[\"mocked\"]";
   protected final StringReader testContentReader = new StringReader(testContent);
   protected final StringWriter testContentWriter = new StringWriter();
 
@@ -68,7 +67,6 @@ abstract class AbstractUnitTest {
     if (!tsr1.artist().equals(tsr2.artist())) {
       return false;
     }
-
     return true;
   }
 
@@ -87,29 +85,30 @@ abstract class AbstractUnitTest {
     // Mock reader. Read contents from a StringReader which can be verified later.
     doAnswer(invocation -> {
 
-      int id = invocation.getArgument(0);
-      Consumer<Reader> c = invocation.getArgument(1);
+      final int id = invocation.getArgument(0);
+      final Consumer<Reader> consumer = invocation.getArgument(1);
 
       if (id == fileNotFoundId) {
-        throw new FileNotFoundException();
+        throw new FileNotFoundException("MOCKED TEST EXCEPTION, THIS CAN BE IGNORED");
       }
 
       if (id == errorId) {
-        throw new UncheckedIOException(new IOException());
+        throw new UncheckedIOException(
+            new IOException("MOCKED TEST EXCEPTION, THIS CAN BE IGNORED"));
       }
 
-      c.accept(testContentReader);
+      consumer.accept(testContentReader);
 
       return null;
 
     }).when(persistenceHandler).readFromFileWithId(Mockito.anyInt(),
         ArgumentMatchers.<Consumer<Reader>>any());
 
-    // Mock writer. Write contents to a StringWrtier which can be verified later.
+    // Mock writer. Write contents to a StringWriter which can be verified later.
     doAnswer(invocation -> {
 
-      Consumer<Writer> c = invocation.getArgument(1);
-      c.accept(testContentWriter);
+      final Consumer<Writer> consumer = invocation.getArgument(1);
+      consumer.accept(testContentWriter);
 
       return null;
 

@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import restserver.SequencerServerApplication;
 import sequencer.json.TrackSearchResult;
 
-
 /**
  * Unit test of {@link SequencerRestController}.
  */
@@ -36,10 +35,10 @@ public class SequencerRestControllerTest extends AbstractUnitTest {
   @Autowired
   MockMvc mvc;
 
-  ObjectMapper mapper = new ObjectMapper();
+  final ObjectMapper mapper = new ObjectMapper();
 
   @Test
-  @DisplayName("/api/tracks should respond with all available tracks")
+  @DisplayName("Test if /api/tracks responds with all available tracks")
   public void testGetTracks() throws Exception {
 
     // SETUP
@@ -59,11 +58,10 @@ public class SequencerRestControllerTest extends AbstractUnitTest {
         "The TrackSearchResult from response did not match: Expected %s, got %s"
             .formatted(testTrackSearchResult, responseAsSearchResult));
 
-
   }
 
   @Test
-  @DisplayName("/api/tracks/{id} should respond with the given track")
+  @DisplayName("Test if /api/tracks/{id} responds with the specified track")
   public void testGetTrackById() throws Exception {
     final String uri = "/api/tracks/";
 
@@ -82,6 +80,6 @@ public class SequencerRestControllerTest extends AbstractUnitTest {
     mvc.perform(get(uri + errorId).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isInternalServerError());
 
-
   }
+
 }

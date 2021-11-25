@@ -6,7 +6,7 @@ import sequencer.persistence.PersistenceHandler;
 
 /**
  * Rest server configuration, including all IoC-containers. Some paths are changed as to ensure
- * local files are not overwritten.
+ * local files are not overwritten during testing.
  */
 @TestConfiguration
 public class IntegrationTestConfiguration {

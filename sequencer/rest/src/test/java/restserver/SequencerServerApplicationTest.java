@@ -25,9 +25,10 @@ import org.springframework.http.ResponseEntity;
 import restapi.SequencerRestController;
 import sequencer.core.Track;
 import sequencer.json.TrackSearchResult;
+import sequencer.persistence.PersistenceHandler;
 
 /**
- * Integration test of {@link SequencerServerApplication}.
+ * Integration test with {@link SequencerServerApplication} and {@link PersistenceHandler}.
  */
 @SpringBootTest(classes = {SequencerServerApplication.class, SequencerRestController.class},
     webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -52,6 +53,7 @@ public class SequencerServerApplicationTest extends AbstractIntegrationTest {
   }
 
   @Test
+  @DisplayName("Test if controller/server initialized successfully")
   public void contextLoads() throws Exception {
     assertNotNull(controller);
   }
@@ -79,7 +81,7 @@ public class SequencerServerApplicationTest extends AbstractIntegrationTest {
    */
   @ParameterizedTest
   @MethodSource
-  @DisplayName("posting to /api/tracks should return expected response")
+  @DisplayName("Test if posting to /api/tracks returns expected response")
   public void postTrackTests(Track track, HttpStatus expectedStatus) throws IOException {
     ResponseEntity<String> response = postTrack(track, expectedStatus);
 
@@ -103,7 +105,7 @@ public class SequencerServerApplicationTest extends AbstractIntegrationTest {
   }
 
   @Test
-  @DisplayName("/api/tracks with name and artists params should return a filtered list")
+  @DisplayName("Test if /api/tracks with name and artists params returns a filtered list")
   public void testGetListOfTracks() throws IOException {
     final String uri = "/api/tracks";
 
@@ -115,33 +117,33 @@ public class SequencerServerApplicationTest extends AbstractIntegrationTest {
     assertEquals(0, emptyResult.size());
 
     // Populate
-    Track testTrackAllContentVariant = testTrackAllContent().copy();
+    final Track testTrackAllContentVariant = testTrackAllContent().copy();
     testTrackAllContentVariant.setArtistName("George Orwell");
     postTrackTests(testTrackAllContent(), HttpStatus.CREATED);
     postTrackTests(testTrackAllContentVariant, HttpStatus.CREATED);
 
     // Check population was sucessful with /tracks
-    ResponseEntity<String> popResponse = controller.getForEntity(uri, String.class);
-    List<TrackSearchResult> popResults = objectMapper.readValue(popResponse.getBody(),
+    final ResponseEntity<String> popResponse = controller.getForEntity(uri, String.class);
+    final List<TrackSearchResult> popResults = objectMapper.readValue(popResponse.getBody(),
         new TypeReference<List<TrackSearchResult>>() {});
     assertEquals(2, popResults.size());
 
     // Check filtering of tracks
-    ResponseEntity<String> singleResponse =
+    final ResponseEntity<String> singleResponse =
         controller.getForEntity(uri + "?artist=" + testAuthor, String.class);
-    List<TrackSearchResult> singleResult = objectMapper.readValue(singleResponse.getBody(),
+    final List<TrackSearchResult> singleResult = objectMapper.readValue(singleResponse.getBody(),
         new TypeReference<List<TrackSearchResult>>() {});
     assertEquals(1, singleResult.size());
 
-    ResponseEntity<String> twoResponse =
+    final ResponseEntity<String> twoResponse =
         controller.getForEntity(uri + "?name=" + testTitle.substring(0, 1), String.class);
-    List<TrackSearchResult> twoResults = objectMapper.readValue(twoResponse.getBody(),
+    final List<TrackSearchResult> twoResults = objectMapper.readValue(twoResponse.getBody(),
         new TypeReference<List<TrackSearchResult>>() {});
     assertEquals(2, twoResults.size());
 
-    ResponseEntity<String> fullyFilteredResponse = controller.getForEntity(
+    final ResponseEntity<String> fullyFilteredResponse = controller.getForEntity(
         uri + "?name=%s&artist=%s".formatted(testTitle.substring(0, 1), testAuthor), String.class);
-    List<TrackSearchResult> fullyFilteredResults = objectMapper.readValue(
+    final List<TrackSearchResult> fullyFilteredResults = objectMapper.readValue(
         fullyFilteredResponse.getBody(), new TypeReference<List<TrackSearchResult>>() {});
     assertEquals(1, fullyFilteredResults.size());
 
@@ -153,36 +155,37 @@ public class SequencerServerApplicationTest extends AbstractIntegrationTest {
   public Track postAndGetTrackById(Track track) throws IOException {
     final String uri = "/api/tracks/";
 
-    ResponseEntity<String> createdResponse = postTrack(track, HttpStatus.CREATED);
+    final ResponseEntity<String> createdResponse = postTrack(track, HttpStatus.CREATED);
 
-    String location = createdResponse.getHeaders().get("Location").get(0);
-    String id = location.substring(location.lastIndexOf("/"));
+    final String location = createdResponse.getHeaders().get("Location").get(0);
+    final String id = location.substring(location.lastIndexOf("/"));
 
-    ResponseEntity<String> singleResponse = controller.getForEntity(uri + id, String.class);
+    final ResponseEntity<String> singleResponse = controller.getForEntity(uri + id, String.class);
     assertEquals(singleResponse.getStatusCode(), HttpStatus.OK);
 
-    Track responseTrack = objectMapper.readValue(singleResponse.getBody(), Track.class);
+    final Track responseTrack = objectMapper.readValue(singleResponse.getBody(), Track.class);
 
     return responseTrack;
   }
 
   @Test
-  @DisplayName("/api/tracks/{id} should respond with the given track")
+  @DisplayName("Test if /api/tracks/{id} responds with the given track")
   public void testGetTrackById() throws IOException {
     final String uri = "/api/tracks/";
 
     // Invalid id should respond with NOT_FOUND.
-    ResponseEntity<String> emptyResponse = controller.getForEntity(uri + testId, String.class);
+    final ResponseEntity<String> emptyResponse =
+        controller.getForEntity(uri + testId, String.class);
     assertEquals(emptyResponse.getStatusCode(), HttpStatus.NOT_FOUND);
 
     // Populate and get id of new track
-    Track postTrack1 = testTrackAllContent();
-    Track postTrack2 = postTrack1.copy();
+    final Track postTrack1 = testTrackAllContent();
+    final Track postTrack2 = postTrack1.copy();
     postTrack2.setTrackName("Second track name");
 
 
-    Track responseTrack1 = postAndGetTrackById(postTrack1);
-    Track responseTrack2 = postAndGetTrackById(postTrack2);
+    final Track responseTrack1 = postAndGetTrackById(postTrack1);
+    final Track responseTrack2 = postAndGetTrackById(postTrack2);
 
     // TESTS
 

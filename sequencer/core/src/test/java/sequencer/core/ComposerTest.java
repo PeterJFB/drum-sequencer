@@ -1,19 +1,15 @@
 package sequencer.core;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import sequencer.json.TrackMapper;
@@ -22,6 +18,7 @@ import sequencer.json.TrackMapper;
  * Tests for the composer.
  */
 public class ComposerTest {
+
   private Composer composer;
 
   @BeforeEach
@@ -30,8 +27,8 @@ public class ComposerTest {
   }
 
   @Test
-  @DisplayName("Check if track and artist name getters return the set value")
-  public void checkNameSettersAndGetters() {
+  @DisplayName("Test if track and artist name getters return the set value")
+  public void testNameSettersAndGetters() {
     assertEquals(null, composer.getTrackName(),
         "Expected trackName 'null', got: " + composer.getTrackName());
     assertEquals(null, composer.getArtistName(),
@@ -46,8 +43,8 @@ public class ComposerTest {
   }
 
   @Test
-  @DisplayName("Check if pattern getters return the set value")
-  public void checkPatternSettersAndGetters() {
+  @DisplayName("Test if pattern getters return the set value")
+  public void testPatternSettersAndGetters() {
     assertTrue(composer.getInstrumentsInTrack().isEmpty(), "Expected empty track");
     composer.addInstrumentToTrack("kick");
     composer.toggleTrackSixteenth("kick", 0);
@@ -76,8 +73,8 @@ public class ComposerTest {
   }
 
   @Test
-  @DisplayName("Removing instruments")
-  public void checkRemovingInstruments() {
+  @DisplayName("Test the removal of instruments")
+  public void testRemovingInstruments() {
     assertTrue(composer.getInstrumentsInTrack().isEmpty(), "Expected empty track");
     composer.addInstrumentToTrack("kick");
     composer.addInstrumentToTrack("snare");
@@ -89,8 +86,8 @@ public class ComposerTest {
   }
 
   @Test
-  @DisplayName("Check if isPlaying returns the expected state")
-  public void checkStartingAndStopping() {
+  @DisplayName("Test if isPlaying returns the expected state")
+  public void testStartingAndStopping() {
     assertFalse(composer.isPlaying(), "Did not expect composer to be playing");
     composer.start();
     assertTrue(composer.isPlaying(), "Expected composer to be playing");
@@ -100,53 +97,5 @@ public class ComposerTest {
     assertFalse(composer.isPlaying(), "Did not expect composer to be playing");
     composer.stop();
     assertFalse(composer.isPlaying(), "Did not expect composer to be playing");
-  }
-
-  @Test
-  @DisplayName("Test writing and reading a track")
-  @Disabled("""
-      By default we do not test writing and reading as part of the composer test.
-      We keep the test here in case it becomes useful.""")
-  public void writeAndRead() {
-    composer.setTrackName("trackName");
-    composer.setArtistName("artistName");
-    composer.addInstrumentToTrack("kick");
-    composer.toggleTrackSixteenth("kick", 0);
-    List<Boolean> snarePattern =
-        new ArrayList<Boolean>(Arrays.asList(new Boolean[Track.TRACK_LENGTH]));
-    Collections.fill(snarePattern, Boolean.FALSE);
-    snarePattern.set(8, true);
-    composer.addInstrumentToTrack("snare", snarePattern);
-
-    StringWriter stringWriter = new StringWriter();
-    assertDoesNotThrow(() -> composer.saveTrack(stringWriter),
-        "Did not expect saving to throw an exception");
-
-    StringReader stringReader = new StringReader(stringWriter.toString());
-
-    Composer composer2 = Composer.createSilentComposer(new TrackMapper());
-    assertDoesNotThrow(() -> composer2.loadTrack(stringReader),
-        "Did not expect saving to throw an exception");
-    assertEquals("trackName", composer2.getTrackName(),
-        "Expected trackName 'trackName', got: " + composer.getTrackName());
-    assertEquals("artistName", composer2.getArtistName(),
-        "Expected artistName 'artistName', got: " + composer.getArtistName());
-    // Check that the only instruments in track are snare and kick
-    assertEquals(2, composer2.getInstrumentsInTrack().size(), "Expected two instruments in track");
-    assertTrue(
-        composer2.getInstrumentsInTrack().stream()
-            .allMatch(instrument -> instrument.equals("snare") || instrument.equals("kick")),
-        "Did not expect other instruments than snare and kick");
-
-    for (int i = 0; i < Track.TRACK_LENGTH; i++) {
-      // Check that the kick only plays on the 0th sixteenth
-      assertEquals(i == 0, composer2.getTrackPattern("kick").get(i),
-          "Expected kick only to be active during index 0");
-
-      // Check that the snare only plays on the 8th sixteenth
-      assertEquals(i == 8, composer2.getTrackPattern("snare").get(i),
-          "Expected snare only to be active during index 8");
-    }
-
   }
 }

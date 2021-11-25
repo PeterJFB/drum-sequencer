@@ -11,7 +11,7 @@ import sequencer.persistence.PersistenceHandler;
  * Rest server configuration, including all IoC-containers.
  */
 @Configuration
-@EnableCaching // Tells spring to start using our rate limiter
+@EnableCaching // Tells Spring Boot to implement the rate limiter
 public class SequencerServerConfiguration {
   @Bean
   public PersistenceHandler persistenceHandler() {

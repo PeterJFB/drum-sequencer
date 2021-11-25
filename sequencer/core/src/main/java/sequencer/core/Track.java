@@ -76,6 +76,7 @@ public class Track {
    * Changes the name of the track.
    *
    * @param trackName new name of track
+   * @throws IllegalArgumentException if trackName is more than TRACK_NAME_LENGTH characters long.
    */
   public void setTrackName(String trackName) throws IllegalArgumentException {
     if (trackName != null && trackName.length() > TRACK_NAME_LENGTH) {
@@ -89,7 +90,8 @@ public class Track {
   /**
    * Changes name of who made the track.
    *
-   * @param artistName new name of artist or is null
+   * @param artistName new name of artist
+   * @throws IllegalArgumentException if artistName is more than ARTIST_NAME_LENGTH characters long
    */
   public void setArtistName(String artistName) throws IllegalArgumentException {
     if (artistName != null && artistName.length() > ARTIST_NAME_LENGTH) {

@@ -116,13 +116,13 @@ public class Composer {
    * Change the encapsulated track which the composer will use.
    *
    * @return true if the change was successful
+   * @throws IllegalArgumentException if the track is null
    */
-  private boolean setTrack(Track track) {
+  private void setTrack(Track track) {
     if (track == null) {
-      return false;
+      throw new IllegalArgumentException("Track cannot be null");
     }
     this.track = track;
-    return true;
   }
 
   /**
@@ -332,11 +332,15 @@ public class Composer {
    * @param reader the reader of the track to load
    * @return true if the composer sucessfully changed to the new track
    * @throws IOException if the reading fails
+   * @throws IllegalArgumentException if any of the read tracks are null
    */
-  public boolean loadTrack(Reader reader) throws IOException {
+  public void loadTrack(Reader reader) throws IOException {
     Track newTrack = null;
     newTrack = trackMapper.readTrack(reader);
-
-    return setTrack(newTrack);
+    if (newTrack.getArtistName() == null || newTrack.getTrackName() == null) {
+      throw new IllegalArgumentException("Reader gave a track with null fields");
+    } else {
+      setTrack(newTrack);
+    }
   }
 }

@@ -119,6 +119,8 @@ public class TrackLoaderModalController {
           true);
     } catch (IOException e) {
       sequencerController.displayStatusMsg("Failed to load track.", false);
+    } catch (IllegalArgumentException e) {
+      sequencerController.displayStatusMsg("Track was corrupted, unable to load", false);
     }
   }
 

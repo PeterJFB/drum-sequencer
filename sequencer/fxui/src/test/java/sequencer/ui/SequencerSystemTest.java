@@ -69,6 +69,8 @@ public class SequencerSystemTest extends ApplicationTest {
 
     // -DargLine ensures the files are not saved in the default directory
     // This directory will be cleared after the tests.
+    // When using ProcessBuilder with Windows, we have to type the filename of the program, so we
+    // check for Windows, and use "mvn.cmd" instead of "mvn" there.
     final String command = System.getProperty("os.name").startsWith("Windows") ? "mvn.cmd" : "mvn";
     final ProcessBuilder pb = new ProcessBuilder(command, "-pl", "rest", "spring-boot:start",
         "-DargLine=\"-D%s=%s\"".formatted("SEQUENCER_REMOTE_SAVE_DIR", remoteTestSaveDir));
@@ -260,6 +262,8 @@ public class SequencerSystemTest extends ApplicationTest {
   static void stopServerAndClearTestDirectories() throws Exception {
 
     // Setup to stop server
+    // When using ProcessBuilder with Windows, we have to type the filename of the program, so we
+    // check for Windows, and use "mvn.cmd" instead of "mvn" there.
     final String command = System.getProperty("os.name").startsWith("Windows") ? "mvn.cmd" : "mvn";
     final ProcessBuilder pb = new ProcessBuilder(command, "-pl", "rest", "spring-boot:stop");
     pb.directory(new File(System.getProperty("user.dir")).getParentFile());

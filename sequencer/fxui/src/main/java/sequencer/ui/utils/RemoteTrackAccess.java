@@ -82,7 +82,10 @@ public class RemoteTrackAccess implements TrackAccessInterface {
     try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
       final OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
       composer.saveTrack(writer);
-      connection.getResponseCode();
+      final int status = connection.getResponseCode();
+      if (status == 400) {
+        throw new IllegalArgumentException("Track was in a illegal format");
+      }
     } catch (IOException e) {
       throw new IOException("The program was unable to save the current track", e);
     }
@@ -124,7 +127,7 @@ public class RemoteTrackAccess implements TrackAccessInterface {
     final String path = "/tracks?" + (trackName != null ? "name=" + trackName : "")
         + (artistName != null ? "&artist=" + artistName : "")
         + (timestamp != null ? "&timestamp=" + timestamp : "");
-    
+
     final HttpURLConnection connection = prepareConnection(path, "GET");
 
     String responseString;

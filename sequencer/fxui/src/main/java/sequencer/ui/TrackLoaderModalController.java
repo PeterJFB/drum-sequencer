@@ -19,7 +19,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sequencer.json.TrackSearchResult;
 import sequencer.persistence.FileMetaData;
-import sequencer.ui.utils.RemoteTrackAccess;
 import sequencer.ui.utils.TrackAccessInterface;
 
 /**
@@ -32,9 +31,15 @@ public class TrackLoaderModalController {
 
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+  TrackLoaderModalController(TrackAccessInterface trackAccess) {
+    if (trackAccess == null) {
+      throw new IllegalArgumentException("trackAccess cannot be null.");
+    }
+    this.trackAccess = trackAccess;
+  }
+
   @FXML
   void initialize() {
-    trackAccess = new RemoteTrackAccess();
     fetchAndDisplayTracks("", "", null); // An empty string as argument will match all tracks
   }
 

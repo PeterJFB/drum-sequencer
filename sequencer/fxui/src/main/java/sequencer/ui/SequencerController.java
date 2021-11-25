@@ -40,8 +40,10 @@ import sequencer.ui.utils.TrackAccessInterface;
 public class SequencerController {
 
   protected Composer composer;
+
   private TrackAccessInterface trackAccess;
   public static final String SEQUENCER_ACCESS_ENV = "SEQUENCER_ACCESS";
+  private TrackLoaderModalController trackLoaderModalController;
 
   @FXML
   void initialize() {
@@ -55,11 +57,13 @@ public class SequencerController {
     // Choose which access class should be used based on the environment variable. Default is
     // RemoteTrackAccess.
     // See docs about valid values of the variable
-    if (sequencerAccess != null && sequencerAccess.equals("LOCAL")) {
-      trackAccess = new LocalTrackAccess();
+    if (sequencerAccess != null && sequencerAccess.startsWith("LOCAL")) {
+      trackAccess = new LocalTrackAccess(composer);
     } else {
       trackAccess = new RemoteTrackAccess();
     }
+
+    trackLoaderModalController = new TrackLoaderModalController(trackAccess);
 
     createElements();
   }
@@ -230,8 +234,6 @@ public class SequencerController {
 
   @FXML
   private AnchorPane content;
-
-  private TrackLoaderModalController trackLoaderModalController = new TrackLoaderModalController();
 
   /**
    * Opening the the modal used for loading a saved track.

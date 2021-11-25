@@ -13,9 +13,22 @@ import sequencer.persistence.PersistenceHandler;
 @Configuration
 @EnableCaching // Tells Spring Boot to implement the rate limiter
 public class SequencerServerConfiguration {
+
+  private static final String remoteSaveDirProperty = "SEQUENCER_REMOTE_SAVE_DIR";
+
+  /**
+   * Use a different remote save directory when the remoteSaveDirProperty is defined (useful for
+   * testing).
+   */
   @Bean
   public PersistenceHandler persistenceHandler() {
-    return new PersistenceHandler("drum-sequencer-persistence", "json");
+
+    final String remoteSaveDir = System.getProperty(remoteSaveDirProperty);
+    if (remoteSaveDir == null || remoteSaveDir.isBlank()) {
+      return new PersistenceHandler("drum-sequencer-persistence", TrackMapper.FORMAT);
+    } else {
+      return new PersistenceHandler(remoteSaveDir, TrackMapper.FORMAT);
+    }
   }
 
   @Bean

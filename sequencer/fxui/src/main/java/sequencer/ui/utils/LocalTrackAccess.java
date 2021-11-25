@@ -9,6 +9,7 @@ import sequencer.json.TrackSearchResult;
 import sequencer.persistence.FileMetaData;
 import sequencer.persistence.FilenameHandler;
 import sequencer.persistence.PersistenceHandler;
+import sequencer.ui.SequencerController;
 
 /**
  * Saves/loads tracks locally via {@link PersistenceHandler}.
@@ -17,9 +18,30 @@ public class LocalTrackAccess implements TrackAccessInterface {
 
   private PersistenceHandler persistenceHandler;
 
-  public LocalTrackAccess() {
-    persistenceHandler = new PersistenceHandler("drum-sequencer-local-persistence",
-        Composer.getSerializationFormat());
+  /**
+   * Instantiates a new access class and attempts to get the directory name from the environment
+   * variable. If it is not defined it will default to drum-sequencer-persistence. See docs about
+   * defining the environment variable.
+   */
+  public LocalTrackAccess(Composer composer) {
+
+    final String sequencerAccess = System.getenv(SequencerController.SEQUENCER_ACCESS_ENV);
+
+    final String configurationFlag = "LOCAL:";
+
+    if (sequencerAccess.startsWith(configurationFlag)
+        && sequencerAccess.length() > configurationFlag.length()) {
+
+      persistenceHandler = new PersistenceHandler(
+          sequencerAccess.substring(configurationFlag.length()), composer.getSerializationFormat());
+
+    } else {
+
+      persistenceHandler = new PersistenceHandler("drum-sequencer-local-persistence",
+          composer.getSerializationFormat());
+
+    }
+
   }
 
   @Override

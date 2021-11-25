@@ -330,7 +330,6 @@ public class Composer {
    * Uses the reader to load a new track into the composer.
    *
    * @param reader the reader of the track to load
-   * @return true if the composer sucessfully changed to the new track
    * @throws IOException if the reading fails
    * @throws IllegalArgumentException if any of the read tracks are null
    */

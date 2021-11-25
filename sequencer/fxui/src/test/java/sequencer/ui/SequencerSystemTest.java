@@ -34,11 +34,10 @@ import sequencer.core.Composer;
 import sequencer.persistence.PersistenceHandler;
 
 /**
- * The system test / full integration test of the application. The REST server
- * will be initialized in the {@link BeforeAll} method below, whereafter it will
- * start the application and run exstensive tests with testfx. The tests also
- * use their own test directory, which will be cleaned up, ensuring no existing
- * files will be accidentally removed.
+ * The system test / full integration test of the application. The REST server will be initialized
+ * in the {@link BeforeAll} method below, whereafter it will start the application and run
+ * exstensive tests with testfx. The tests also use their own test directory, which will be cleaned
+ * up, ensuring no existing files will be accidentally removed.
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SequencerSystemTest extends ApplicationTest {
@@ -49,8 +48,8 @@ public class SequencerSystemTest extends ApplicationTest {
   private TextField trackNameField;
 
   private final int tracksCreated = 3;
-  private final String[] testArtistNames = { "Juni", "Vetle", "Ivar" };
-  private final String[] testTrackNames = { "HOTEL", "BANAN", "HOTEL" };
+  private final String[] testArtistNames = {"Juni", "Vetle", "Ivar"};
+  private final String[] testTrackNames = {"HOTEL", "BANAN", "HOTEL"};
 
   private static final String remoteTestSaveDir = "test-drum-sequencer-persistence-test";
 
@@ -85,7 +84,8 @@ public class SequencerSystemTest extends ApplicationTest {
       assertNotNull(serverProcess, "Initialization of server failed");
 
       final int exitCode = serverProcess.waitFor();
-      assertEquals(0, exitCode, "Intitialization of server return unxecpected exit code: " + exitCode);
+      assertEquals(0, exitCode,
+          "Intitialization of server return unxecpected exit code: " + exitCode);
     }
 
     // Perform a request to ensure server is running
@@ -103,11 +103,11 @@ public class SequencerSystemTest extends ApplicationTest {
   }
 
   /**
-   * Will be called with {@code @BeforeEach} semantics, i. e. before each test
-   * method.
+   * Will be called with {@code @BeforeEach} semantics, i. e. before each test method.
    */
   @Override
-  public void start(final Stage stage) throws IOException, InterruptedException, ExecutionException {
+  public void start(final Stage stage)
+      throws IOException, InterruptedException, ExecutionException {
 
     final FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("Sequencer.fxml"));
     final Parent root = fxmlLoader.load();
@@ -179,7 +179,8 @@ public class SequencerSystemTest extends ApplicationTest {
         in a valid format.""");
     sleep(1000);
     clickOn("#startStopBtn");
-    assertFalse(sequencerController.composer.isPlaying(), "Attempting to stop the loaded instrument failed.");
+    assertFalse(sequencerController.composer.isPlaying(),
+        "Attempting to stop the loaded instrument failed.");
   }
 
   @Test
@@ -231,7 +232,8 @@ public class SequencerSystemTest extends ApplicationTest {
     clickOn("#modalOpener");
 
     final DatePicker timestampPicker = lookup("#timestampPicker").query();
-    moveTo(timestampPicker).moveBy(timestampPicker.getWidth() / 2 - 5, 0).clickOn(MouseButton.PRIMARY);
+    moveTo(timestampPicker).moveBy(timestampPicker.getWidth() / 2 - 5, 0)
+        .clickOn(MouseButton.PRIMARY);
     type(KeyCode.ENTER);
 
     clickOn("#searchBtn");
@@ -241,7 +243,8 @@ public class SequencerSystemTest extends ApplicationTest {
         Amount of tracks after selecting date was not as expected. Ensure both client and server
         are performing the GET-request as expected.""");
 
-    moveTo(timestampPicker).moveBy(timestampPicker.getWidth() / 2 - 5, 0).clickOn(MouseButton.PRIMARY);
+    moveTo(timestampPicker).moveBy(timestampPicker.getWidth() / 2 - 5, 0)
+        .clickOn(MouseButton.PRIMARY);
     type(KeyCode.LEFT).type(KeyCode.ENTER);
 
     clickOn("#searchBtn");

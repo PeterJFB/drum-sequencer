@@ -37,13 +37,11 @@ public class TrackLoaderModalController {
       "dd/M/yyyy", "dd/MM/yy", "dd/MM/yyyy"};
 
 
-
   TrackLoaderModalController(TrackAccessInterface trackAccess) {
     if (trackAccess == null) {
       throw new IllegalArgumentException("trackAccess cannot be null.");
     }
     this.trackAccess = trackAccess;
-
   }
 
   @FXML
@@ -180,8 +178,8 @@ public class TrackLoaderModalController {
 
 
   /**
-   * Converts a {@link String} to a {@link LocalDate} if possible. PS: Only the norwegian dd/MM/yyyy
-   * and similar variantions is accepted, so it's expected that the user is on a norwegian computer
+   * Converts a {@link String} to a {@link LocalDate} if possible. Notice that only the format 
+   * dd/MM/yyyy and similar variations are accepted.
    */
   public StringConverter<LocalDate> timestampPickerConverter = new StringConverter<>() {
 
@@ -241,8 +239,7 @@ public class TrackLoaderModalController {
   }
 
   /**
-   * Calls filterTracks when the enter key is pressed. Calls filterTracks if the enter key is
-   * pressed.
+   * Calls filterTracks when the enter key is pressed.
    */
   @FXML
   private void handleKeyPress(KeyEvent event) {

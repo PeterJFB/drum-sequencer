@@ -25,7 +25,7 @@
 
             <GridPane fx:id="header" alignment="TOP_CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
 
-                <StackPane fx:id="saveTrackBtn" onMouseClicked="#saveTrack" GridPane.columnIndex="0">
+                <StackPane fx:id="saveTrackBtn" onMouseClicked="#saveTrack" GridPane.columnIndex="0" pickOnBounds="false">
                     <ImageView>
                         <image>
                             <Image url="@images/save.png" />

@@ -45,7 +45,7 @@ public class LocalTrackAccess implements TrackAccessInterface {
   }
 
   @Override
-  public void saveTrack(Composer composer) throws IOException {
+  public void saveTrack(Composer composer) throws IOException, IllegalArgumentException {
 
     final int newId = persistenceHandler.listSavedFiles().stream().map(trackMeta -> trackMeta.id())
         .reduce(0, (currMax, next) -> {

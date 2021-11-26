@@ -45,6 +45,9 @@ public class SequencerController {
   public static final String SEQUENCER_ACCESS_ENV = "SEQUENCER_ACCESS";
   private TrackLoaderModalController trackLoaderModalController;
 
+  private Timer statusMessageTimer;
+  private TimerTask statusMessageTimerTask;
+
   @FXML
   void initialize() {
     composer = new Composer(new TrackMapper());
@@ -62,6 +65,7 @@ public class SequencerController {
     } else {
       trackAccess = new RemoteTrackAccess();
     }
+    statusMessageTimer = new Timer(true);
 
     trackLoaderModalController = new TrackLoaderModalController(trackAccess);
 
@@ -466,17 +470,21 @@ public class SequencerController {
 
     statusMsgText.setText(msg);
 
-    playStatusMsgTransition(true);
-    // Removing the message after 4 seconds (4000L):
-    Timer timer = new Timer(true);
-    timer.schedule(new TimerTask() {
+    // Canceling old timer task
+    if (statusMessageTimerTask != null) {
+      statusMessageTimerTask.cancel();
+    }
+    statusMessageTimerTask = new TimerTask() {
       @Override
       public void run() {
         Platform.runLater(() -> {
           playStatusMsgTransition(false);
         });
       }
-    }, 4000L);
+    };
+    playStatusMsgTransition(true);
+    // Removing the message after 4 seconds (4000L):
+    statusMessageTimer.schedule(statusMessageTimerTask, 4000L);
   }
 
   /**

@@ -2,7 +2,7 @@
 variables:
   SKIP_ALL_TESTS: -DskipTests=true
   IGNORE_UI_COVERAGE: -DfxuiScope=test
-  SKIP_UI_TESTS: -Dtest=!SequencerControllerTest -DfailIfNoTests=false
+  SKIP_UI_TESTS: -P headlessTest -DfailIfNoTests=false
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   MAVEN_CLI_OPTS: "--batch-mode"
 

@@ -183,14 +183,15 @@ Read more about our choice of implementation in the [release docs](./../docs/rel
 
 ## Test-classes
 
-- Composer: [`core/src/test/java/sequencer/core/ComposerTest.java`](./core/src/test/java/sequencer/core/ComposerTest.java)
-- Track: [`core/src/test/java/sequencer/core/TrackTest.java`](./core/src/test/java/sequencer/core/TrackTest.java)
+- Composer (Integration): [`core/src/test/java/sequencer/core/ComposerTest.java`](./core/src/test/java/sequencer/core/ComposerTest.java)
+- Track (Unit): [`core/src/test/java/sequencer/core/TrackTest.java`](./core/src/test/java/sequencer/core/TrackTest.java)
 
-- TrackMapper: [`core/src/test/java/sequencer/json/TrackMapperTest.java`](./core/src/test/java/sequencer/json/TrackMapperTest.java)
+- TrackMapper (Unit): [`core/src/test/java/sequencer/json/TrackMapperTest.java`](./core/src/test/java/sequencer/json/TrackMapperTest.java)
 
-- SequencerController: [`fxui/src/test/java/sequencer/ui/SequencerControllerTest.java`](./fxui/src/test/java/sequencer/ui/SequencerControllerTest.java)
+- SequencerController (Integration): [`fxui/src/test/java/sequencer/ui/SequencerControllerTest.java`](./fxui/src/test/java/sequencer/ui/SequencerControllerTest.java)
+- SequencerSystemTest (Full Integration): [`fxui/src/test/java/sequencer/ui/SequencerSystemTest.java`](./fxui/src/test/java/sequencer/ui/SequencerSystemTest.java)
 
-- PersistenceHandler: [`localpersistence/src/test/java/sequencer/persistence/PersistenceHandlerTest.java`](./localpersistence/src/test/java/sequencer/persistence/PersistenceHandlerTest.java)
+- PersistenceHandler (Unit): [`localpersistence/src/test/java/sequencer/persistence/PersistenceHandlerTest.java`](./localpersistence/src/test/java/sequencer/persistence/PersistenceHandlerTest.java)
 
 - SequencerRestController (Unit): [`rest/src/test/java/restapi/SequencerRestControllerTest.java`](rest/src/test/java/restapi/SequencerRestControllerTest.java)
 - SequencerServerApplication (Integration): [`rest/src/test/java/restserver/SequencerServerApplication.java`](rest/src/test/java/restserver/SequencerServerApplicationTest.java)

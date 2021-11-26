@@ -1,9 +1,12 @@
 package sequencer.ui;
 
+import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Random;
@@ -15,24 +18,36 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.Effect;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
 import sequencer.core.Composer;
+import sequencer.persistence.PersistenceHandler;
 
 /**
- * TestFX App test.
+ * A larger Integration test of the application by utilizing TestFX without a server, instead using
+ * the LocalTrackAccess class for storage. The tests also use their own test directory, which will
+ * be cleaned up, ensuring no existing files will be accidentally removed.
  */
 public class SequencerControllerTest extends ApplicationTest {
 
+  private final String localTestSaveDir = "test-local-sequencer-test";
+  private SequencerController sequencerController = null;
+
   /**
-   * Will be called with {@code @Before} semantics, i. e. before each test method.
+   * Will be called with {@code @BeforeEach} semantics, i. e. before each test method.
    */
   @Override
-  public void start(final Stage stage) throws IOException {
+  public void start(final Stage stage) throws IOException, Exception {
     final FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("Sequencer.fxml"));
-    final Parent root = fxmlLoader.load();
+
+    // Initialize the app with the sequencer's-accessClass as localTrackAccess, using the
+    // localTestSaveDir as save diractory
+    final Parent root = withEnvironmentVariable("SEQUENCER_ACCESS", "LOCAL:" + localTestSaveDir)
+        .and("MAVEN_OPTS", "--illegal-access=permit").execute(() -> fxmlLoader.load());
+    sequencerController = fxmlLoader.getController();
     stage.setScene(new Scene(root));
     stage.show();
   }
@@ -41,8 +56,8 @@ public class SequencerControllerTest extends ApplicationTest {
   @DisplayName("Test the toggle of sixteenths, both before and after choosing an instrument")
   public void testToggleOfSixteenth() {
     // Running the test on 3 random sixteenths
+    final Random rand = new Random();
     for (int i = 0; i < 3; i++) {
-      final Random rand = new Random();
       final int x = rand.nextInt(Composer.getTrackLength());
       final int y = rand.nextInt(SequencerController.NUMBER_OF_ROWS);
       final String id = "#" + String.valueOf(x) + "," + String.valueOf(y);
@@ -51,7 +66,6 @@ public class SequencerControllerTest extends ApplicationTest {
     }
 
     for (int j = 0; j < 3; j++) {
-      final Random rand = new Random();
       final int x = rand.nextInt(Composer.getTrackLength());
       final int y = rand.nextInt(SequencerController.NUMBER_OF_ROWS);
       final String id = "#" + String.valueOf(x) + "," + String.valueOf(y);
@@ -80,19 +94,13 @@ public class SequencerControllerTest extends ApplicationTest {
   @DisplayName("Test the input (text) fields for track name and artist name")
   public void testTextFields() {
     final TextField trackNameField = lookup("#trackName").query();
-    assertEquals("untitled", trackNameField.getText());
-    trackNameField.setText("");
-    assertEquals("", trackNameField.getText());
     final String exampleTrackName = "my new track";
-    clickOn(trackNameField).write(exampleTrackName);
+    clickOn(trackNameField).push(KeyCode.CONTROL, KeyCode.A).write(exampleTrackName);
     assertEquals(exampleTrackName, trackNameField.getText());
 
     final TextField artistNameField = lookup("#artistName").query();
-    assertEquals("unknown", artistNameField.getText());
-    artistNameField.setText("");
-    assertEquals("", artistNameField.getText());
     final String exampleArtistName = "John Doe";
-    clickOn(artistNameField).write(exampleArtistName);
+    clickOn(artistNameField).push(KeyCode.CONTROL, KeyCode.A).write(exampleArtistName);
     assertEquals(exampleArtistName, artistNameField.getText());
   }
 
@@ -100,9 +108,6 @@ public class SequencerControllerTest extends ApplicationTest {
   @DisplayName("Test that one cannot employ the same instrument more than once")
   public void testInstrumentUsageConstraint() {
     final int amountOfInstrumentsToAdd = 2; // The amount of instruments must be greater than 1
-    if (SequencerController.NUMBER_OF_ROWS < amountOfInstrumentsToAdd) {
-      return;
-    }
 
     Set<String> chosenInstruments = new HashSet<>();
     for (int i = 0; i < amountOfInstrumentsToAdd; i++) {
@@ -135,11 +140,49 @@ public class SequencerControllerTest extends ApplicationTest {
         "Expected the ChoiceBox to have a value of an empty string");
   }
 
-  // @Test
-  // @DisplayName("Test if modal can be opened")
-  // public void testModalOpener() {
-  // clickOn("#modalOpener");
-  // assertTrue(window("TrackLoaderModal").isShowing());
-  // }
+  @Test
+  @DisplayName("Test if you can save and load a single track with LocalTrackAccess")
+  public void testSaveAndLoadSingleTrack() {
+
+    // Ensure test folder is empty
+    PersistenceHandler ph = new PersistenceHandler(localTestSaveDir,
+        sequencerController.composer.getSerializationFormat());
+
+    assertTrue(
+        !ph.getSaveDirectoryPath().toFile().exists()
+            || ph.getSaveDirectoryPath().toFile().listFiles().length == 0,
+        "The test directory %s is not empty. Please clear it before performing tests."
+            .formatted(localTestSaveDir));
+
+    // Create a nice beat
+    final int row = 0;
+    chooseFirstOption(row);
+    for (int col = 0; col < Composer.getTrackLength(); col += 2) {
+      clickOn("#" + col + "," + String.valueOf(row));
+    }
+
+    clickOn("#trackName").push(KeyCode.CONTROL, KeyCode.A).write("Tougher than the REST");
+    clickOn("#artistName").push(KeyCode.CONTROL, KeyCode.A).write("John Doe and The Placeholders");
+
+    clickOn("#saveTrackBtn").sleep(500);
+
+    clickOn("#modalOpener").sleep(500);
+
+    VBox savedTracksPanel = lookup("#savedTracksPanel").query();
+
+    assertEquals(1, savedTracksPanel.getChildren().size(), """
+        Amount of tracks in %s was not as expected. Check the directory and ensure
+        LocalTrackAccess is behaving as expected.""".formatted(ph.getSaveDirectoryPath()));
+
+    clickOn("#" + savedTracksPanel.getChildren().get(0).getId());
+
+    // CleanUp
+
+    for (File testFile : ph.getSaveDirectoryPath().toFile().listFiles()) {
+      testFile.delete();
+    }
+
+    ph.getSaveDirectoryPath().toFile().delete();
+  }
 
 }

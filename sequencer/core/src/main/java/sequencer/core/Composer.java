@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import javafx.scene.media.AudioClip;
-import sequencer.json.TrackMapper;
 
 /**
  * The {@link Composer} encapsulated a {@link Track}. It handles the playback of this track,
@@ -311,8 +310,8 @@ public class Composer {
   /**
    * Returns the serialization format for Tracks.
    */
-  public static String getSerializationFormat() {
-    return TrackMapper.FORMAT;
+  public String getSerializationFormat() {
+    return trackMapper.getFormat();
   }
 
 

@@ -147,10 +147,10 @@ public class TrackTest {
     public void createFilledTrack() {
       track = new Track();
       instruments = Arrays.asList("inst1", "inst2", "inst3");
+      Random random = new Random();
       instruments.stream().forEach((instrument) -> {
         final List<Boolean> pattern =
             new ArrayList<>(Arrays.asList(new Boolean[Track.TRACK_LENGTH]));
-        final Random random = new Random();
         IntStream.range(0, pattern.size()).forEach(index -> {
           pattern.set(index, random.nextBoolean());
         });

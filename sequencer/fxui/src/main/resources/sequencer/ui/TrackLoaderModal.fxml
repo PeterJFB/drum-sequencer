@@ -18,12 +18,11 @@
 <?import javafx.scene.text.Text?>
 
 <GridPane stylesheets="@TrackLoaderModal.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
- 
     <AnchorPane fx:id="content">
 
         <GridPane fx:id="header" alignment="TOP_CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
             <Text fx:id="title" text="Find a track" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
- 
+
             <StackPane fx:id="modalCloser" onMouseClicked="#closeTrackLoaderModal" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                 <ImageView>
                     <image>
@@ -41,15 +40,15 @@
             <rowConstraints>
                 <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
             </rowConstraints>
-        </GridPane> 
+        </GridPane>
 
-        <TextField fx:id="trackNameField" promptText="Track name ..." layoutX="60.0" layoutY="200.0" onKeyPressed="#handleKeyPress" /> 
-         
+        <TextField fx:id="trackNameField" promptText="Track name ..." layoutX="60.0" layoutY="200.0" onKeyPressed="#handleKeyPress" />
+
         <TextField fx:id="artistNameField" promptText="Artist name ..." layoutX="60.0" layoutY="300.0" onKeyPressed="#handleKeyPress" />
 
-        <DatePicker fx:id="timestampPicker" layoutX="60.0" layoutY="400.0" prefHeight="56.0" prefWidth="392.0" onKeyPressed="#handleKeyPress"/>
-         
-        <Button fx:id="searchBtn" onMouseClicked="#filterTracks" layoutX="60.0" layoutY="500.0" text="Search" />        
+        <DatePicker fx:id="timestampPicker" promptText="dd/MM/yyyy" layoutX="60.0" layoutY="400.0" prefHeight="56.0" prefWidth="392.0" onKeyPressed="#handleKeyPress" />
+
+        <Button fx:id="searchBtn" onMouseClicked="#filterTracks" layoutX="60.0" layoutY="500.0" text="Search" />
 
         <Text fx:id="infoText" text="Click on the track you wish to load." layoutX="543" layoutY="130" />
         <ScrollPane fx:id="savedTracksScrollPane" layoutX="535.0" layoutY="136.0" prefViewportHeight="440.0" prefViewportWidth="565.0">

@@ -19,6 +19,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.StringConverter;
 import sequencer.json.TrackSearchResult;
 import sequencer.persistence.FileMetaData;
 import sequencer.ui.utils.TrackAccessInterface;
@@ -31,16 +32,34 @@ public class TrackLoaderModalController {
   private SequencerController sequencerController;
   private TrackAccessInterface trackAccess;
 
+  private final DateTimeFormatter defaultFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+  private final String[] validPatterns = {"d/M/yy", "d/M/yyyy", "d/MM/yy", "d/MM/yyyy", "dd/M/yy",
+      "dd/M/yyyy", "dd/MM/yy", "dd/MM/yyyy"};
+
+
+
   TrackLoaderModalController(TrackAccessInterface trackAccess) {
     if (trackAccess == null) {
       throw new IllegalArgumentException("trackAccess cannot be null.");
     }
     this.trackAccess = trackAccess;
+
   }
 
   @FXML
   void initialize() {
-    fetchAndDisplayTracks("", "", null); // An empty string as argument will match all tracks
+    fetchAndDisplayTracks("", "", null); // Empty strings and null will match all tracks
+
+    // Set properties of timestampPicker
+    timestampPicker.setConverter(timestampPickerConverter);
+    // https://stackoverflow.com/questions/37923502/how-to-get-entered-value-in-editable-combobox-in-javafx
+    timestampPicker.getEditor().focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+      timestampPicker
+          .setValue(timestampPickerConverter.fromString(timestampPicker.getEditor().getText()));
+      timestampPicker.getEditor()
+          .setText(timestampPickerConverter.toString(timestampPicker.getValue()));
+
+    });
   }
 
   /**
@@ -107,8 +126,8 @@ public class TrackLoaderModalController {
       displayedTrackName.setWrappingWidth(140);
       final Text displayedArtistName = new Text(track.artist());
       displayedArtistName.setWrappingWidth(140);
-      final String date = FileMetaData.getDay(track.timestamp())
-          .format(DateTimeFormatter.ofPattern("MM/dd/yyyy")).toString();
+      final String date =
+          FileMetaData.getDay(track.timestamp()).format(defaultFormatter).toString();
       final Text displayedTimestamp = new Text(date);
 
       final Region region3 = new Region();
@@ -159,18 +178,58 @@ public class TrackLoaderModalController {
   @FXML
   DatePicker timestampPicker;
 
+
   /**
-   * Fetches the trackName, artistName and timestamp to filter tracks by from ui, and calls
-   * fetchAndDisplayTracks. Fires when the "Search" button is pushed.
+   * Converts a {@link String} to a {@link LocalDate} if possible. PS: Only the norwegian dd/MM/yyyy
+   * and similar variantions is accepted, so it's expected that the user is on a norwegian computer
+   */
+  public StringConverter<LocalDate> timestampPickerConverter = new StringConverter<>() {
+
+    @Override
+    public String toString(LocalDate date) {
+      if (date != null) {
+        return defaultFormatter.format(date);
+      }
+      return "";
+    }
+
+    @Override
+    public LocalDate fromString(String string) {
+
+      try {
+        // Default formatter
+        return LocalDate.parse(string, defaultFormatter);
+      } catch (DateTimeParseException e) {
+        // string was not the the default pattern
+      }
+
+      for (String validPattern : validPatterns) {
+        try {
+          return LocalDate.parse(string, DateTimeFormatter.ofPattern(validPattern));
+        } catch (DateTimeParseException e) {
+          // Attempt different pattern
+        }
+      }
+
+      // string did not match any pattern we support
+      return null;
+    }
+
+
+  };
+
+  /**
+   * Fires when the "Search" button is pushed. Fetches the trackName, artistName and timestamp to
+   * filter the tracks shown in UI
    */
   @FXML
   private void filterTracks() {
     final String trackName = trackNameField.getText() != null ? trackNameField.getText() : "";
     final String artistName = artistNameField.getText() != null ? artistNameField.getText() : "";
-    final Long timestamp;
 
-    final String timeStampPickerText = timestampPicker.getEditor().getText();
-    final LocalDate date = convertStringToDate(timeStampPickerText);
+    final LocalDate date = timestampPicker.getValue();
+
+    final Long timestamp;
     if (date != null) {
       final Instant instant = Instant.from(date.atStartOfDay(ZoneId.systemDefault()));
       timestamp = instant.toEpochMilli();
@@ -182,37 +241,8 @@ public class TrackLoaderModalController {
   }
 
   /**
-   * Converts a {@link String} to a {@link LocalDate} if possible. PS: Only the norwegian MM/dd is
-   * accepted, so it's expected that the user is on a norwegian computer
-   *
-   * @param string the {@link String} to be coverted
-   * @return a date if the string could be converted, or null otherwise
-   */
-  private LocalDate convertStringToDate(String string) {
-    // All DateTimeParseException are ignored as they are in lot's of legal cases expected
-    // to be thrown. The exceptions are handled by returning null if all try's fail.
-    try {
-      return LocalDate.parse(string, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-    } catch (DateTimeParseException e) {
-      /* ignore */ }
-    try {
-      return LocalDate.parse(string, DateTimeFormatter.ofPattern("M/dd/yyyy"));
-    } catch (DateTimeParseException e) {
-      /* ignore */ }
-    try {
-      return LocalDate.parse(string, DateTimeFormatter.ofPattern("MM/d/yyyy"));
-    } catch (DateTimeParseException e) {
-      /* ignore */ }
-    try {
-      return LocalDate.parse(string, DateTimeFormatter.ofPattern("M/d/yyyy"));
-    } catch (DateTimeParseException e) {
-      /* ignore */ }
-
-    return null;
-  }
-
-  /**
-   * Calls filterTracks when the enter key is pressed.
+   * Calls filterTracks when the enter key is pressed. Calls filterTracks if the enter key is
+   * pressed.
    */
   @FXML
   private void handleKeyPress(KeyEvent event) {

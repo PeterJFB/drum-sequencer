@@ -52,6 +52,8 @@ public class SequencerController {
   void initialize() {
     try {
       composer = new Composer(new TrackMapper());
+      composer.setTrackName(trackName.getText());
+      composer.setArtistName(artistName.getText());
       composer.addListener(progress -> {
         Platform.runLater(() -> addBorderToSixteenths(progress));
       });

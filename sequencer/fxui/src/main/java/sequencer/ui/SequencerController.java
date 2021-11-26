@@ -468,7 +468,7 @@ public class SequencerController {
 
     statusMsgText.setText(msg);
 
-    // Calceling old timer task
+    // Canceling old timer task
     if (statusMessageTimerTask != null) {
       statusMessageTimerTask.cancel();
     }

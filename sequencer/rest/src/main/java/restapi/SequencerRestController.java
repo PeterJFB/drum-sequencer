@@ -108,7 +108,8 @@ public class SequencerRestController {
       Track track = objectMapper.readValue(trackAsJson, Track.class);
       if (track.getTrackName() == null || track.getTrackName().isBlank()
           || track.getArtistName() == null || track.getArtistName().isBlank()) {
-        return new ResponseEntity<>("Track name and artist name required", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("{ message: \"Track name and artist name required\" }",
+            HttpStatus.BAD_REQUEST);
       }
 
       // Find the next available id which is greater than those in use.
@@ -125,8 +126,8 @@ public class SequencerRestController {
             track.getTrackName(), track.getArtistName(), Instant.now().toEpochMilli()));
       } catch (IllegalArgumentException e) {
         return new ResponseEntity<>(
-            "A field has han illegal format."
-                + " Maybe track name or artist name contains special characters?",
+            "{ message:\"A field has han illegal format. "
+                + "Maybe track name or artist name contains special characters?\" }",
             HttpStatus.BAD_REQUEST);
       }
 

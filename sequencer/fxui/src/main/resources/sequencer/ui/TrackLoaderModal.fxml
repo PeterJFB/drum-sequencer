@@ -10,12 +10,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<GridPane fx:id="modal" stylesheets="@modal.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane stylesheets="@TrackLoaderModal.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
  
     <AnchorPane fx:id="content">
 
@@ -49,10 +51,10 @@
          
         <Button fx:id="searchBtn" onMouseClicked="#filterTracks" layoutX="60.0" layoutY="500.0" text="Search" />        
 
-        <Text fx:id="infoText" text="Click on the track you wish to load." layoutX="562" layoutY="130" />
-        <ScrollPane fx:id="savedTracksScrollPane" layoutX="560.0" layoutY="136.0" prefViewportHeight="440.0" prefViewportWidth="455.0">
+        <Text fx:id="infoText" text="Click on the track you wish to load." layoutX="543" layoutY="130" />
+        <ScrollPane fx:id="savedTracksScrollPane" layoutX="535.0" layoutY="136.0" prefViewportHeight="440.0" prefViewportWidth="565.0">
             <content>
-                <VBox fx:id="savedTracksPanel" spacing="10.0" />
+                <VBox fx:id="savedTracksPanel" spacing="10.0" prefWidth="555.0" />
             </content>
         </ScrollPane>
 

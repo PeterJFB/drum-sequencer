@@ -170,11 +170,12 @@ public class SequencerControllerTest extends ApplicationTest {
 
     VBox savedTracksPanel = lookup("#savedTracksPanel").query();
 
-    assertEquals(1, savedTracksPanel.getChildren().size(), """
+    // Removing 1, as the panel also contains a node displaying the name of each column
+    assertEquals(1, savedTracksPanel.getChildren().size() - 1, """
         Amount of tracks in %s was not as expected. Check the directory and ensure
         LocalTrackAccess is behaving as expected.""".formatted(ph.getSaveDirectoryPath()));
 
-    clickOn("#" + savedTracksPanel.getChildren().get(0).getId());
+    clickOn("#" + savedTracksPanel.getChildren().get(1).getId());
 
     // CleanUp
 

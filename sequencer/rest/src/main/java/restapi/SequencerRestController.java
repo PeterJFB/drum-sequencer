@@ -119,8 +119,17 @@ public class SequencerRestController {
       newId = maxId + 1;
 
       // Create and write to a new file with the unique id
-      final String filename = FilenameHandler.generateFilenameFromMetaData(new FileMetaData(newId,
-          track.getTrackName(), track.getArtistName(), Instant.now().toEpochMilli()));
+      String filename;
+      try {
+        filename = FilenameHandler.generateFilenameFromMetaData(new FileMetaData(newId,
+            track.getTrackName(), track.getArtistName(), Instant.now().toEpochMilli()));
+      } catch (IllegalArgumentException e) {
+        return new ResponseEntity<>(
+            "A field has han illegal format."
+                + " Maybe track name or artist name contains special characters?",
+            HttpStatus.BAD_REQUEST);
+      }
+
       final String content = objectMapper.writeValueAsString(track);
 
       persistenceHandler.writeToFile(filename, writer -> {

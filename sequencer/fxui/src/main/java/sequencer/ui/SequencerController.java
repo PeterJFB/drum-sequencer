@@ -392,7 +392,7 @@ public class SequencerController {
       displayStatusMsg(composer.getTrackName() + " saved.", true);
 
     } catch (IllegalArgumentException e) {
-      displayStatusMsg("Track name has an invalid format.", false);
+      displayStatusMsg("Track name or artist has an invalid format.", false);
     } catch (IOException e) {
       displayStatusMsg("Failed to save track.", false);
     }

@@ -156,7 +156,8 @@ public class SequencerSystemTest extends ApplicationTest {
     clickOn("#modalOpener");
     final VBox savedTracksPanel = lookup("#savedTracksPanel").query();
 
-    assertEquals(tracksCreated, savedTracksPanel.getChildren().size(), """
+    // Removing 1, as the panel also contains a node displaying the name of each column
+    assertEquals(tracksCreated, savedTracksPanel.getChildren().size() - 1, """
         Amount of saved tracks was not as expected. Ensure both client and server are performing
         the POST-request as expected.""");
 
@@ -170,11 +171,12 @@ public class SequencerSystemTest extends ApplicationTest {
     clickOn("#modalOpener");
     final VBox savedTracksPanel = lookup("#savedTracksPanel").query();
 
-    assertEquals(tracksCreated, savedTracksPanel.getChildren().size(), """
+    // Removing 1, as the panel also contains a node displaying the name of each column
+    assertEquals(tracksCreated, savedTracksPanel.getChildren().size() - 1, """
         Amount of saved tracks was not as expected. Ensure both client and server are
         performing the POST-request as expected.""");
 
-    clickOn("#" + savedTracksPanel.getChildren().get(0).getId());
+    clickOn("#" + savedTracksPanel.getChildren().get(1).getId());
     clickOn("#startStopBtn");
     assertTrue(sequencerController.composer.isPlaying(), """
         Attempting to play the loaded instrument failed. Ensure the loaded track is
@@ -189,17 +191,19 @@ public class SequencerSystemTest extends ApplicationTest {
   @Order(3)
   @DisplayName("Load an instrument based on name search")
   public void searchInstrumentByTrackName() {
+
     clickOn("#modalOpener");
     clickOn("#trackNameField").write(testTrackNames[1].substring(1));
     clickOn("#searchBtn");
 
     final VBox savedTracksPanel = lookup("#savedTracksPanel").query();
 
-    assertEquals(1, savedTracksPanel.getChildren().size(), """
+    // Removing 1, as the panel also contains a node displaying the name of each column
+    assertEquals(1, savedTracksPanel.getChildren().size() - 1, """
         Amount of tracks after searching by trackName was not as expected. Ensure both client and
         server are performing the GET-request as expected.""");
 
-    clickOn("#" + savedTracksPanel.getChildren().get(0).getId());
+    clickOn("#" + savedTracksPanel.getChildren().get(1).getId());
 
     assertEquals(trackNameField.getText(), testTrackNames[1],
         "Loaded unexpected track. Ensure sorting and meta are handled as expected.");
@@ -209,17 +213,19 @@ public class SequencerSystemTest extends ApplicationTest {
   @Order(4)
   @DisplayName("Load an instrument based on artist search")
   public void searchInstrumentByArtistName() {
+
     clickOn("#modalOpener");
     clickOn("#artistNameField").write(testArtistNames[2].charAt(0));
     clickOn("#searchBtn");
 
     final VBox savedTracksPanel = lookup("#savedTracksPanel").query();
 
-    assertEquals(2, savedTracksPanel.getChildren().size(), """
+    // Removing 1, as the panel also contains a node displaying the name of each column
+    assertEquals(2, savedTracksPanel.getChildren().size() - 1, """
         Amount of tracks after searching by artist was not as expected. Ensure both client
         and server are performing the GET-request as expected.""");
 
-    clickOn("#" + savedTracksPanel.getChildren().get(0).getId());
+    clickOn("#" + savedTracksPanel.getChildren().get(1).getId());
     // Sence track name is the same, should sorting ensure testTrack3 is the first
     // based on
     // alphabetical order in their names.
@@ -241,7 +247,8 @@ public class SequencerSystemTest extends ApplicationTest {
     clickOn("#searchBtn");
 
     VBox savedTracksPanel = lookup("#savedTracksPanel").query();
-    assertEquals(tracksCreated, savedTracksPanel.getChildren().size(), """
+    // Removing 1, as the panel also contains a node displaying the name of each column
+    assertEquals(tracksCreated, savedTracksPanel.getChildren().size() - 1, """
         Amount of tracks after selecting date was not as expected. Ensure both client and server
         are performing the GET-request as expected.""");
 
@@ -252,7 +259,7 @@ public class SequencerSystemTest extends ApplicationTest {
     clickOn("#searchBtn");
 
     savedTracksPanel = lookup("#savedTracksPanel").query();
-    assertEquals(0, savedTracksPanel.getChildren().size(), """
+    assertEquals(0, savedTracksPanel.getChildren().size() - 1, """
         Amount of tracks after selecting date was not as expected. Ensure both client and server
         are performing the GET-request as expected.""");
     sleep(500);

@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
@@ -29,8 +30,6 @@ public class TrackLoaderModalController {
 
   private SequencerController sequencerController;
   private TrackAccessInterface trackAccess;
-
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
   TrackLoaderModalController(TrackAccessInterface trackAccess) {
     if (trackAccess == null) {
@@ -69,7 +68,7 @@ public class TrackLoaderModalController {
   ScrollPane savedTracksScrollPane;
 
   /**
-   * Fetch and display the saved tracks. Fires on initialization.
+   * Fetch and display the saved tracks. Fires on initialization (and when called from filterTracks)
    *
    * @param trackName the name of the track (or part of it) to search for
    * @param artistName the name of the artist (or part of it) to search for
@@ -108,7 +107,8 @@ public class TrackLoaderModalController {
       displayedTrackName.setWrappingWidth(140);
       final Text displayedArtistName = new Text(track.artist());
       displayedArtistName.setWrappingWidth(140);
-      final String date = FileMetaData.getDay(track.timestamp()).format(formatter).toString();
+      final String date = FileMetaData.getDay(track.timestamp())
+          .format(DateTimeFormatter.ofPattern("MM/dd/yyyy")).toString();
       final Text displayedTimestamp = new Text(date);
 
       final Region region3 = new Region();
@@ -159,21 +159,61 @@ public class TrackLoaderModalController {
   @FXML
   DatePicker timestampPicker;
 
+  /**
+   * Fetches the trackName, artistName and timestamp to filter tracks by from ui, and calls
+   * fetchAndDisplayTracks. Fires when the "Search" button is pushed.
+   */
   @FXML
   private void filterTracks() {
     final String trackName = trackNameField.getText() != null ? trackNameField.getText() : "";
     final String artistName = artistNameField.getText() != null ? artistNameField.getText() : "";
     final Long timestamp;
-    if (timestampPicker.getValue() != null) {
-      LocalDate localDate = timestampPicker.getValue();
-      Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+
+    final String timeStampPickerText = timestampPicker.getEditor().getText();
+    final LocalDate date = convertStringToDate(timeStampPickerText);
+    if (date != null) {
+      final Instant instant = Instant.from(date.atStartOfDay(ZoneId.systemDefault()));
       timestamp = instant.toEpochMilli();
     } else {
       timestamp = null;
     }
+
     fetchAndDisplayTracks(trackName, artistName, timestamp);
   }
 
+  /**
+   * Converts a {@link String} to a {@link LocalDate} if possible. PS: Only the norwegian MM/dd is
+   * accepted, so it's expected that the user is on a norwegian computer
+   *
+   * @param string the {@link String} to be coverted
+   * @return a date if the string could be converted, or null otherwise
+   */
+  private LocalDate convertStringToDate(String string) {
+    // All DateTimeParseException are ignored as they are in lot's of legal cases expected
+    // to be thrown. The exceptions are handled by returning null if all try's fail.
+    try {
+      return LocalDate.parse(string, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+    } catch (DateTimeParseException e) {
+      /* ignore */ }
+    try {
+      return LocalDate.parse(string, DateTimeFormatter.ofPattern("M/dd/yyyy"));
+    } catch (DateTimeParseException e) {
+      /* ignore */ }
+    try {
+      return LocalDate.parse(string, DateTimeFormatter.ofPattern("MM/d/yyyy"));
+    } catch (DateTimeParseException e) {
+      /* ignore */ }
+    try {
+      return LocalDate.parse(string, DateTimeFormatter.ofPattern("M/d/yyyy"));
+    } catch (DateTimeParseException e) {
+      /* ignore */ }
+
+    return null;
+  }
+
+  /**
+   * Calls filterTracks when the enter key is pressed.
+   */
   @FXML
   private void handleKeyPress(KeyEvent event) {
     if (event.getCode().equals(KeyCode.ENTER)) {

@@ -56,7 +56,6 @@ public class LocalTrackAccess implements TrackAccessInterface {
       final String filename = FilenameHandler.generateFilenameFromMetaData(new FileMetaData(newId,
           composer.getTrackName(), composer.getArtistName(), Instant.now().toEpochMilli()));
 
-
       persistenceHandler.writeToFile(filename, (writer) -> {
         try {
           composer.saveTrack(writer);

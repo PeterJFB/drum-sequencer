@@ -147,6 +147,7 @@ public class SequencerSystemTest extends ApplicationTest {
       }
 
       clickOn(trackNameField).push(KeyCode.CONTROL, KeyCode.A).write(testTrackNames[i]);
+      clickOn(artistNameField).push(KeyCode.CONTROL, KeyCode.A, KeyCode.BACK_SPACE);
       if (i == 0) {
         clickOn("#saveTrackBtn"); // Should have no effect, as artistName is not filled out
       }

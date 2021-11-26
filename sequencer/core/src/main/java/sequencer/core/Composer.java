@@ -1,7 +1,6 @@
 package sequencer.core;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -45,15 +44,21 @@ public class Composer {
    * when the user thread is stopped. Useful for testing.
    *
    * @return a new composer without audio files
+   * @throws IOException if the reader fails to read instrumentNames.csv, or the AudioClips fail to
+   *         load
    */
-  public static Composer createSilentComposer(TrackMapperInterface newTrackMapper) {
+  public static Composer createSilentComposer(TrackMapperInterface newTrackMapper)
+      throws IOException {
     return new Composer(false, true, newTrackMapper);
   }
 
   /**
    * Composer constructor. Use this in production.
+   *
+   * @throws IOException if the reader fails to read instrumentNames.csv, or the AudioClips fail to
+   *         load
    */
-  public Composer(TrackMapperInterface newTrackMapper) {
+  public Composer(TrackMapperInterface newTrackMapper) throws IOException {
     this(true, false, newTrackMapper);
   }
 
@@ -64,9 +69,11 @@ public class Composer {
    *        {@linktourl https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html#setDaemon(boolean)}.
    *        If set to false, the composer will not stop when the window is closed
    * @param testMode If testMode is set to true, the AudioClips will not be loaded
+   * @throws IOException if the reader fails to read instrumentNames.csv, or the AudioClips fail to
+   *         load
    */
-  private Composer(boolean createDaemonTimer, boolean testMode,
-      TrackMapperInterface newTrackMapper) {
+  private Composer(boolean createDaemonTimer, boolean testMode, TrackMapperInterface newTrackMapper)
+      throws IOException {
 
     progress = 0;
     timer = new Timer(createDaemonTimer);
@@ -93,12 +100,7 @@ public class Composer {
         }
 
       }
-    } catch (FileNotFoundException e) {
-      System.err.println("Could not find instrumentNames.csv");
-    } catch (IOException e) {
-      System.err.println("Could not close instrumentReader");
     }
-
   }
 
   /**

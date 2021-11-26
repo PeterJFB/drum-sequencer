@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,9 +22,20 @@ public class ComposerTest {
 
   private Composer composer;
 
+  /**
+   * Creates a composer that does not load audio files, nor stops the timer when the user thread is
+   * stopped.
+   *
+   * @throws IOException if the reader fails to read instrumentNames.csv
+   */
   @BeforeEach
-  public void createComposer() {
-    composer = Composer.createSilentComposer(new TrackMapper());
+  public void createComposer() throws IOException {
+    try {
+      composer = Composer.createSilentComposer(new TrackMapper());
+    } catch (IOException e) {
+      throw new IOException("Composer failed to load instrument data or audio files", e);
+    }
+
   }
 
   @Test

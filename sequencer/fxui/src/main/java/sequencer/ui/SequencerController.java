@@ -50,10 +50,16 @@ public class SequencerController {
 
   @FXML
   void initialize() {
-    composer = new Composer(new TrackMapper());
-    composer.addListener(progress -> {
-      Platform.runLater(() -> addBorderToSixteenths(progress));
-    });
+    try {
+      composer = new Composer(new TrackMapper());
+      composer.addListener(progress -> {
+        Platform.runLater(() -> addBorderToSixteenths(progress));
+      });
+    } catch (Exception e) {
+      displayStatusMsg(
+          "The composer could not load audio data. Please try restarting or reinstalling the app.",
+          false);
+    }
 
     final String sequencerAccess = System.getenv(SEQUENCER_ACCESS_ENV);
 
@@ -162,10 +168,12 @@ public class SequencerController {
       ChoiceBox<String> availableInstruments = new ChoiceBox<>();
       availableInstruments.setId("choiceBox" + String.valueOf(row));
       availableInstruments.getStyleClass().add("availableInstruments");
-      List<String> instrumentsNotUsed = composer.getAvailableInstruments().stream()
-          .filter(instrument -> !composer.getInstrumentsInTrack().contains(instrument))
-          .collect(Collectors.toList());
-      availableInstruments.getItems().addAll(instrumentsNotUsed);
+      if (composer != null) {
+        List<String> instrumentsNotUsed = composer.getAvailableInstruments().stream()
+            .filter(instrument -> !composer.getInstrumentsInTrack().contains(instrument))
+            .collect(Collectors.toList());
+        availableInstruments.getItems().addAll(instrumentsNotUsed);
+      }
       availableInstruments.valueProperty()
           .addListener((observable, oldValue, newValue) -> addInstrument(oldValue, newValue));
       instrumentSubPanel.add(availableInstruments, 1, 0);

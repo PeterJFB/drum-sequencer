@@ -28,7 +28,7 @@ public record FileMetaData(int id, String title, String author, long timestamp)
     }
 
     if (!getDay().equals(other.getDay())) {
-      return getDay().compareTo(other.getDay());
+      return other.getDay().compareTo(getDay());
     }
 
     if (!title.equals(other.title)) {

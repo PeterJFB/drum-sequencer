@@ -307,7 +307,7 @@ public class SequencerController {
     if (instrument == null || instrument.isBlank()) {
       return;
     }
-    instruments.setValue("");
+    instruments.setValue(null);
     if (!updatingElements) {
       composer.removeInstrumentFromTrack(instrument);
     }

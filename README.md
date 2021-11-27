@@ -6,6 +6,8 @@
 [![pipeline status](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/main/pipeline.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/main)
 [![coverage report](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/badges/main/coverage.svg)](https://gitlab.stud.idi.ntnu.no/it1901/groups-2021/gr2101/gr2101/-/commits/main) ([headless](#tests-jacoco))
 
+<img src="docs/release3/demonstration.gif" alt="Demonstration">
+
 The app requires `Java 16`. Other dependecies are compiled and built using `Maven 3.8.2`.
 
 The project itself and further descriptions is located in the [sequencer folder](./sequencer).
@@ -87,7 +89,7 @@ After this, you will find the installer in `/fxui/target/dist`
 
 ## Additional configuration: Changing storage endpoint
 
-Our application is as of now designed to utilize a local server to store/share tracks made with the application. The url for this is by default `http://localhost:8080/api`. This value can be changed by declaring the environment variable `SEQUENCER_ACCESS` with a different endpoint. There is additionally an option to run the application without running a sever, declared with `SEQUENCER_ACCESS=LOCAL` (or, if you want to rename the directory: SEQUENCER_ACCESS=LOCAL:directory-name). Below are some examples of running the application with these varaibles:
+Our application is as of now designed to utilize a local server to store/share tracks made with the application. The url for this is by default `http://localhost:8080/api`. This value can be changed by declaring the environment variable `SEQUENCER_ACCESS` with a different endpoint. There is additionally an option to run the application without running a sever, declared with `SEQUENCER_ACCESS=LOCAL` (or, if you want to rename the directory: `SEQUENCER_ACCESS=LOCAL:directory-name`). Below are some examples of running the application with these varaibles:
 
 ```bash
 $ SEQUENCER_ACCESS=http://216.58.211.14:8080/api mvn javafx:run -pl fxui # Run application with external server

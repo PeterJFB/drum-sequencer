@@ -53,6 +53,8 @@ public class SequencerController {
   void initialize() {
     try {
       composer = new Composer(new TrackMapper());
+      composer.setTrackName(trackName.getText());
+      composer.setArtistName(artistName.getText());
       composer.addListener(progress -> {
         Platform.runLater(() -> addBorderToSixteenths(progress));
       });
@@ -391,7 +393,7 @@ public class SequencerController {
       // Track is successfully saved
       displayStatusMsg(composer.getTrackName() + " saved.", true);
     } catch (IllegalArgumentException e) {
-      displayStatusMsg("Track name has an invalid format.", false);
+      displayStatusMsg("Track name or artist has an invalid format.", false);
     } catch (IOException e) {
       displayStatusMsg("Failed to save track.", false);
     }

@@ -15,8 +15,10 @@ public interface TrackAccessInterface {
    *
    * @param composer the composer holding the track you want to save
    * @throws IOException if something went wrong while saving the track
+   * @throws IllegalArgumentException if the track has a format that is not accepted by the track
+   *         access object
    */
-  public void saveTrack(Composer composer) throws IOException;
+  public void saveTrack(Composer composer) throws IOException, IllegalArgumentException;
 
   /**
    * Loads the track with the given id into the composer.

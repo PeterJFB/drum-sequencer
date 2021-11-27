@@ -58,19 +58,14 @@ public class FilenameHandler {
    *
    * @param metaData the metadata to base the generation on
    * @return the generated filename
-   * @throws IllegalArgumentException if title or author contains the value used as separator
+   * @throws IllegalArgumentException if a valid file name can't be generated from meta data
    */
   public static String generateFilenameFromMetaData(FileMetaData metaData) {
-    if (metaData.title().contains(SEPARATOR)) {
-      throw new IllegalArgumentException(
-          "title contains illegal character %s: %s".formatted(SEPARATOR, metaData.title()));
+    String filename = metaData.id() + SEPARATOR + metaData.title() + SEPARATOR + metaData.author()
+        + SEPARATOR + metaData.timestamp();
+    if (!isValidFilename(filename)) {
+      throw new IllegalArgumentException("Couldn't create a valid filename from meta data");
     }
-    if (metaData.author().contains(SEPARATOR)) {
-      throw new IllegalArgumentException(
-          "author contains illegal character %s: %s".formatted(SEPARATOR, metaData.title()));
-    }
-
-    return metaData.id() + SEPARATOR + metaData.title() + SEPARATOR + metaData.author() + SEPARATOR
-        + metaData.timestamp();
+    return filename;
   }
 }

@@ -68,14 +68,8 @@ public class RemoteTrackAccess implements TrackAccessInterface {
     return connection;
   }
 
-  /**
-   * Saves the track that the composer is currently holding.
-   *
-   * @param composer the composer holding the track you want to save
-   * @throws IOException if something went wrong while saving the track
-   */
   @Override
-  public void saveTrack(Composer composer) throws IOException {
+  public void saveTrack(Composer composer) throws IOException, IllegalArgumentException {
     final HttpURLConnection connection = prepareConnection("/tracks", "POST");
     connection.setDoOutput(true);
 

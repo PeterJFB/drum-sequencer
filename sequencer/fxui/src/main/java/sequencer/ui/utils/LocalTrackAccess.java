@@ -45,17 +45,17 @@ public class LocalTrackAccess implements TrackAccessInterface {
   }
 
   @Override
-  public void saveTrack(Composer composer) throws IOException {
+  public void saveTrack(Composer composer) throws IOException, IllegalArgumentException {
 
     final int newId = persistenceHandler.listSavedFiles().stream().map(trackMeta -> trackMeta.id())
         .reduce(0, (currMax, next) -> {
           return currMax > next ? currMax : next;
         }) + 1;
 
-    final String filename = FilenameHandler.generateFilenameFromMetaData(new FileMetaData(newId,
-        composer.getTrackName(), composer.getArtistName(), Instant.now().toEpochMilli()));
-
     try {
+      final String filename = FilenameHandler.generateFilenameFromMetaData(new FileMetaData(newId,
+          composer.getTrackName(), composer.getArtistName(), Instant.now().toEpochMilli()));
+
       persistenceHandler.writeToFile(filename, (writer) -> {
         try {
           composer.saveTrack(writer);
@@ -65,6 +65,8 @@ public class LocalTrackAccess implements TrackAccessInterface {
       });
     } catch (UncheckedIOException | IOException e) {
       throw new IOException("The program was unable to save the current track", e);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("Couldn't create a valid filename from meta data");
     }
 
   }

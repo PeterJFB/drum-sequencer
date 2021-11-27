@@ -108,7 +108,8 @@ public class SequencerRestController {
       Track track = objectMapper.readValue(trackAsJson, Track.class);
       if (track.getTrackName() == null || track.getTrackName().isBlank()
           || track.getArtistName() == null || track.getArtistName().isBlank()) {
-        return new ResponseEntity<>("Track name and artist name required", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("{ message: \"Track name and artist name required\" }",
+            HttpStatus.BAD_REQUEST);
       }
 
       // Find the next available id which is greater than those in use.
@@ -119,8 +120,17 @@ public class SequencerRestController {
       newId = maxId + 1;
 
       // Create and write to a new file with the unique id
-      final String filename = FilenameHandler.generateFilenameFromMetaData(new FileMetaData(newId,
-          track.getTrackName(), track.getArtistName(), Instant.now().toEpochMilli()));
+      String filename;
+      try {
+        filename = FilenameHandler.generateFilenameFromMetaData(new FileMetaData(newId,
+            track.getTrackName(), track.getArtistName(), Instant.now().toEpochMilli()));
+      } catch (IllegalArgumentException e) {
+        return new ResponseEntity<>(
+            "{ message:\"A field has han illegal format. "
+                + "Maybe track name or artist name contains special characters?\" }",
+            HttpStatus.BAD_REQUEST);
+      }
+
       final String content = objectMapper.writeValueAsString(track);
 
       persistenceHandler.writeToFile(filename, writer -> {

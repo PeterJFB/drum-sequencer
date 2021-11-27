@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
@@ -18,6 +19,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.StringConverter;
 import sequencer.json.TrackSearchResult;
 import sequencer.persistence.FileMetaData;
 import sequencer.ui.utils.TrackAccessInterface;
@@ -30,7 +32,10 @@ public class TrackLoaderModalController {
   private SequencerController sequencerController;
   private TrackAccessInterface trackAccess;
 
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+  private final DateTimeFormatter defaultFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+  private final String[] validPatterns = {"d/M/yy", "d/M/yyyy", "d/MM/yy", "d/MM/yyyy", "dd/M/yy",
+      "dd/M/yyyy", "dd/MM/yy", "dd/MM/yyyy"};
+
 
   TrackLoaderModalController(TrackAccessInterface trackAccess) {
     if (trackAccess == null) {
@@ -41,7 +46,18 @@ public class TrackLoaderModalController {
 
   @FXML
   void initialize() {
-    fetchAndDisplayTracks("", "", null); // An empty string as argument will match all tracks
+    fetchAndDisplayTracks("", "", null); // Empty strings and null will match all tracks
+
+    // Set properties of timestampPicker
+    timestampPicker.setConverter(timestampPickerConverter);
+    // https://stackoverflow.com/questions/37923502/how-to-get-entered-value-in-editable-combobox-in-javafx
+    timestampPicker.getEditor().focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+      timestampPicker
+          .setValue(timestampPickerConverter.fromString(timestampPicker.getEditor().getText()));
+      timestampPicker.getEditor()
+          .setText(timestampPickerConverter.toString(timestampPicker.getValue()));
+
+    });
   }
 
   /**
@@ -69,7 +85,7 @@ public class TrackLoaderModalController {
   ScrollPane savedTracksScrollPane;
 
   /**
-   * Fetch and display the saved tracks. Fires on initialization.
+   * Fetch and display the saved tracks. Fires on initialization (and when called from filterTracks)
    *
    * @param trackName the name of the track (or part of it) to search for
    * @param artistName the name of the artist (or part of it) to search for
@@ -108,7 +124,8 @@ public class TrackLoaderModalController {
       displayedTrackName.setWrappingWidth(140);
       final Text displayedArtistName = new Text(track.artist());
       displayedArtistName.setWrappingWidth(140);
-      final String date = FileMetaData.getDay(track.timestamp()).format(formatter).toString();
+      final String date =
+          FileMetaData.getDay(track.timestamp()).format(defaultFormatter).toString();
       final Text displayedTimestamp = new Text(date);
 
       final Region region3 = new Region();
@@ -159,21 +176,71 @@ public class TrackLoaderModalController {
   @FXML
   DatePicker timestampPicker;
 
+
+  /**
+   * Converts a {@link String} to a {@link LocalDate} if possible. Notice that only the format 
+   * dd/MM/yyyy and similar variations are accepted.
+   */
+  public StringConverter<LocalDate> timestampPickerConverter = new StringConverter<>() {
+
+    @Override
+    public String toString(LocalDate date) {
+      if (date != null) {
+        return defaultFormatter.format(date);
+      }
+      return "";
+    }
+
+    @Override
+    public LocalDate fromString(String string) {
+
+      try {
+        // Default formatter
+        return LocalDate.parse(string, defaultFormatter);
+      } catch (DateTimeParseException e) {
+        // string was not the the default pattern
+      }
+
+      for (String validPattern : validPatterns) {
+        try {
+          return LocalDate.parse(string, DateTimeFormatter.ofPattern(validPattern));
+        } catch (DateTimeParseException e) {
+          // Attempt different pattern
+        }
+      }
+
+      // string did not match any pattern we support
+      return null;
+    }
+
+
+  };
+
+  /**
+   * Fires when the "Search" button is pushed. Fetches the trackName, artistName and timestamp to
+   * filter the tracks shown in UI
+   */
   @FXML
   private void filterTracks() {
     final String trackName = trackNameField.getText() != null ? trackNameField.getText() : "";
     final String artistName = artistNameField.getText() != null ? artistNameField.getText() : "";
+
+    final LocalDate date = timestampPicker.getValue();
+
     final Long timestamp;
-    if (timestampPicker.getValue() != null) {
-      LocalDate localDate = timestampPicker.getValue();
-      Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+    if (date != null) {
+      final Instant instant = Instant.from(date.atStartOfDay(ZoneId.systemDefault()));
       timestamp = instant.toEpochMilli();
     } else {
       timestamp = null;
     }
+
     fetchAndDisplayTracks(trackName, artistName, timestamp);
   }
 
+  /**
+   * Calls filterTracks when the enter key is pressed.
+   */
   @FXML
   private void handleKeyPress(KeyEvent event) {
     if (event.getCode().equals(KeyCode.ENTER)) {

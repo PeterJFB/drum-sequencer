@@ -105,7 +105,7 @@ public class Track {
   /**
    * Adds another instrument to the track with the given pattern.
    *
-   * @param instrument name of the new instrument
+   * @param instrumentName name of the new instrument
    * @param pattern the pattern to apply with the instrument. The reason this is a List and not a
    *        Collection, is so that when using the method one is forced to pass in an ordered list,
    *        as this matches the intended meaning of a pattern: it is supposed to have an order.
@@ -113,12 +113,12 @@ public class Track {
    * @throws IllegalArgumentException if the given pattern is null or has an illegal length
    * 
    */
-  public void addInstrument(String instrument, List<Boolean> pattern) {
+  public void addInstrument(String instrumentName, List<Boolean> pattern) {
     if (pattern == null || pattern.size() != TRACK_LENGTH) {
       throw new IllegalArgumentException(
           "Cannot add instrument. The instrument had an illegal format");
     }
-    instruments.put(instrument, new ArrayList<>(pattern));
+    instruments.put(instrumentName, new ArrayList<>(pattern));
   }
 
   /**

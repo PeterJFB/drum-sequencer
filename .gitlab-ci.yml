@@ -1,40 +1,54 @@
+# gitlab-runner exec docker jacoco
 variables:
-  SKIP_UI_TESTS: -Dtest=!SequencerControllerTest -DfailIfNoTests=false
+  SKIP_ALL_TESTS: -DskipTests=true
+  IGNORE_UI_COVERAGE: -DfxuiScope=test
+  SKIP_UI_TESTS: -P headlessTest -DfailIfNoTests=false
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode"
 
 image: maven:3-openjdk-16
+#image: maven:3.3.9-jdk-16
 before_script:
+  - echo ${CI_PROJECT_DIR}
   - cd sequencer
+
+cache:
+  paths:
+    - .m2/repository
 
 stages:
   - build
-  - test
   - verify
+  - test
 
 build:
   stage: build
+  artifacts:
+    paths:
+      - "*/target"
+      - "*/*/target"
+
   script:
     - mvn compile
-
-test:
-  stage: test
-  script:
-    - mvn test $SKIP_UI_TESTS
 
 checkstyle:
   stage: verify
   script:
-    - mvn install $SKIP_UI_TESTS
     - mvn checkstyle:check
 
 spotbugs:
   stage: verify
   script:
-    - mvn install $SKIP_UI_TESTS
-    - mvn spotbugs:check
+    - mvn install spotbugs:check $SKIP_ALL_TESTS
 
-jacoco:
-  stage: verify
+test:
+  stage: test
+  artifacts:
+    paths:
+      - "*/target"
+      - "*/*/target"
+
   script:
-    - mvn verify $SKIP_UI_TESTS
-    - cat report/target/site/jacoco-aggregate/index.html | grep -o 'Total[^%]*%' | sed -e 's/Total/Jacoco-Test-Coverage:/g'
-  coverage: '/Jacoco-Test-Coverage[^%]+[>](\d+.?\d*)%/'
+    - mvn clean test jacoco:report-aggregate $SKIP_UI_TESTS $IGNORE_UI_COVERAGE
+    - 'cat report/target/site/jacoco-aggregate/index.html | grep -oP "Total[^%]*>\K\d+%{1}" | sed -e "s/^/Jacoco-Test-Coverage: /g"'
+  coverage: '/Jacoco-Test-Coverage: (\d+.?\d*)%/'

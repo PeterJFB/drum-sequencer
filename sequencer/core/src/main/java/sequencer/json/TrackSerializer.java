@@ -12,19 +12,25 @@ import sequencer.core.Track;
  * The {@code TrackSerializer} is a custom serializer of the {@link Track} class.
  */
 class TrackSerializer extends JsonSerializer<Track> {
+
   @Override
   public void serialize(Track track, JsonGenerator jsonGen, SerializerProvider serializers)
       throws IOException {
     jsonGen.writeStartObject();
+
     jsonGen.writeStringField("name", track.getTrackName());
     jsonGen.writeStringField("artist", track.getArtistName());
+
     jsonGen.writeObjectFieldStart("instruments");
-    List<String> instruments = track.getInstruments();
+    final List<String> instruments = track.getInstrumentNames();
+
+    // Preserve order of instruments
     Collections.reverse(instruments);
     for (String instrument : instruments) {
       jsonGen.writeObjectField(instrument, track.getPattern(instrument));
     }
-    jsonGen.writeEndObject();
-    jsonGen.writeEndObject();
+    jsonGen.writeEndObject(); // End of "instruments"
+
+    jsonGen.writeEndObject(); // End of entire object
   }
 }

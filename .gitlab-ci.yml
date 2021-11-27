@@ -39,7 +39,7 @@ checkstyle:
 spotbugs:
   stage: verify
   script:
-    - mvn spotbugs:check
+    - mvn install spotbugs:check $SKIP_ALL_TESTS
 
 test:
   stage: test

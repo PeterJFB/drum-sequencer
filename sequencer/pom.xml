@@ -134,8 +134,8 @@
     </build>
 
     <modules>
-        <module>core</module>
         <module>localpersistence</module>
+        <module>core</module>
         <module>rest</module>
         <module>fxui</module>
         <module>report</module>

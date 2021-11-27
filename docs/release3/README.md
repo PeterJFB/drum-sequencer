@@ -1,3 +1,5 @@
+# Drum sequencer 2.0.0
+
 <img src="Logo.svg" alt="Drum Sequencer">
 
 > Everything related to the third release of _Drum Sequencer_
